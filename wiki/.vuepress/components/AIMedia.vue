@@ -84,18 +84,13 @@ const blurPreview = computed(() => props.blurPreview !== false)
 
 /* 外层容器不要再占 inline 宽度，也不要外边距 */
 .ai-media {
-  display: inline-block;  /* 让图片容器并排 */
   vertical-align: top;    /* 顶部对齐 */
-  margin:0;
-  text-align:center;
 }
 
 /* 图片占满容器，避免“看起来更小” */
 .ai-media img {
   display: block;
   margin: 0 auto;
-  width: auto;          /* 宽度自动，避免被拉伸 */
-  height: 420px;        /* 固定高度，统一显示 */
   object-fit: cover;    /* 保持比例并裁剪多余部分 */
   border-radius: 8px;
 }
@@ -110,12 +105,20 @@ const blurPreview = computed(() => props.blurPreview !== false)
 .ai-veil:focus .ai-mask {
   box-shadow: 0 0 0 3px rgba(25,120,255,.35);
 }
+/* 模糊状态：图片保留尺寸，只改变视觉样式 */
 .ai-blur {
-  filter: blur(14px) brightness(0.9);
-  transform: scale(1.02);
-  border-radius: 8px;
-  max-width: 100%;
-  height: auto;
+  filter: blur(18px) brightness(0.7);
+  opacity: 0.6;              /* 半透明，不彻底隐藏 */
+  pointer-events: none;      /* 防止点击 */
+  transition: all 0.4s ease; /* 动画过渡 */
+}
+
+/* 聚焦/点击后恢复清晰 */
+.ai-veil:focus .ai-blur,
+.ai-veil:hover .ai-blur {
+  filter: blur(0) brightness(1);
+  opacity: 1;
+  pointer-events: auto;
 }
 .ai-mask {
   position: absolute;
