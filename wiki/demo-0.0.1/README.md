@@ -11,10 +11,10 @@ highlights:
     bgImage: https://theme-hope-assets.vuejs.press/bg/3-light.svg
     bgImageDark: https://theme-hope-assets.vuejs.press/bg/3-dark.svg
     actions:
-    - text: 角色总览
-      icon: star
-      link: ./character/
-      type: primary
+      - text: 角色总览
+        icon: star
+        link: ./character/
+        type: primary
     highlights:
       - title: 阎罗、甲等不死、先知、灵动骑士、天灾……这个世界属于少数精英，他们是舞台的主角。
       - title: 超级英雄、反派、神秘学家、神明代行、武道家、修仙者、科学怪人、魔法师……
