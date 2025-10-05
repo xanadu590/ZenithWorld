@@ -23,6 +23,9 @@ isOriginal: true
 * 英雄名：灵动骑士（Ethereal Knight)
 * 昵称：灵骑、07、E-Knight
 * 年龄：19
+
+<AIMedia src="/image/LOGO-light.jpg" alt="测试图" width="45%" />
+
 * 种族：人类
 * 出生年月：2011年7月30日
 * 职业：学生
