@@ -5,7 +5,9 @@
 <ul>
 <li><RouteLink to="/demo-0.0.1/character/superhero/character-EtherealKnight.html">灵动骑士</RouteLink></li>
 <li><RouteLink to="/demo-0.0.1/character/superhero/character-Scourge.html">天灾</RouteLink></li>
+<li>[赤听][HearTone]</li>
 </ul>
+<p>[HearTone]： /demo-0.0.1/character/superhero/character-HearTone.md</p>
 </div></template>
 
 
