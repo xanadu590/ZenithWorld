@@ -22,7 +22,7 @@
         @keydown.enter.prevent="reveal"
       >
         <img
-          v-if="blurPreview"
+          v-show="blurPreview"
           class="ai-blur"
           :src="src"
           :alt="alt"
