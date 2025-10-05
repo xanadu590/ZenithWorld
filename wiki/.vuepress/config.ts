@@ -2,6 +2,8 @@ import { defineUserConfig } from "vuepress";
 
 import theme from "./theme.js";
 
+import { viteBundler } from '@vuepress/bundler-vite'
+
 export default defineUserConfig({
   base: "/",
   
@@ -19,6 +21,8 @@ export default defineUserConfig({
   },
 
   theme,
+
+    bundler: viteBundler(), // ← 指定打包器
 
   // Enable it with pwa
   // shouldPrefetch: false,
