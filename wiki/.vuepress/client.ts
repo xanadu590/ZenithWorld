@@ -2,40 +2,38 @@
 import { defineClientConfig } from 'vuepress/client'
 import { reactive, h } from 'vue'
 import AIToggle from './components/AIToggle.vue'
-import AIMedia from './components/AIMedia.vue'
+import AIMedia from './components/AIMedia.vue' // ← 新增：显式引入
 
 export type AISetting = {
   show: boolean
   setShow: (v: boolean) => void
 }
 
-const STORAGE_KEY = 'showAIImages'
+const KEY = 'showAIImages'
 export const AI_INJECT_KEY = Symbol('AISetting')
 
 export default defineClientConfig({
   enhance({ app }) {
-    // 全局可响应的开关（带本地持久化）
     const setting = reactive<AISetting>({
       show:
         typeof window !== 'undefined'
-          ? (localStorage.getItem(STORAGE_KEY) ?? 'off') === 'on'
+          ? (localStorage.getItem(KEY) ?? 'off') === 'on'
           : false,
       setShow(v: boolean) {
         setting.show = v
         if (typeof window !== 'undefined') {
-          localStorage.setItem(STORAGE_KEY, v ? 'on' : 'off')
+          localStorage.setItem(KEY, v ? 'on' : 'off')
         }
       },
     })
 
-    // 注入到全局（供任意组件 inject 使用）
+    // 全局注入
     app.provide(AI_INJECT_KEY, setting)
 
-    // ✅ 显式注册全局组件（最稳妥）
-    app.component('AIToggle', AIToggle)
+    // ✅ 显式注册组件（可选，不注册也能用）
     app.component('AIMedia', AIMedia)
   },
 
-  // 在每个页面右上角挂一个总开关
+  // 右上角悬浮的总开关
   rootComponents: [h(AIToggle)],
 })
