@@ -12,8 +12,10 @@ isOriginal: true
 
 # [灵动骑士][EtherealKnight]
 
-<AIMedia src="/image/EtherealKnightCombatSuit.jpg" caption="AI战斗服"/>
-<AIMedia src="/image/EtherealKnightEverydayWear.jpg" caption="AI日常服"/>
+<div class="ai-row">
+<AIMedia src="/image/EtherealKnightCombatSuit.jpg" caption="战斗状态"/>
+<AIMedia src="/image/EtherealKnightEverydayWear.jpg" caption="常服"/>
+</div>
 
 ## 基本信息
 * 姓名：宇文南城

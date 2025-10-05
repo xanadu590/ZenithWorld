@@ -47,15 +47,16 @@ const ai = inject(AI_INJECT_KEY) as { show: boolean }
 .ai-media img {
   border-radius: 6px;
   width: 220px;           /* 固定宽度，可根据需要调整 */
-  height: 300px;          /* 固定高度，确保并排统一 */
+  height: 330px;          /* 固定高度，确保并排统一 */
   object-fit: cover;      /* 自动裁剪图片而不变形 */
   object-position: center;/* 居中裁剪区域 */
 }
 
 /* 占位符也保持相同尺寸 */
 .ai-placeholder {
-  display: inline-block;
-  vertical-align: top;
+  display: inline-flex; /* 改为 inline-flex 支持横向排列 */
+  align-items: center;  /* 垂直居中 */
+  justify-content: center; /* 水平居中 */
   width: 220px;
   height: 300px;
   border: 1px dashed #ddd;
