@@ -7,26 +7,24 @@
 <script setup lang="ts">
 import { ref, provide } from 'vue'
 
-// 全局状态：是否显示AI图
 const showAI = ref(false)
 const toggle = () => (showAI.value = !showAI.value)
 
-// 提供给 AIMedia 使用
 provide('showAI', showAI)
 </script>
 
 <style scoped>
 .ai-toggle {
-  background: #333;
+  display: block;
+  margin: 1rem auto;
+  padding: 0.4rem 1rem;
+  background: #444;
   color: #fff;
   border: none;
-  padding: .4rem .8rem;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: background .2s;
 }
 .ai-toggle:hover {
-  background: #555;
+  background: #666;
 }
 </style>
