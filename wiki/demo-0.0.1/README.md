@@ -6,10 +6,15 @@ heroText: 世界观总览
 tagline: ZenithWorld,我正在创造的原创世界观百科
 
 highlights:
-  - header: [角色总览][character]
+  - header: 角色总览
     image: /assets/image/box.svg
     bgImage: https://theme-hope-assets.vuejs.press/bg/3-light.svg
     bgImageDark: https://theme-hope-assets.vuejs.press/bg/3-dark.svg
+    actions:
+    - text: 角色总览
+      icon: star
+      link: ./character/
+      type: primary
     highlights:
       - title: 阎罗、甲等不死、先知、灵动骑士、天灾……这个世界属于少数精英，他们是舞台的主角。
       - title: 超级英雄、反派、神秘学家、神明代行、武道家、修仙者、科学怪人、魔法师……
@@ -305,5 +310,3 @@ This is an example of a project homepage. You can place your main content here.
 To use this layout, you need to set `home: true` in the page front matter.
 
 For related descriptions of configuration items, please see [Project HomePage Layout Config](https://theme-hope.vuejs.press/guide/layout/home.html).
-
-[character]:/demo-0.0.1/character/
