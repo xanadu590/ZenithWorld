@@ -1,4 +1,4 @@
-<template>
+<templ ate>
   <div class="ai-media">
     <img :src="src" :alt="alt" :width="width" :height="height" loading="lazy" />
     <slot />

@@ -11,7 +11,7 @@
 <li>昵称：灵骑、07、E-Knight</li>
 <li>年龄：19</li>
 </ul>
-<AIMedia src="/image/LOGO-light.jpg" alt="测试图" width="45%" /><ul>
+<AIMedia src="/image/LOGO-light.jpg" alt="测试图" width="45%" /><Badge text="Test" type="tip" /><ul>
 <li>种族：人类</li>
 <li>出生年月：2011年7月30日</li>
 <li>职业：学生</li>

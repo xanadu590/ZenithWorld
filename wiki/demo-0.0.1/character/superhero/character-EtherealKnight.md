@@ -25,6 +25,7 @@ isOriginal: true
 * 年龄：19
 
 <AIMedia src="/image/LOGO-light.jpg" alt="测试图" width="45%" />
+<Badge text="Test" type="tip" />
 
 * 种族：人类
 * 出生年月：2011年7月30日
