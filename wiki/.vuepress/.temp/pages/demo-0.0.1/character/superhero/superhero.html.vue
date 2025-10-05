@@ -1,0 +1,8 @@
+<template><div><h1 id="超级英雄" tabindex="-1"><a class="header-anchor" href="#超级英雄"><span>超级英雄</span></a></h1>
+<blockquote>
+<p><RouteLink to="/demo-0.0.1/character/superhero/superhero.html">超级英雄</RouteLink>是指拥有超凡能力，凭借强烈的正义感或使命感，以打击邪恶、保护民众为目标的正义人士。</p>
+</blockquote>
+<h2 id="灵动骑士" tabindex="-1"><a class="header-anchor" href="#灵动骑士"><span><RouteLink to="/demo-0.0.1/character/superhero/character-EtherealKnight.html">灵动骑士</RouteLink></span></a></h2>
+</div></template>
+
+
