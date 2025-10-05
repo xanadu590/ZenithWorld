@@ -3,7 +3,7 @@
     <figure class="ai-media" :style="figureStyle">
       <!-- 显示条件：全站开 或 单图点开 或 defaultShow -->
       <img
-        v-if="visible"
+        v-show="visible"
         :src="src"
         :alt="alt"
         :width="width"
@@ -12,7 +12,7 @@
       />
 
       <div
-        v-else
+        v-show="!visible"
         class="ai-veil"
         role="button"
         tabindex="0"
