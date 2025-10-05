@@ -8,7 +8,7 @@
 <li>姓名：宇文南城</li>
 <li>性别：女</li>
 <li>英雄名：灵动骑士（Ethereal Knight)</li>
-<li>昵称：灵骑、07</li>
+<li>昵称：灵骑、07、E-Knight</li>
 <li>年龄：19</li>
 <li>种族：人类</li>
 <li>出生年月：2011年7月30日</li>
