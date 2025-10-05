@@ -1,55 +1,39 @@
+<!-- .vuepress/components/AIMedia.vue -->
 <template>
-  <figure class="ai-media" :class="{ 'is-ai': isAI, 'blur': isAI && !revealed }">
-    < img :src="src" :alt="alt" :loading="loading" />
-    <figcaption v-if="isAI" class="ai-label" @click="toggle">
-      🔒 AI 生成图（点击查看）
-    </figcaption>
-  </figure>
+  <ClientOnly>
+    <figure v-if="ai.show" class="ai-media">
+      < img :src="src" :alt="alt" :width="width" :height="height" loading="lazy" />
+      <figcaption v-if="caption">{{ caption }}</figcaption>
+    </figure>
+
+    <div v-else class="ai-placeholder">
+      <slot name="placeholder">
+        🔒 AI 生成内容已隐藏
+      </slot>
+    </div>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps } from 'vue'
+import { inject } from 'vue'
+import { AI_INJECT_KEY } from '../client'
 
-const props = defineProps({
-  src: String,
-  alt: String,
-  isAI: { type: Boolean, default: false },
-  loading: { type: String, default: 'lazy' }
-})
+defineProps<{
+  src: string
+  alt?: string
+  width?: string | number
+  height?: string | number
+  caption?: string
+}>()
 
-const revealed = ref(false)
-const toggle = () => (revealed.value = !revealed.value)
+const ai = inject(AI_INJECT_KEY) as { show: boolean }
 </script>
 
 <style scoped>
-.ai-media {
-  position: relative;
-  overflow: hidden;
-  display: inline-block;
-  margin: 0 0.5rem;
-}
-.ai-media img {
-  display: block;
-  width: 100%;
-  height: 420px;
-  object-fit: cover;
-  border-radius: 8px;
-  transition: filter 0.4s ease;
-}
-.ai-media.blur img {
-  filter: blur(18px) brightness(0.9);
-}
-.ai-label {
-  position: absolute;
-  bottom: 8px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: 14px;
-  color: white;
-  background: rgba(0, 0, 0, 0.45);
-  cursor: pointer;
-  border-radius: 0 0 8px 8px;
-  padding: 4px;
+.ai-media img{ border-radius: 6px; max-width: 100%; height: auto; }
+.ai-media figcaption{ color:#666; font-size:13px; margin-top:6px; }
+.ai-placeholder{
+  border: 1px dashed #ddd; border-radius: 6px; padding: 10px; color:#666;
+  text-align: center; font-size: 14px; background: #fafafa;
 }
 </style>
