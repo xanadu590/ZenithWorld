@@ -62,6 +62,39 @@
 <li>战友：肖银池，兰音悦，柯丹，韩笑雨中，连珐紫，伊美素</li>
 <li>宿敌：金华谑（金王子）</li>
 </ul>
-</div></template>
+<style>
+.ai-row {
+  display: flex;
+  gap: 0;
+  justify-content: center;
+  align-items: flex-start;
+}
+.ai-row .ai-media {
+  flex: 0 0 48%;
+  margin: 0;
+}
+.ai-row .ai-media img {
+  display: block;
+  width: 100%;
+  height: 420px;      /* 想更高/更低就改这里 */
+  object-fit: cover;
+  border-radius: 8px;
+}.ai-row {
+  display: flex;
+  gap: 0;
+  justify-content: center;
+  align-items: flex-start;
+}
+.ai-row .ai-media {
+  flex: 0 0 48%;
+  margin: 0;
+}
+.ai-row .ai-media img {
+  display: block;
+  width: 100%;
+  height: 420px;      /* 想更高/更低就改这里 */
+  object-fit: cover;
+  border-radius: 8px;
+}</div></template>
 
 

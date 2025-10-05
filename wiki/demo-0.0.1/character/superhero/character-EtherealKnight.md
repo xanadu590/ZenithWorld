@@ -69,23 +69,39 @@ isOriginal: true
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 [EtherealKnight]: /EtherealKnight.md#灵动骑士
+
+<style>
+.ai-row {
+  display: flex;
+  gap: 0;
+  justify-content: center;
+  align-items: flex-start;
+}
+.ai-row .ai-media {
+  flex: 0 0 48%;
+  margin: 0;
+}
+.ai-row .ai-media img {
+  display: block;
+  width: 100%;
+  height: 420px;      /* 想更高/更低就改这里 */
+  object-fit: cover;
+  border-radius: 8px;
+}.ai-row {
+  display: flex;
+  gap: 0;
+  justify-content: center;
+  align-items: flex-start;
+}
+.ai-row .ai-media {
+  flex: 0 0 48%;
+  margin: 0;
+}
+.ai-row .ai-media img {
+  display: block;
+  width: 100%;
+  height: 420px;      /* 想更高/更低就改这里 */
+  object-fit: cover;
+  border-radius: 8px;
+}
