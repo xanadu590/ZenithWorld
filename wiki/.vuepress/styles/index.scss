@@ -1,1 +1,24 @@
 // place your custom styles here
+
+/* 外层行容器：并排、无间隙、顶对齐、居中 */
+.ai-row {
+  display: flex;
+  gap: 0;                 /* 取消间距 */
+  justify-content: center;
+  align-items: flex-start;/* 顶部对齐 */
+}
+
+/* 每个单元：占据固定比例（可按需改 48%/50%） */
+.ai-row .ai-media {
+  flex: 0 0 48%;
+  margin: 0;
+}
+
+/* 让图片占满单元宽度，统一高度，看起来大小一致 */
+.ai-row .ai-media img {
+  display: block;
+  width: 100%;
+  height: 420px;          /* 统一高度，可按需改 */
+  object-fit: cover;      /* 等比裁剪铺满 */
+  border-radius: 8px;
+}

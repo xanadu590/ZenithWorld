@@ -12,9 +12,9 @@ isOriginal: true
 
 # [灵动骑士][EtherealKnight]
 
-<div style="text-align:center">
-  <AIMedia src="/image/EtherealKnightEverydayWear.jpg" alt="日常服（AI）" width="45%" />
-  <AIMedia src="/image/EtherealKnightCombatSuit.jpg"  alt="战斗服（AI）" width="45%" />
+<div class="ai-row">
+  <AIMedia src="/image/EtherealKnightEverydayWear.jpg" alt="日常服（AI）" />
+  <AIMedia src="/image/EtherealKnightCombatSuit.jpg"  alt="战斗服（AI）" />
 </div>
 
 ## 基本信息
