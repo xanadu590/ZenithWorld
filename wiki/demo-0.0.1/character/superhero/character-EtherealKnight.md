@@ -1,3 +1,7 @@
+<AIToggle />
+
+
+
 ---
 title: 灵动骑士
 sidebar: false
@@ -11,8 +15,6 @@ isOriginal: true
 ---
 
 # [灵动骑士][EtherealKnight]
-
-<AIToggle />
 
 <div class="ai-row">
   <AIMedia src="/images/EtherealKnightEverydayWear.jpg" alt="AI图" :isAI="true" />
