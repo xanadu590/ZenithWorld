@@ -3,9 +3,13 @@
 <p><RouteLink to="/demo-0.0.1/character/superhero/#%E8%B6%85%E7%BA%A7%E8%8B%B1%E9%9B%84">超级英雄</RouteLink>是指拥有超凡能力，凭借强烈的正义感或使命感，以打击邪恶、保护民众为目标的正义人士。</p>
 </blockquote>
 <ul>
+<li><RouteLink to="/demo-0.0.1/character/superhero/character-StrikeClock.html">警钟</RouteLink></li>
 <li><RouteLink to="/demo-0.0.1/character/superhero/character-EtherealKnight.html">灵动骑士</RouteLink></li>
 <li><RouteLink to="/demo-0.0.1/character/superhero/character-Scourge.html">天灾</RouteLink></li>
 <li><RouteLink to="/demo-0.0.1/character/superhero/character-HearTone.html">赤听</RouteLink></li>
+<li><RouteLink to="/demo-0.0.1/character/superhero/character-M-A-Y.html">月者五</RouteLink></li>
+<li><RouteLink to="/demo-0.0.1/character/superhero/character-Illustra.html">幻绘</RouteLink></li>
+<li><RouteLink to="/demo-0.0.1/character/superhero/character-WizardHope.html">巫师希望</RouteLink></li>
 </ul>
 </div></template>
 

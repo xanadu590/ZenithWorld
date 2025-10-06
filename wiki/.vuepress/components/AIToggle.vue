@@ -20,7 +20,7 @@ const toggle = () => ai.setShow(!ai.show)
   position: fixed;
   z-index: 9999;
   top: 12px;
-  right: 16px;
+  right: 200px;
   font-size: 13px;
   padding: 6px 10px;
   border: 1px solid var(--c-border,#e5e7eb);
