@@ -46,7 +46,7 @@ highlights:
     bgImageDark: https://theme-hope-assets.vuejs.press/bg/9-dark.svg
 
   - header: 力量体系
-    description: 就像传世神打翻了自己的调色盘，这个世界的力量体系多样而诡谲。
+    description: 就像创世神打翻了自己的调色盘，这个世界的力量体系多样而诡谲。
     image: /image/LOGO-power.png
     bgImage: https://theme-hope-assets.vuejs.press/bg/5-light.svg
     bgImageDark: https://theme-hope-assets.vuejs.press/bg/5-dark.svg

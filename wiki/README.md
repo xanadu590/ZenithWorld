@@ -17,6 +17,9 @@ actions:
   - text: 角色列表
     link: ./demo-0.0.1/character/
 
+  - text: 时间线
+    link: ./demo-0.0.1/timeline.md
+
 features:
   - title: 信念与冲突
     details: 巅峰世界的基石是信念的对立，世界的维护者与破坏者，英雄与反派，神明与凡人……一切信仰在这里碰撞。
