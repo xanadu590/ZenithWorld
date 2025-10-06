@@ -130,6 +130,13 @@ export const SEARCH_INDEX = [
     "extraFields": []
   },
   {
+    "title": "世界观总览",
+    "headers": [],
+    "path": "/demo-0.0.1/",
+    "pathLocale": "/",
+    "extraFields": []
+  },
+  {
     "title": "指南",
     "headers": [
       {
@@ -182,9 +189,9 @@ export const SEARCH_INDEX = [
     "extraFields": []
   },
   {
-    "title": "世界观总览",
+    "title": "角色介绍",
     "headers": [],
-    "path": "/demo-0.0.1/",
+    "path": "/demo-0.0.1/character/",
     "pathLocale": "/",
     "extraFields": []
   },
@@ -381,71 +388,6 @@ export const SEARCH_INDEX = [
       }
     ],
     "path": "/en/guide/",
-    "pathLocale": "/en/",
-    "extraFields": []
-  },
-  {
-    "title": "角色介绍",
-    "headers": [],
-    "path": "/demo-0.0.1/character/",
-    "pathLocale": "/",
-    "extraFields": []
-  },
-  {
-    "title": "Baz",
-    "headers": [],
-    "path": "/en/guide/bar/baz.html",
-    "pathLocale": "/en/",
-    "extraFields": []
-  },
-  {
-    "title": "Bar feature",
-    "headers": [
-      {
-        "level": 2,
-        "title": "Introduction",
-        "slug": "introduction",
-        "link": "#introduction",
-        "children": []
-      },
-      {
-        "level": 2,
-        "title": "Details",
-        "slug": "details",
-        "link": "#details",
-        "children": []
-      }
-    ],
-    "path": "/en/guide/bar/",
-    "pathLocale": "/en/",
-    "extraFields": []
-  },
-  {
-    "title": "Ray",
-    "headers": [],
-    "path": "/en/guide/foo/ray.html",
-    "pathLocale": "/en/",
-    "extraFields": []
-  },
-  {
-    "title": "Foo feature",
-    "headers": [
-      {
-        "level": 2,
-        "title": "Introduction",
-        "slug": "introduction",
-        "link": "#introduction",
-        "children": []
-      },
-      {
-        "level": 2,
-        "title": "Details",
-        "slug": "details",
-        "link": "#details",
-        "children": []
-      }
-    ],
-    "path": "/en/guide/foo/",
     "pathLocale": "/en/",
     "extraFields": []
   },
@@ -650,9 +592,74 @@ export const SEARCH_INDEX = [
     "extraFields": []
   },
   {
+    "title": "Ray",
+    "headers": [],
+    "path": "/en/guide/foo/ray.html",
+    "pathLocale": "/en/",
+    "extraFields": []
+  },
+  {
+    "title": "Foo feature",
+    "headers": [
+      {
+        "level": 2,
+        "title": "Introduction",
+        "slug": "introduction",
+        "link": "#introduction",
+        "children": []
+      },
+      {
+        "level": 2,
+        "title": "Details",
+        "slug": "details",
+        "link": "#details",
+        "children": []
+      }
+    ],
+    "path": "/en/guide/foo/",
+    "pathLocale": "/en/",
+    "extraFields": []
+  },
+  {
+    "title": "Baz",
+    "headers": [],
+    "path": "/en/guide/bar/baz.html",
+    "pathLocale": "/en/",
+    "extraFields": []
+  },
+  {
+    "title": "Bar feature",
+    "headers": [
+      {
+        "level": 2,
+        "title": "Introduction",
+        "slug": "introduction",
+        "link": "#introduction",
+        "children": []
+      },
+      {
+        "level": 2,
+        "title": "Details",
+        "slug": "details",
+        "link": "#details",
+        "children": []
+      }
+    ],
+    "path": "/en/guide/bar/",
+    "pathLocale": "/en/",
+    "extraFields": []
+  },
+  {
     "title": "",
     "headers": [],
     "path": "/404.html",
+    "pathLocale": "/",
+    "extraFields": []
+  },
+  {
+    "title": "",
+    "headers": [],
+    "path": "/demo-0.0.1/character/superhero/character-WizardHope.html",
     "pathLocale": "/",
     "extraFields": []
   }

@@ -2,8 +2,9 @@
 title: 灵动骑士
 sidebar: false
 categroy:
-- 角色介绍
-- 超级英雄
+- 人类
+- 英雄
+- 异能者
 tag:
 - 灵动骑士
 - 世界英雄
