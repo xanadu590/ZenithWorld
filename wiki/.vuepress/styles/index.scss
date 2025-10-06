@@ -11,3 +11,15 @@
 .ai-row > * {
   margin: 0 !important;
 }
+
+/* 让根背景/文字总是跟随主题变量，减少短暂白底 */
+html, body {
+  background: var(--c-bg);
+  color: var(--c-text);
+}
+
+/* 主题切换瞬间禁用过渡，避免“闪一下再渐变” */
+html.theme-switching, html.theme-switching * {
+  transition: none !important;
+  animation: none !important;
+}
