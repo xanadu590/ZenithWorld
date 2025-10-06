@@ -3,6 +3,7 @@ import { defineClientConfig } from 'vuepress/client'
 import { reactive, h } from 'vue'
 import AIToggle from './components/AIToggle.vue'
 import AIMedia from './components/AIMedia.vue' // ← 新增：显式引入
+import RelationCards from './components/RelationCards.vue' 
 
 export type AISetting = {
   show: boolean
@@ -32,6 +33,8 @@ export default defineClientConfig({
 
     // ✅ 显式注册组件（可选，不注册也能用）
     app.component('AIMedia', AIMedia)
+    
+    app.component('RelationCards', RelationCards)          // ← 新增：全局注册
   },
 
   // 右上角悬浮的总开关

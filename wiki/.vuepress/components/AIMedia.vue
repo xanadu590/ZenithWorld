@@ -46,8 +46,8 @@ const ai = inject(AI_INJECT_KEY) as { show: boolean }
 /* 固定显示区域，高度统一、自动裁剪、保持居中 */
 .ai-media img {
   border-radius: 6px;
-  width: 220px;           /* 固定宽度，可根据需要调整 */
-  height: 330px;          /* 固定高度，确保并排统一 */
+  width: 180px;           /* 固定宽度，可根据需要调整 */
+  height: 270px;          /* 固定高度，确保并排统一 */
   object-fit: cover;      /* 自动裁剪图片而不变形 */
   object-position: center;/* 居中裁剪区域 */
 }
@@ -57,8 +57,8 @@ const ai = inject(AI_INJECT_KEY) as { show: boolean }
   display: inline-flex; /* 改为 inline-flex 支持横向排列 */
   align-items: center;  /* 垂直居中 */
   justify-content: center; /* 水平居中 */
-  width: 220px;
-  height: 300px;
+  width: 160px;
+  height: 275.5px;
   border: 1px dashed #ddd;
   border-radius: 6px;
   padding: 10px;
@@ -67,5 +67,11 @@ const ai = inject(AI_INJECT_KEY) as { show: boolean }
   font-size: 14px;
   background: #fafafa;
   margin-right: 12px;
+}
+
+html[data-theme='dark'] .ai-placeholder {
+  background: #1e1e1e;     /* 深色背景 */
+  border-color: #333;      /* 深色边框 */
+  color: #aaa;             /* 灰字 */
 }
 </style>

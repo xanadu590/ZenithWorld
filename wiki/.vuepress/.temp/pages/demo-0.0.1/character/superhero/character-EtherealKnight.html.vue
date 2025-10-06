@@ -16,7 +16,7 @@
 <li>学历：大学本科（在读）</li>
 <li>加入过的团体：世界英雄（World Hero)，拯救者联盟</li>
 </ul>
-<h2 id="外貌特征" tabindex="-1"><a class="header-anchor" href="#外貌特征"><span>外貌特征</span></a></h2>
+<h3 id="外貌特征" tabindex="-1"><a class="header-anchor" href="#外貌特征"><span>外貌特征</span></a></h3>
 <ul>
 <li>身高：174cm</li>
 <li>体重：57kg</li>
@@ -26,7 +26,7 @@
 <li>日常风格：喜欢阳光时尚的风格，但是由于自己的相貌常常会引发骚动，因此经常穿的不起眼，并且用头发覆盖住脸</li>
 <li>战斗着装：银色西方骑士铠甲，头盔覆面，武器为长剑</li>
 </ul>
-<h2 id="性格心理" tabindex="-1"><a class="header-anchor" href="#性格心理"><span>性格心理</span></a></h2>
+<h3 id="性格心理" tabindex="-1"><a class="header-anchor" href="#性格心理"><span>性格心理</span></a></h3>
 <ul>
 <li>性格：守序，善良，宽以待人</li>
 <li>面对陌生人的态度：友好</li>
@@ -38,7 +38,7 @@
 <li>道德观：黑白分明</li>
 <li>成为英雄的理由：只是为了做点好事</li>
 </ul>
-<h2 id="特殊能力" tabindex="-1"><a class="header-anchor" href="#特殊能力"><span>特殊能力</span></a></h2>
+<h3 id="特殊能力" tabindex="-1"><a class="header-anchor" href="#特殊能力"><span>特殊能力</span></a></h3>
 <ul>
 <li>未变身时，几乎没有战斗力，力气、技艺甚至比普通女生还弱，但是她的美人痣几乎可以魅惑一切生灵</li>
 <li>能够变身成为游戏中自己创建的游戏角色，能力为打败BOSS时游戏角色的能力</li>
@@ -48,13 +48,13 @@
 <li>远程战斗能力：极强，是一名魔法大师</li>
 <li>弱点：因为是数据化身躯，有一种特殊的电脑病毒可以影响到她，可以篡改她的身体数据，但是不会影响她的复活能力。</li>
 </ul>
-<h2 id="背景故事" tabindex="-1"><a class="header-anchor" href="#背景故事"><span>背景故事</span></a></h2>
+<h3 id="背景故事" tabindex="-1"><a class="header-anchor" href="#背景故事"><span>背景故事</span></a></h3>
 <ul>
 <li>出身：是个孤儿，在孤儿院长大</li>
 <li>擅长的事：厨艺，但是只会做自己喜欢吃的；与人交往，长相极佳的她几乎可以获得任何人的好感，即使是反派；游戏，游戏技术很好。</li>
 <li>获得超能力的契机：在喜欢的游戏《剑与酒杯》里与好友一起击杀了一个特殊boss后，获得了特殊能力</li>
 </ul>
-<h2 id="人际关系" tabindex="-1"><a class="header-anchor" href="#人际关系"><span>人际关系</span></a></h2>
+<h3 id="人际关系" tabindex="-1"><a class="header-anchor" href="#人际关系"><span>人际关系</span></a></h3>
 <ul>
 <li>朋友：舒雪，韩英宇，姬泽</li>
 <li>恋人：卞体羽</li>
@@ -62,10 +62,18 @@
 <li>战友：肖银池，兰音悦，柯丹，韩笑雨中，连珐紫，伊美素</li>
 <li>宿敌：金华谑（金王子）</li>
 </ul>
-<h2 id="人物关系" tabindex="-1"><a class="header-anchor" href="#人物关系"><span>人物关系</span></a></h2>
-<RelationCards /><h3 id="人物故事" tabindex="-1"><a class="header-anchor" href="#人物故事"><span>人物故事</span></a></h3>
+<blockquote>
+<p>人物关系</p>
+</blockquote>
+<hr>
+<RelationCards :items='[
+  { "name":"舒雪", "role":"朋友", "avatar":"/image/EtherealKnightCombatSuit.jpg", "link":"/demo-0.0.1/character/superhero/character-Scourge.md" },
+  { "name":"韩梓宁", "role":"朋友", "avatar":"/image/EtherealKnightCombatSuit.jpg", "link":"/demo-0.0.1/character/superhero/character-Scourge.md" }
+]' />
+<h3 id="人物故事" tabindex="-1"><a class="header-anchor" href="#人物故事"><span>人物故事</span></a></h3>
 <p>宇文南城，是一个好人。<br>
-这是对她而言，最准确的描述。在她眼中，只有需要帮助的人和暂时不需要帮助的人，抱有这种思想的她，本来会因为现实而理想破灭然而，她却拥有了超能力——</p>
+这是对她而言，最准确的描述。在她眼中，只有需要帮助的人和暂时不需要帮助的人，抱有这种思想的她，本来会因为现实而理想破灭。<br>
+然而，她却拥有了超能力——</p>
 <h4 id="序幕" tabindex="-1"><a class="header-anchor" href="#序幕"><span>序幕</span></a></h4>
 <p>在宇文南城升入大学之前，她的人生与普通人没有两样，虽然拥有动人心魄的外貌，但她却并不以此为傲，反而是将其遮掩，努力以平凡人的身份融入社会。因为她阴沉的外在，在中学时期，只有舒雪与她成为朋友。<br>
 宇文南城从小在孤儿院长大，她的父母自出生便将她遗弃在了公园的长凳上，就在那烈日炎炎的夏日，当路人发现她的时候，她几乎已经被晒成干尸。被送到医院救助之后，警察也寻找过她的父母，但是并没有结果，最终，她还是被送到了孤儿院。<br>
