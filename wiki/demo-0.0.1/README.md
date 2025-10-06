@@ -34,37 +34,31 @@ highlights:
         link: ./character/
 
   - header: 角色总览
-    description: 舞台的主角。
-    image: /assets/image/box.svg
+    description: 这个世界是属于少数精英的世界，他们是舞台的主角。
+    image: /image/LOGO-character.png
     bgImage: https://theme-hope-assets.vuejs.press/bg/2-light.svg
     bgImageDark: https://theme-hope-assets.vuejs.press/bg/2-dark.svg  
     
-  - header: 角色总览
-    description: 舞台的主角。
-    image: /assets/image/box.svg
+  - header: 势力分布
+    description: 如果说超级英雄们是舞台的主角，那么一个个势力、一个个城市就是舞台。
+    image: /image/LOGO-influence.png
     bgImage: https://theme-hope-assets.vuejs.press/bg/9-light.svg
     bgImageDark: https://theme-hope-assets.vuejs.press/bg/9-dark.svg
 
-  - header: 角色总览
-    description: 舞台的主角。
-    image: /assets/image/box.svg
+  - header: 力量体系
+    description: 就像传世神打翻了自己的调色盘，这个世界的力量体系多样而诡谲。
+    image: /image/LOGO-power.png
     bgImage: https://theme-hope-assets.vuejs.press/bg/5-light.svg
     bgImageDark: https://theme-hope-assets.vuejs.press/bg/5-dark.svg
 
-  - header: 角色总览
-    description: 舞台的主角。
-    image: /assets/image/box.svg
+  - header: 世界专有
+    description: 这个世界有一些专有的事物，可以在这里查看。
+    image: /image/LOGO-influence.png
     bgImage: https://theme-hope-assets.vuejs.press/bg/1-light.svg
     bgImageDark: https://theme-hope-assets.vuejs.press/bg/1-dark.svg
 
-  - header: 角色总览
-    description: 舞台的主角。
-    image: /assets/image/box.svg
-    bgImage: https://theme-hope-assets.vuejs.press/bg/5-light.svg
-    bgImageDark: https://theme-hope-assets.vuejs.press/bg/5-dark.svg
-
-  - header: 角色总览
-    description: 舞台的主角。
-    image: /assets/image/box.svg
+  - header: 危机事件
+    description: 舞台与主角的诞生，是为了戏剧的上演。危机——这便是戏剧。
+    image: /image/LOGO-influence.png
     bgImage: https://theme-hope-assets.vuejs.press/bg/4-light.svg
     bgImageDark: https://theme-hope-assets.vuejs.press/bg/4-dark.svg
