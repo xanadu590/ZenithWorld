@@ -19,10 +19,6 @@ export default hopeTheme({
 
   docsDir: "wiki",
 
-  blog:{
-    
-  },
-
   locales: {
     "/": {
       // navbar
