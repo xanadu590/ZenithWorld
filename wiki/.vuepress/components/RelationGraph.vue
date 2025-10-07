@@ -31,7 +31,9 @@ type NodeItem = {
   image?: string
   shape?: string
 }
-type EdgeItem = { from: string | number; to: string | number; type?: string }
+type EdgeItem = { from: string | number; to: string | number; type?: string }  // ← 原样保留
+// ★ 新增：为了让“连线显示文字”，给边增加可选 label（不影响现有用法）
+type EdgeItemWithLabel = EdgeItem & { label?: string }
 
 /** ----------------------------------------------------------------------------
  *  输入：组件属性
@@ -40,7 +42,7 @@ type EdgeItem = { from: string | number; to: string | number; type?: string }
 const props = defineProps<{
   height?: number | string
   nodes: NodeItem[]
-  edges: EdgeItem[]
+  edges: EdgeItemWithLabel[]              // ★ 新增：使用带 label 的边类型
 }>()
 
 /** ----------------------------------------------------------------------------
@@ -51,6 +53,8 @@ const el = ref<HTMLElement | null>(null)
 let net: any = null
 let nodeDS: any = null
 let edgeDS: any = null
+// ★ 新增：用于监听主题切换的观察器
+let themeObserver: MutationObserver | null = null
 
 /** ----------------------------------------------------------------------------
  *  常量：交互时的样式参数
@@ -60,6 +64,11 @@ const DEFAULT_NODE_SIZE = 36
 const HOVER_NODE_SIZE = 42
 const DEFAULT_EDGE_WIDTH = 2
 const HOVER_EDGE_WIDTH = 4
+// ★ 新增：连线文字在默认/悬停时的字号
+const DEFAULT_EDGE_FONT_SIZE = 12
+const HOVER_EDGE_FONT_SIZE = 16
+// ★ 默认头像：当某节点未提供 image 时，自动用这张
+const DEFAULT_NODE_IMAGE = '/image/LOGO-character.png'  // 请确保这张图存在
 
 /** ----------------------------------------------------------------------------
  *  计算：容器样式
@@ -78,6 +87,16 @@ const wrapStyle = computed(() => {
 })
 
 /** ----------------------------------------------------------------------------
+ *  ★ 新增：读取 CSS 变量真实颜色值（Canvas 需要实色值）
+ *  作用：把 'var(--c-text)' 解析为当前主题下的 #RRGGBB / rgb() 字符串
+ * ---------------------------------------------------------------------------*/
+function cssVar(name: string, fallback: string) {
+  const root = document.documentElement
+  const v = getComputedStyle(root).getPropertyValue(name).trim()
+  return v || fallback
+}
+
+/** ----------------------------------------------------------------------------
  *  初始化：构建网络图
  *  作用：动态导入 vis-network；创建数据集和实例；绑定交互事件
  * ---------------------------------------------------------------------------*/
@@ -89,17 +108,31 @@ async function init() {
 
   // 构造安全节点数组：如果节点包含 image 则使用 circularImage 形状，并通过 font.vadjust 向上微调文字位置，
   // 以修正带图片节点文字过远的问题；否则使用默认 dot 形状和字体。
-  const safeNodes = (props.nodes ?? []).map(n => ({
-    ...n,
-    shape: n.image ? 'circularImage' : (n.shape || 'dot'),
-    font: n.image ? { vadjust: -6 } : undefined,  // ★ 仅图像节点上调文字
-  }))
+  // ★ 统一为圆形头像：没有 image 的节点自动使用默认头像
+  const safeNodes = (props.nodes ?? []).map(n => {
+    const img = n.image ?? DEFAULT_NODE_IMAGE
+    return {
+      ...n,
+      image: img,                  // ★ 补上图片（无则用默认）
+      shape: 'circularImage',      // ★ 统一用圆形图片节点
+      font: { vadjust: 0 },      // ★ 图像节点把文字微微上调（可按需要调整）
+    }
+  })
+
+  // ★ 新增：按关系类型给“边文字”一个默认中文（你也可以在传入 edges 时显式写 label）
+  const edgeLabelByType: Record<string, string> = {
+    friend: '朋友',
+    ally: '盟友',
+    enemy: '敌对',
+    family: '家人',
+  }
 
   // 数据集：保存并暴露给悬停事件使用
   nodeDS = new DataSet(safeNodes)
   edgeDS = new DataSet(
     (props.edges ?? []).map(e => ({
       ...e,
+      label: e.label ?? (e.type ? edgeLabelByType[e.type] : undefined), // ★ 新增：把文字带给连线
       color: edgeColor(e.type),
       width: DEFAULT_EDGE_WIDTH,
       arrows: { to: { enabled: false } },
@@ -108,11 +141,20 @@ async function init() {
 
   // 全局选中（加粗）样式：保证文字颜色“不变化”，仅加粗
   // 注意：这里配置的是“选中态”的文字样式（我们在 hover 时临时选择该节点）
-  const fontCommonColor = 'var(--c-text, #111)'
+  // ★ 修改点：用解析后的实色值，确保明暗主题下都正确
+  const fontCommonColor = cssVar('--c-text', '#111')   // ★
 
   const options = {
     layout: { improvedLayout: true },
-    physics: { enabled: true, stabilization: true },
+      physics: {
+        enabled: true,
+        stabilization: true,
+        solver: 'forceAtlas2Based',  // 或 'barnesHut'，默认是这个
+        forceAtlas2Based: {
+          springLength: 200,     // ★ 节点之间的理想距离（默认 100）
+          springConstant: 0.02,  // 弹性强度，数值越小越松散
+        },
+      },
     nodes: {
       shape: 'dot',
       size: DEFAULT_NODE_SIZE,
@@ -127,20 +169,31 @@ async function init() {
       },
       // 默认字体 + “选中态”字体：颜色保持不变，仅加粗
       font: {
-        color: fontCommonColor,
+        color: fontCommonColor,     // ★ 使用解析后的实色
         face: 'sans-serif',
         size: 14,
         bold: {
-          color: fontCommonColor, // 加粗时仍保持同色
+          color: fontCommonColor,   // ★ 选中时仍用同色
         },
       },
       // 头像加载失败时的占位
-      brokenImage: '/images/fallback-avatar.png',
+      brokenImage: '/image/LOGO-character.png',
     },
     edges: {
       smooth: { enabled: true, type: 'dynamic' },
       color: { color: '#94a3b8', highlight: '#3eaf7c' },
       width: DEFAULT_EDGE_WIDTH,
+      // ★ 修改点：连线文字颜色使用解析后的实色，保证暗色主题能变白
+      font: {
+        color: fontCommonColor,     // ★ 关键：Canvas 需要实色，不支持 var()
+        size: DEFAULT_EDGE_FONT_SIZE,
+        face: 'sans-serif',
+        strokeWidth: 0,
+        // background: 'rgba(255,255,255,.85)',
+        align: 'top',
+        vadjust: -2,
+      },
+      labelHighlightBold: false,
     },
     interaction: {
       hover: true,    // 必须打开，才能响应 hoverNode / blurNode
@@ -152,6 +205,26 @@ async function init() {
 
   // 创建网络实例
   net = new Network(el.value, { nodes: nodeDS, edges: edgeDS }, options)
+
+  /** ------------------------------------------------------------------------
+   *  ★ 新增：监听主题切换（<html data-theme> 变化），动态更新文字颜色
+   *  作用：切到暗色时，边/节点文字立即变亮；切回亮色时恢复
+   * -----------------------------------------------------------------------*/
+  const applyThemeTextColor = () => {
+    const c = cssVar('--c-text', '#111')
+    net?.setOptions({
+      nodes: { font: { color: c, bold: { color: c } } },
+      edges: { font: { color: c } },
+    })
+  }
+  applyThemeTextColor() // 初始化后先应用一次
+
+  themeObserver?.disconnect()
+  themeObserver = new MutationObserver(applyThemeTextColor)
+  themeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme'],
+  })
 
   /** ------------------------------------------------------------------------
    *  交互：点击节点 → 若存在 url 则跳转
@@ -169,35 +242,40 @@ async function init() {
    *    1) 通过 selectNodes 触发“选中态”从而加粗文字（颜色保持不变）
    *    2) 临时把节点 size 调大
    *    3) 把与之相连的边 width 调大
+   *    4) 连线文字字号随之放大
    * -----------------------------------------------------------------------*/
   net.on('hoverNode', ({ node }: { node: string | number }) => {
-    // 文字加粗但不变色：使用“选中态”
-    net.selectNodes([node], false)
-
-    // 节点变大
+    net.selectNodes([node], false)                 // 文字加粗但不变色
     nodeDS.update({ id: node, size: HOVER_NODE_SIZE })
 
-    // 相连的边变粗
     const eids = net.getConnectedEdges(node)
     if (Array.isArray(eids) && eids.length) {
-      edgeDS.update(eids.map(id => ({ id, width: HOVER_EDGE_WIDTH })))
+      edgeDS.update(
+        eids.map(id => ({
+          id,
+          width: HOVER_EDGE_WIDTH,
+          font: { size: HOVER_EDGE_FONT_SIZE },   // 连线文字变大
+        })),
+      )
     }
   })
 
   /** ------------------------------------------------------------------------
-   *  交互：移出节点 → 恢复默认线宽、节点尺寸，并取消选中
+   *  交互：移出节点 → 恢复默认线宽、节点尺寸，并取消选中；连线文字字号还原
    * -----------------------------------------------------------------------*/
   net.on('blurNode', ({ node }: { node: string | number }) => {
-    // 取消“选中态”，文字恢复正常粗细（颜色一直未变）
     net.unselectAll()
-
-    // 节点尺寸还原
     nodeDS.update({ id: node, size: DEFAULT_NODE_SIZE })
 
-    // 相连的边宽度还原
     const eids = net.getConnectedEdges(node)
     if (Array.isArray(eids) && eids.length) {
-      edgeDS.update(eids.map(id => ({ id, width: DEFAULT_EDGE_WIDTH })))
+      edgeDS.update(
+        eids.map(id => ({
+          id,
+          width: DEFAULT_EDGE_WIDTH,
+          font: { size: DEFAULT_EDGE_FONT_SIZE }, // 还原连线文字
+        })),
+      )
     }
   })
 }
@@ -238,6 +316,9 @@ watch(
 onBeforeUnmount(() => {
   if (net && typeof net.destroy === 'function') net.destroy()
   net = null
+  // ★ 新增：卸载时断开主题观察器
+  themeObserver?.disconnect()
+  themeObserver = null
 })
 </script>
 

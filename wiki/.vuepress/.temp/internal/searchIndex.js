@@ -99,7 +99,15 @@ export const SEARCH_INDEX = [
             "slug": "人际关系",
             "link": "#人际关系",
             "children": []
-          },
+          }
+        ]
+      },
+      {
+        "level": 2,
+        "title": "人物关系图谱",
+        "slug": "人物关系图谱",
+        "link": "#人物关系图谱",
+        "children": [
           {
             "level": 3,
             "title": "人物故事",

@@ -72,6 +72,23 @@ isOriginal: true
   { "name":"韩梓宁", "role":"朋友", "avatar":"/image/EtherealKnightCombatSuit.jpg", "link":"/demo-0.0.1/character/superhero/character-Scourge.md" }
 ]' />
 
+## 人物关系图谱
+
+<ClientOnly>
+  <RelationGraph
+    :height="420"
+    :nodes="[ 
+      { id: 'ek', label: '灵动骑士', url: '/demo-0.0.1/character/superhero/character-EtherealKnight.html', image: '/image/EtherealKnightCombatSuit.jpg' },
+      { id: 'sx', label: '舒雪' },
+      { id: 'hn', label: '韩桉宁' }
+    ]"
+    :edges="[
+      { from: 'ek', to: 'sx', type: 'friend' },
+      { from: 'ek', to: 'hn', type: 'ally' }
+    ]"
+  />
+</ClientOnly>
+
 ### 人物故事
 宇文南城，是一个好人。
 这是对她而言，最准确的描述。在她眼中，只有需要帮助的人和暂时不需要帮助的人，抱有这种思想的她，本来会因为现实而理想破灭。
@@ -88,6 +105,8 @@ isOriginal: true
 在经历了姬泽的偷拍事件、韩英宇的威胁事件、舒雪的催眠事件后，宇文南城与卞体羽的距离一步步拉进。最后，她们遇见了第一个危机——黑道复兴。
 【黑蝮蛇】，武当山的弟子，他对于黑道有着不切实际的幻想，他妄图创造一个心中的理想国，在这个理想国，所有人都可以用拳头来为自己争理。因此，他在腾海市内部发掘打手，从腾海市外引入势力，并凭借强大的实力抢劫警察局，武装手下，最后在腾海市掀起混乱，砸摄像头，收保护费。如果遇见警察，黑腹蛇就会让手下躲好，自己冲过来以强大的实力解决，一时间，警察还真对他毫无办法。
 事情的转折在于黑腹蛇也对宇文南城一见钟情，他绑架了她，并许诺让她成为这个理想国的第一夫人，宇文南城当然不从，于是黑腹蛇就将她关了起来。在外的卞体羽，韩英宇和舒雪三人得知
+
+<RelatedByTag />
 
 [EtherealKnight]: /demo-0.0.1/character/superhero/character-EtherealKnight.md
 [EtherealKnight]: /EtherealKnight.md#灵动骑士
