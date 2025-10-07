@@ -5,6 +5,7 @@ import AIToggle from './components/AIToggle.vue'
 import AIMedia from './components/AIMedia.vue' // ← 新增：显式引入
 import WorldTimeline from './components/WorldTimeline.vue'
 import RelationCards from './components/RelationCards.vue' 
+import RelationGraph from './components/RelationGraph.vue'
 
 export type AISetting = {
   show: boolean
@@ -39,6 +40,8 @@ export default defineClientConfig({
     // ……你原来 AI 注入、rootComponents 等保留不动
     
     app.component('RelationCards', RelationCards)          // ← 新增：全局注册
+
+    app.component('RelationGraph', RelationGraph)
   },
 
   // 右上角悬浮的总开关
