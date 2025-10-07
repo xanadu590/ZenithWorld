@@ -148,13 +148,7 @@ export default hopeTheme({
     },
     // Note: This is for testing ONLY!
     // You MUST generate and use your own comment service in production.
-    comment: {
-      provider: "Giscus",
-      repo: "vuepress-theme-hope/giscus-discussions",
-      repoId: "R_kgDOG_Pt2A",
-      category: "Announcements",
-      categoryId: "DIC_kwDOG_Pt2M4COD69",
-    },
+    comment: false,
 
     search: {
     // 建议做一下 i18n
