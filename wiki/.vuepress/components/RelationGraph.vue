@@ -5,6 +5,7 @@
 </template>
 
 <script setup lang="ts">
+import 'vis-network/styles/vis-network.css'
 import { onMounted, onBeforeUnmount, ref, watch, computed, nextTick } from 'vue'
 
 type NodeItem = {
