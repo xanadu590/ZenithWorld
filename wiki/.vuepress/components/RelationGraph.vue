@@ -87,7 +87,19 @@ async function init() {
           background: 'var(--vp-c-bg-soft, #f8fafc)',
         },
       },
-      font: { color: 'var(--c-text, #111)' },
+      
+      font: {
+        color: 'var(--c-text, #111)',     // 默认文字颜色
+        face: 'sans-serif',               // 字体族
+        size: 14,                         // 字号
+        bold: {
+         color: 'var(--c-text, #111)',   // 被选中时仍保持同样颜色
+       },
+      highlight: {
+        color: 'var(--c-text, #111)',   // 高亮状态颜色（防止变灰）
+      },
+},
+
       // ⬇️ 可选：备用图片，防止加载失败报错
       brokenImage: '/images/fallback-avatar.png',
     },
