@@ -4,7 +4,7 @@
   <RelationGraph
     :height="420"
     :nodes="[ 
-      { id: 'ek', label: '灵动骑士', url: '/demo-0.0.1/character/superhero/character-EtherealKnight.html' image: '/image/EtherealKnightCombatSuit.jpg' },
+      { id: 'ek', label: '灵动骑士', url: '/demo-0.0.1/character/superhero/character-EtherealKnight.html', image: '/image/EtherealKnightCombatSuit.jpg' },
       { id: 'sx', label: '舒雪' },
       { id: 'hn', label: '韩桉宁' }
     ]"
