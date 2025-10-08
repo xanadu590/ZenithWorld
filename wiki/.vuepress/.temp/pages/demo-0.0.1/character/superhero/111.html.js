@@ -1,5 +1,5 @@
 import comp from "C:/Users/super/ZenithWorld/wiki/.vuepress/.temp/pages/demo-0.0.1/character/superhero/111.html.vue"
-const data = JSON.parse("{\"path\":\"/demo-0.0.1/character/superhero/111.html\",\"title\":\"\",\"lang\":\"zh-CN\",\"frontmatter\":{},\"git\":{\"createdTime\":1759711076000,\"updatedTime\":1759889825000},\"readingTime\":{\"minutes\":0.29,\"words\":86},\"filePathRelative\":\"demo-0.0.1/character/superhero/111.md\"}")
+const data = JSON.parse("{\"path\":\"/demo-0.0.1/character/superhero/111.html\",\"title\":\"\",\"lang\":\"zh-CN\",\"frontmatter\":{},\"git\":{\"createdTime\":1759711076000,\"updatedTime\":1759890412000},\"readingTime\":{\"minutes\":0.29,\"words\":86},\"filePathRelative\":\"demo-0.0.1/character/superhero/111.md\"}")
 export { comp, data }
 
 if (import.meta.webpackHot) {
