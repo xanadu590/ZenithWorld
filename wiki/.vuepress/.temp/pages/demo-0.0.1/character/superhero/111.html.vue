@@ -36,12 +36,6 @@
     firstAppearance="2024-11-01"
     to="/demo-0.0.1/character/superhero/character-EtherealKnight.html"
   />
-</div>
-<ClientOnly>
-  <!-- 全站随机 -->
-  <RandomButton />
-  <!-- 只在中文目录随机（示例） -->
-<RandomButton scope="/zh/" />  <!-- 指定排除目录 -->
-<RandomButton exclude="/404,/tag,/demo" /></ClientOnly></div></template>
+</div></div></template>
 
 
