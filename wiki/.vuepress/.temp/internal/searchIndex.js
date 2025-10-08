@@ -50,6 +50,20 @@ export const SEARCH_INDEX = [
     "extraFields": []
   },
   {
+    "title": "",
+    "headers": [],
+    "path": "/demo-0.0.1/character/divineproxy/",
+    "pathLocale": "/",
+    "extraFields": []
+  },
+  {
+    "title": "",
+    "headers": [],
+    "path": "/demo-0.0.1/character/superhero/111.html",
+    "pathLocale": "/",
+    "extraFields": []
+  },
+  {
     "title": "灵动骑士",
     "headers": [
       {
@@ -253,21 +267,7 @@ export const SEARCH_INDEX = [
   {
     "title": "",
     "headers": [],
-    "path": "/demo-0.0.1/character/divineproxy/",
-    "pathLocale": "/",
-    "extraFields": []
-  },
-  {
-    "title": "",
-    "headers": [],
     "path": "/404.html",
-    "pathLocale": "/",
-    "extraFields": []
-  },
-  {
-    "title": "",
-    "headers": [],
-    "path": "/demo-0.0.1/character/superhero/111.html",
     "pathLocale": "/",
     "extraFields": []
   }
