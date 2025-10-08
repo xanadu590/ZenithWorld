@@ -415,20 +415,4 @@ html[data-theme="dark"] .role-card{
 .title { font-size: 13px; }   /* 之前是 20px，可等比调小 */
 .meta { gap: 8px; }           /* 行距也可略缩小 */
 
-/* === 强制取消标题与信息区链接的下划线（常态 + 悬停态）=== */
-/* 1) 常态先去掉任何下划线实现 */
-.role-card :is(.title a, .meta .v a) {
-  text-decoration: none !important;
-  border-bottom: none !important;  /* 有的主题用边框当“下划线” */
-  box-shadow: none !important;     /* 有的主题用内阴影模拟“下划线” */
-}
-
-/* 2) 悬停时也保持不出现下划线 */
-.role-card :is(.title a:hover, .meta .v a:hover) {
-  text-decoration: none !important;
-  border-bottom: none !important;
-  box-shadow: none !important;
-}
-
-
 </style>
