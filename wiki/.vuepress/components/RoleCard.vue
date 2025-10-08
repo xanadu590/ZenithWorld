@@ -318,6 +318,7 @@ html[data-theme="dark"] .role-card{
   -webkit-line-clamp: 3;          /* 最多显示三行 */
   -webkit-box-orient: vertical;
   overflow: hidden;
+  line-clamp: 3;
 }
 
 /* ===========================
@@ -398,6 +399,7 @@ html[data-theme="dark"] .role-card{
   min-width: 0;
 }
 .role-card.stacked .bottom{
+  display: block;
   /* 底部整行展示能力/简介，无需额外样式 */
 }
 
