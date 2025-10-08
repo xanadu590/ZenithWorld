@@ -4,9 +4,11 @@ import theme from "./theme.js";
 
 import { viteBundler } from '@vuepress/bundler-vite'
 
+import { searchPlugin } from '@vuepress/plugin-search'
+
 export default defineUserConfig({
   base: "/",
-  
+
   locales: {
     "/en/": {
       lang: "en-US",
@@ -27,3 +29,4 @@ export default defineUserConfig({
   // Enable it with pwa
   // shouldPrefetch: false,
 });
+
