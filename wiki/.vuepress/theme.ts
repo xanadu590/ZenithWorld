@@ -5,6 +5,7 @@ import { enNavbar, zhNavbar } from "./navbar/index.js";
 import { enSidebar, zhSidebar } from "./sidebar/index.js";
 
 
+
 export default hopeTheme({
   hostname: "https://zenithworld.com",
 
@@ -60,11 +61,11 @@ export default hopeTheme({
 
   encrypt: {
     config: {
-      "/demo/encrypt.html": {
+      "/en/demo/encrypt.html": {
         hint: "Password: 1234",
         password: "1234",
       },
-      "/zh/demo/encrypt.html": {
+      "/demo/encrypt.html": {
         hint: "Password: 1234",
         password: "1234",
       },
@@ -147,27 +148,53 @@ export default hopeTheme({
       updatedTime: true,     // 显示最后更新时间
       contributors: false,   // 不显示贡献者
     },
+
+    // ✅ slimsearch 只写“配置对象”或 true
+    slimsearch: {
+      // 是否索引正文（默认 false）
+      indexContent: true,
+
+      // 本地化占位符（只配 placeholder 即可）
+      locales: {
+        '/en/':   { placeholder: 'Search' },
+        '/': { placeholder: '搜索文档' },
+      },
+
+      // 触发聚焦搜索框的快捷键 —— 用“对象”写法，避免 TS 报错
+      hotKeys: [
+        { key: 'k', ctrl: true }, // Ctrl + K
+        { key: '/', ctrl: true }, // Ctrl + /
+      ],
+
+      // 可选：历史数量与防抖
+      queryHistoryCount: 5,
+      resultHistoryCount: 5,
+      searchDelay: 150,
+
+      // 可选：过滤哪些页面参与索引
+      // filter: (page) => page.path !== '/drafts/',
+
+      // 可选：中文等需要分词时再配 indexOptions / indexLocaleOptions
+      // indexOptions: { ... },
+      // indexLocaleOptions: { '/zh/': { ... } },
+    },
+
+    // 如果你之前还配置了 search / search-pro，请删掉或设为 false，避免冲突：
+    // search: false,
+    // 'search-pro': false,
+
+
+
+    
     // Note: This is for testing ONLY!
     // You MUST generate and use your own comment service in production.
     comment: false,
 
-    search: {
-    // 建议做一下 i18n
-    locales: {
-      '/':  { placeholder: 'Search' },
-      '/zh/': { placeholder: '搜索文档' },
-    },
-    // 高级可选：最多展示条数、热键等
-    maxSuggestions: 15,
-    hotKeys: ['s', '/'],        // 焦点快捷键
-    // isSearchable: (page) => true, // 也可过滤不参与索引的页面
-  },
-
   photoSwipe: {
     // i18n
     locales: {
-      '/':   { close: 'Close', fullscreen: 'Fullscreen' },
-      '/zh/': { close: '关闭', fullscreen: '全屏' },
+      '/en/':   { close: 'Close', fullscreen: 'Fullscreen' },
+      '/': { close: '关闭', fullscreen: '全屏' },
     },
   },
 

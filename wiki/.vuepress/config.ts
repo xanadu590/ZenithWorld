@@ -6,6 +6,8 @@ import { viteBundler } from '@vuepress/bundler-vite'
 
 import { searchPlugin } from '@vuepress/plugin-search'
 
+
+
 export default defineUserConfig({
   base: "/",
 
