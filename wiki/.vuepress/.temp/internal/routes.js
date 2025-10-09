@@ -19,3 +19,20 @@ export const routes = Object.fromEntries([
   ["/demo-0.0.1/character/superhero/", { loader: () => import(/* webpackChunkName: "demo-0.0.1_character_superhero_index.html" */"C:/Users/super/ZenithWorld/wiki/.vuepress/.temp/pages/demo-0.0.1/character/superhero/index.html.js"), meta: {"title":"超级英雄"} }],
   ["/404.html", { loader: () => import(/* webpackChunkName: "404.html" */"C:/Users/super/ZenithWorld/wiki/.vuepress/.temp/pages/404.html.js"), meta: {"title":""} }],
 ]);
+
+if (import.meta.webpackHot) {
+  import.meta.webpackHot.accept()
+  if (__VUE_HMR_RUNTIME__.updateRoutes) {
+    __VUE_HMR_RUNTIME__.updateRoutes(routes)
+  }
+  if (__VUE_HMR_RUNTIME__.updateRedirects) {
+    __VUE_HMR_RUNTIME__.updateRedirects(redirects)
+  }
+}
+
+if (import.meta.hot) {
+  import.meta.hot.accept(({ routes, redirects }) => {
+    __VUE_HMR_RUNTIME__.updateRoutes(routes)
+    __VUE_HMR_RUNTIME__.updateRedirects(redirects)
+  })
+}
