@@ -59,7 +59,7 @@ export async function loadRandomIndex(): Promise<RandomItem[]> {
   if (CACHE) return CACHE
   if (typeof window === 'undefined') return []
 
-  const url = withBase('data/random-index.json') // ← 只保留这处
+  const url = withBase('random-index.json') // ← 只保留这处
   try {
     const res = await fetch(url, { cache: 'force-cache' })
     if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)

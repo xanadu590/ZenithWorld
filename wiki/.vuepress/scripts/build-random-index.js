@@ -7,7 +7,7 @@ import matter from 'gray-matter'
 
 const ROOT = path.resolve(process.cwd(), 'wiki')
 const DOCS = path.join(ROOT) // 你的文档主目录
-const OUTPUT = path.resolve(ROOT, 'wiki/.vuepress/public/data/random-index.json')
+const OUTPUT = path.resolve(ROOT, '.vuepress/public/random-index.json')
 
 // 递归读取 Markdown 文件
 function walk(dir) {
