@@ -59,34 +59,26 @@ export async function loadRandomIndex(): Promise<RandomItem[]> {
   if (CACHE) return CACHE
   if (typeof window === 'undefined') return []
 
-  const url = withBase('data/random-index.json') // ← 只保留这处
+  const url = withBase('data/random-index.json')
+  // ✅ 这三行是新增的日志，不影响功能
+  console.log('[RandomIndex] 请求路径 =', url)
+
   try {
     const res = await fetch(url, { cache: 'force-cache' })
+    console.log('[RandomIndex] 请求状态 =', res.status, res.statusText)
+
     if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
     const json = await res.json()
     const list = normalizeIndex(json)
+
+    // ✅ 打印解析后的数量
+    console.log('[RandomIndex] 成功解析条目数 =', list.length)
+
     CACHE = list
     return list
   } catch (e) {
-    console.warn('[Random] loadRandomIndex fail:', e)
+    console.warn('[RandomIndex] 加载失败：', e)
     CACHE = []
     return CACHE
   }
-}
-
-/** 从索引中抽一个随机项；可传入排除集合避免最近重复 */
-export function pickRandom(
-  list: RandomItem[],
-  exclude: Set<string> = new Set()
-): RandomItem | null {
-  const candidates = list.filter(i => !exclude.has(i.link))
-  const pool = candidates.length ? candidates : list
-  if (!pool.length) return null
-  const idx = Math.floor(Math.random() * pool.length)
-  return pool[idx]
-}
-
-/** 生成可用于 <a href> 或 router.push 的最终链接（带 base 前缀） */
-export function resolveRandomLink(item: RandomItem): string {
-  return withBase(item.link)
 }
