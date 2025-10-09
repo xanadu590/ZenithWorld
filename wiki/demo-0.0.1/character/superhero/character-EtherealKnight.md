@@ -14,8 +14,8 @@ isOriginal: true
 # [灵动骑士][EtherealKnight]
 
 <div class="ai-row">
-<AIMedia src="/ZenithWorld/wiki/.vuepress/public/images/EtherealKnightCombatSuit.jpg" caption="战斗状态"/>
-<AIMedia src="./images/EtherealKnightEverydayWear.jpg" caption="常服"/>
+<AIMedia src="/images/EtherealKnightCombatSuit.jpg" caption="战斗状态"/>
+<AIMedia src="/images/EtherealKnightEverydayWear.jpg" caption="常服"/>
 </div>
 
 ## 基本信息

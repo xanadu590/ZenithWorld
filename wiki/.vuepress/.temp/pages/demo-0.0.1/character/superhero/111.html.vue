@@ -34,8 +34,9 @@
     status="在世"
     :abilities="['风元素强化', '轻盈术（滑翔）']"
     firstAppearance="2024-11-01"
-    to="/ZenithWorld/demo-0.0.1/character/superhero/character-EtherealKnight.html"
+    to="/demo-0.0.1/character/superhero/character-EtherealKnight.html"
   />
-</div></div></template>
+</div>
+<RandomArticleCard /></div></template>
 
 
