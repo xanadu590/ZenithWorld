@@ -1,15 +1,15 @@
-import { Layout, NotFound, injectDarkMode, setupDarkMode, setupSidebarItems, scrollPromise } from "C:/Users/super/ZenithWorld/node_modules/.pnpm/vuepress-theme-hope@2.0.0-r_60b2c02605e333930f57b201be111327/node_modules/vuepress-theme-hope/lib/bundle/exports/base.js";
+import { Layout, NotFound, injectDarkMode, setupDarkMode, setupSidebarItems, scrollPromise } from "C:/Users/super/ZenithWorld/node_modules/.pnpm/vuepress-theme-hope@2.0.0-r_65007f4417d8def3ccd4fcb0aaadda56/node_modules/vuepress-theme-hope/lib/bundle/exports/base.js";
 
-import { defineCatalogInfoGetter } from "C:/Users/super/ZenithWorld/node_modules/.pnpm/@vuepress+plugin-catalog@2._6135d39c6c2402b94c97522cf482bc58/node_modules/@vuepress/plugin-catalog/lib/client/index.js"
+import { defineCatalogInfoGetter } from "C:/Users/super/ZenithWorld/node_modules/.pnpm/@vuepress+plugin-catalog@2._2764670e2ea4be0fa391885469a382ad/node_modules/@vuepress/plugin-catalog/lib/client/index.js"
 import { h } from "vue"
 import { resolveComponent } from "vue"
-import { GlobalEncrypt, LocalEncrypt } from "C:/Users/super/ZenithWorld/node_modules/.pnpm/vuepress-theme-hope@2.0.0-r_60b2c02605e333930f57b201be111327/node_modules/vuepress-theme-hope/lib/bundle/exports/encrypt.js";
-import "C:/Users/super/ZenithWorld/node_modules/.pnpm/vuepress-theme-hope@2.0.0-r_60b2c02605e333930f57b201be111327/node_modules/vuepress-theme-hope/lib/bundle/styles/encrypt/bundle.scss"
+import { GlobalEncrypt, LocalEncrypt } from "C:/Users/super/ZenithWorld/node_modules/.pnpm/vuepress-theme-hope@2.0.0-r_65007f4417d8def3ccd4fcb0aaadda56/node_modules/vuepress-theme-hope/lib/bundle/exports/encrypt.js";
+import "C:/Users/super/ZenithWorld/node_modules/.pnpm/vuepress-theme-hope@2.0.0-r_65007f4417d8def3ccd4fcb0aaadda56/node_modules/vuepress-theme-hope/lib/bundle/styles/encrypt/bundle.scss"
 
-import "C:/Users/super/ZenithWorld/node_modules/.pnpm/@vuepress+helper@2.0.0-rc.1_ba678c52a08dd49215d2786e6dd7a9b6/node_modules/@vuepress/helper/lib/client/styles/colors.css";
-import "C:/Users/super/ZenithWorld/node_modules/.pnpm/@vuepress+helper@2.0.0-rc.1_ba678c52a08dd49215d2786e6dd7a9b6/node_modules/@vuepress/helper/lib/client/styles/normalize.css";
-import "C:/Users/super/ZenithWorld/node_modules/.pnpm/@vuepress+helper@2.0.0-rc.1_ba678c52a08dd49215d2786e6dd7a9b6/node_modules/@vuepress/helper/lib/client/styles/sr-only.css";
-import "C:/Users/super/ZenithWorld/node_modules/.pnpm/vuepress-theme-hope@2.0.0-r_60b2c02605e333930f57b201be111327/node_modules/vuepress-theme-hope/lib/bundle/styles/bundle.scss";
+import "C:/Users/super/ZenithWorld/node_modules/.pnpm/@vuepress+helper@2.0.0-rc.1_6beaba0337a17dad4e82cff92eae8dd0/node_modules/@vuepress/helper/lib/client/styles/colors.css";
+import "C:/Users/super/ZenithWorld/node_modules/.pnpm/@vuepress+helper@2.0.0-rc.1_6beaba0337a17dad4e82cff92eae8dd0/node_modules/@vuepress/helper/lib/client/styles/normalize.css";
+import "C:/Users/super/ZenithWorld/node_modules/.pnpm/@vuepress+helper@2.0.0-rc.1_6beaba0337a17dad4e82cff92eae8dd0/node_modules/@vuepress/helper/lib/client/styles/sr-only.css";
+import "C:/Users/super/ZenithWorld/node_modules/.pnpm/vuepress-theme-hope@2.0.0-r_65007f4417d8def3ccd4fcb0aaadda56/node_modules/vuepress-theme-hope/lib/bundle/styles/bundle.scss";
 
 defineCatalogInfoGetter((meta) => {
   const title = meta.title;
