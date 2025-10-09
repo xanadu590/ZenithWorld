@@ -110,3 +110,5 @@ isOriginal: true
 
 [EtherealKnight]: /demo-0.0.1/character/superhero/character-EtherealKnight.md
 [EtherealKnight]: /EtherealKnight.md#灵动骑士
+
+<RandomArticleCard />
