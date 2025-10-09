@@ -28,7 +28,7 @@
     :avatarWidth="100"
     :avatarHeight="150"
     title="灵动骑士"
-    avatar="/image/EtherealKnightCombatSuit.jpg"
+    avatar="/images/EtherealKnightCombatSuit.jpg"
     alias="Ether Knight"
     faction="中域团体"
     status="在世"

@@ -1,7 +1,7 @@
 <template><div><h1 id="灵动骑士" tabindex="-1"><a class="header-anchor" href="#灵动骑士"><span><RouteLink to="/demo-0.0.1/character/superhero/character-EtherealKnight.html">灵动骑士</RouteLink></span></a></h1>
 <div class="ai-row">
-<AIMedia src="/image/EtherealKnightCombatSuit.jpg" caption="战斗状态"/>
-<AIMedia src="/image/EtherealKnightEverydayWear.jpg" caption="常服"/>
+<AIMedia src="/images/EtherealKnightCombatSuit.jpg" caption="战斗状态"/>
+<AIMedia src="/images/EtherealKnightEverydayWear.jpg" caption="常服"/>
 </div>
 <h2 id="基本信息" tabindex="-1"><a class="header-anchor" href="#基本信息"><span>基本信息</span></a></h2>
 <ul>
@@ -67,15 +67,15 @@
 </blockquote>
 <hr>
 <RelationCards :items='[
-  { "name":"舒雪", "role":"朋友", "avatar":"/image/EtherealKnightCombatSuit.jpg", "link":"/demo-0.0.1/character/superhero/character-Scourge.md" },
-  { "name":"韩梓宁", "role":"朋友", "avatar":"/image/EtherealKnightCombatSuit.jpg", "link":"/demo-0.0.1/character/superhero/character-Scourge.md" }
+  { "name":"舒雪", "role":"朋友", "avatar":"/images/EtherealKnightCombatSuit.jpg", "link":"/demo-0.0.1/character/superhero/character-Scourge.md" },
+  { "name":"韩梓宁", "role":"朋友", "avatar":"/images/EtherealKnightCombatSuit.jpg", "link":"/demo-0.0.1/character/superhero/character-Scourge.md" }
 ]' />
 <h2 id="人物关系图谱" tabindex="-1"><a class="header-anchor" href="#人物关系图谱"><span>人物关系图谱</span></a></h2>
 <ClientOnly>
   <RelationGraph
     :height="420"
     :nodes="[ 
-      { id: 'ek', label: '灵动骑士', url: '/demo-0.0.1/character/superhero/character-EtherealKnight.html', image: '/image/EtherealKnightCombatSuit.jpg' },
+      { id: 'ek', label: '灵动骑士', url: '/demo-0.0.1/character/superhero/character-EtherealKnight.html', image: '/images/EtherealKnightCombatSuit.jpg' },
       { id: 'sx', label: '舒雪' },
       { id: 'hn', label: '韩桉宁' }
     ]"

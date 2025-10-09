@@ -14,8 +14,8 @@ isOriginal: true
 # [灵动骑士][EtherealKnight]
 
 <div class="ai-row">
-<AIMedia src="/image/EtherealKnightCombatSuit.jpg" caption="战斗状态"/>
-<AIMedia src="/image/EtherealKnightEverydayWear.jpg" caption="常服"/>
+<AIMedia src="/images/EtherealKnightCombatSuit.jpg" caption="战斗状态"/>
+<AIMedia src="/images/EtherealKnightEverydayWear.jpg" caption="常服"/>
 </div>
 
 ## 基本信息
@@ -68,8 +68,8 @@ isOriginal: true
 > 人物关系
 ---
 <RelationCards :items='[
-  { "name":"舒雪", "role":"朋友", "avatar":"/image/EtherealKnightCombatSuit.jpg", "link":"/demo-0.0.1/character/superhero/character-Scourge.md" },
-  { "name":"韩梓宁", "role":"朋友", "avatar":"/image/EtherealKnightCombatSuit.jpg", "link":"/demo-0.0.1/character/superhero/character-Scourge.md" }
+  { "name":"舒雪", "role":"朋友", "avatar":"/images/EtherealKnightCombatSuit.jpg", "link":"/demo-0.0.1/character/superhero/character-Scourge.md" },
+  { "name":"韩梓宁", "role":"朋友", "avatar":"/images/EtherealKnightCombatSuit.jpg", "link":"/demo-0.0.1/character/superhero/character-Scourge.md" }
 ]' />
 
 ## 人物关系图谱
@@ -78,7 +78,7 @@ isOriginal: true
   <RelationGraph
     :height="420"
     :nodes="[ 
-      { id: 'ek', label: '灵动骑士', url: '/demo-0.0.1/character/superhero/character-EtherealKnight.html', image: '/image/EtherealKnightCombatSuit.jpg' },
+      { id: 'ek', label: '灵动骑士', url: '/demo-0.0.1/character/superhero/character-EtherealKnight.html', image: '/images/EtherealKnightCombatSuit.jpg' },
       { id: 'sx', label: '舒雪' },
       { id: 'hn', label: '韩桉宁' }
     ]"
