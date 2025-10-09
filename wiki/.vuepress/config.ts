@@ -5,7 +5,7 @@ import theme from "./theme.js";
 import { viteBundler } from '@vuepress/bundler-vite'
 
 export default defineUserConfig({
-  base: process.env.NODE_ENV === 'production' ? '/ZenithWorld/' : '/',
+  base:  '/',
 
   locales: {
     "/en/": {

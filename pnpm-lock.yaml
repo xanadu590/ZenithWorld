@@ -36,6 +36,12 @@ importers:
       '@vuepress/utils':
         specifier: 2.0.0-rc.25
         version: 2.0.0-rc.25
+      fast-glob:
+        specifier: ^3.3.3
+        version: 3.3.3
+      gray-matter:
+        specifier: ^4.0.3
+        version: 4.0.3
       sass-embedded:
         specifier: ^1.89.2
         version: 1.93.2
