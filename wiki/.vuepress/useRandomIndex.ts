@@ -2,50 +2,52 @@
 // 作用：加载站内“随机文章索引”（random-index.json），并提供抽样工具。
 // 只在客户端运行；SSR 时不触发网络请求。
 
-import { withBase } from '@vuepress/client'   // ★ 新增：带上 base 前缀
+import { withBase } from '@vuepress/client'
 
-// 保持你原来的类型（对外仍暴露 link 字段）
 export type RandomItem = {
   title: string
-  link: string          // 继续用 link，不改外部调用
+  link: string          // 对外仍然叫 link
   excerpt?: string
 }
 
 let CACHE: RandomItem[] | null = null
 
-// ★ 改造：适配我们自建的 random-index.json 结构：{ pages: [{title, path, excerpt}] }
 function normalizeIndex(json: any): RandomItem[] {
   if (!json) return []
 
-  // 新结构：{ pages: [...] }
+  // 结构1：{ pages: [{ title, path, excerpt }] }
   if (Array.isArray(json?.pages)) {
     return (json.pages as any[])
-      .filter(i => i?.title && i?.path)
-      .map(i => ({
-        title: i.title,
-        // 保持对外字段名仍为 link；真正导航时再 withBase
-        link: i.path as string,          // 例如 "/foo/bar.html"
-        excerpt: i.excerpt || '',
-      }))
+      .filter(i => i?.title && (i?.path || i?.link))
+      .map(i => {
+        const link = String(i.path ?? i.link ?? '')
+        return {
+          title: String(i.title),
+          link: link.startsWith('/') ? link : `/${link}`,
+          excerpt: String(i.excerpt ?? ''),
+        }
+      })
   }
 
-  // 旧方案兼容（如果你以后回退到 plugin-search / 其它索引也不至于报错）
+  // 结构2：数组 [{ title, link, ... }]
   if (Array.isArray(json) && json.length && 'link' in json[0]) {
     return (json as any[])
       .filter(i => i?.title && i?.link)
       .map(i => ({
-        title: i.title,
-        link: i.link,
-        excerpt: i.excerpt || i.headers?.[0]?.title || '',
+        title: String(i.title),
+        link: String(i.link).startsWith('/') ? String(i.link) : `/${String(i.link)}`,
+        excerpt: String(i.excerpt ?? i.headers?.[0]?.title ?? ''),
       }))
   }
-  if (Array.isArray(json?.entries)) {
+
+  // 结构3：{ entries: [...] }
+  if (Array.isArray((json as any).entries)) {
     return (json.entries as any[])
       .filter(i => i?.title && i?.link)
       .map(i => ({
-        title: i.title,
-        link: i.link,
-        excerpt: i.excerpt || '',
+        title: String(i.title),
+        link: String(i.link).startsWith('/') ? String(i.link) : `/${String(i.link)}`,
+        excerpt: String(i.excerpt ?? ''),
       }))
   }
 
@@ -57,18 +59,16 @@ export async function loadRandomIndex(): Promise<RandomItem[]> {
   if (CACHE) return CACHE
   if (typeof window === 'undefined') return []
 
-  // ★ 现在只读我们生成的 random-index.json
-  const url = withBase('random-index.json')
-
+  const url = withBase('data/random-index.json') // ← 只保留这处
   try {
     const res = await fetch(url, { cache: 'force-cache' })
-    if (!res.ok) throw new Error(res.statusText)
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
     const json = await res.json()
     const list = normalizeIndex(json)
     CACHE = list
     return list
-  } catch {
-    // 兜底：失败返回空
+  } catch (e) {
+    console.warn('[Random] loadRandomIndex fail:', e)
     CACHE = []
     return CACHE
   }
@@ -84,4 +84,9 @@ export function pickRandom(
   if (!pool.length) return null
   const idx = Math.floor(Math.random() * pool.length)
   return pool[idx]
+}
+
+/** 生成可用于 <a href> 或 router.push 的最终链接（带 base 前缀） */
+export function resolveRandomLink(item: RandomItem): string {
+  return withBase(item.link)
 }
