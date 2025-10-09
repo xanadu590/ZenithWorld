@@ -5,7 +5,7 @@ import theme from "./theme.js";
 import { viteBundler } from '@vuepress/bundler-vite'
 
 export default defineUserConfig({
-  base: "/",
+  base: "/ZenithWorld/",
 
   locales: {
     "/en/": {
