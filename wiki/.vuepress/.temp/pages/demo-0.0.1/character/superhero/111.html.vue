@@ -36,7 +36,6 @@
     firstAppearance="2024-11-01"
     to="/demo-0.0.1/character/superhero/character-EtherealKnight.html"
   />
-</div>
-<RandomCard /></div></template>
+</div></div></template>
 
 
