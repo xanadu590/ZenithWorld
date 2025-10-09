@@ -50,6 +50,7 @@ function showNext() {
   if (history.value[0] && next.href === history.value[0].href) {
     next = pickRandom(candidates.value)
   }
+  if (history.value.some(h => h.href === next.href)) next = pickRandom(candidates.value)
   current.value = next
 }
 
@@ -152,4 +153,5 @@ onMounted(init)
   border-radius: 8px;
   cursor: pointer;
 }
+
 </style>

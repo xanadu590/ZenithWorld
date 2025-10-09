@@ -19,13 +19,13 @@
     "vue": {
       "src": "../../../../node_modules/.pnpm/vue@3.5.22/node_modules/vue/dist/vue.runtime.esm-bundler.js",
       "file": "vue.js",
-      "fileHash": "c004b0e5",
+      "fileHash": "81cc08a8",
       "needsInterop": false
     },
     "vue-router": {
       "src": "../../../../node_modules/.pnpm/vue-router@4.5.1_vue@3.5.22/node_modules/vue-router/dist/vue-router.esm-bundler.js",
       "file": "vue-router.js",
-      "fileHash": "ad79c6f5",
+      "fileHash": "11044fa0",
       "needsInterop": false
     },
     "vis-network/standalone": {
