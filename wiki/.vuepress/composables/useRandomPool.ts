@@ -16,20 +16,71 @@ export function useRandomPool() {
   const pool = ref<RandomItem[]>([])
   const loaded = ref(false)
 
+  /**
+   * 尝试按多个候选 URL 依次拉取 JSON。
+   * 典型候选：
+   *   1) withBase('data/random-index.json')       —— 受 base 影响的路径（如 /demo-0.0.1/...）
+   *   2) '/data/random-index.json'               —— 站点根路径（dev 场景常见）
+   *   3) 去掉 base 后的路径（当 withBase 输出包含历史前缀时，兼容打包产物）
+   */
+  const tryFetch = async <T = any>(candidates: string[]): Promise<T | null> => {
+    for (const url of candidates) {
+      try {
+        DEBUG && console.info(TAG, 'fetch try:', url)
+        const res = await fetch(url, { cache: 'force-cache' })
+        if (!res.ok) {
+          DEBUG && console.warn(TAG, `fetch fail ${res.status}:`, url)
+          continue
+        }
+        const json = await res.json()
+        DEBUG && console.info(TAG, 'fetch ok:', url)
+        return json as T
+      } catch (e) {
+        DEBUG && console.warn(TAG, 'fetch error:', url, e)
+      }
+    }
+    return null
+  }
+
   const load = async () => {
     loaded.value = false
     pool.value = []
 
-    try {
-      const url = withBase('data/random-index.json')
-      DEBUG && console.info(TAG, 'fetch:', url)
-      const res = await fetch(url, { cache: 'force-cache' })
-      if (!res.ok) throw new Error(`fetch ${url} failed: ${res.status}`)
-      const json = await res.json()
+    // 组织候选 URL
+    const baseUrl = withBase('data/random-index.json')
+    // 去掉运行时 base 的简易版本（例如把 /demo-0.0.1/data/random-index.json → /data/random-index.json）
+    const stripped = (() => {
+      try {
+        const u = new URL(baseUrl, location.origin)
+        // 当前路径首段（可能是 demo-* 或 v*）
+        const seg = u.pathname.match(/^\/([^/]+)\/(.*)$/)
+        if (seg) {
+          const first = seg[1]
+          if (/^(demo-[\w.-]+|v[\w.-]+)$/i.test(first)) {
+            return `/${seg[2]}` // 去掉第一段
+          }
+        }
+      } catch {}
+      return null
+    })()
+
+    const candidates = Array.from(
+      new Set([
+        baseUrl,                // 受 base 影响版本
+        '/data/random-index.json', // 站点根版本
+        stripped ?? undefined,  // 自动去掉 base 的版本（如有）
+      ].filter(Boolean) as string[])
+    )
+
+    // 1) 先尝试按候选地址依次拉取
+    const json = await tryFetch<any>(candidates)
+
+    if (json) {
       pool.value = normalizeIndex(json)
       DEBUG && console.info(TAG, 'normalizeIndex ->', pool.value.length)
-    } catch (err) {
-      console.warn(`${TAG} load json failed, fallback to document scan.`, err)
+    } else {
+      // 2) 全部失败：回退扫描页面链接
+      console.warn(`${TAG} all fetch candidates failed, fallback to document scan.`)
       pool.value = collectFromDocument()
       DEBUG && console.info(TAG, 'collectFromDocument ->', pool.value.length)
     }
@@ -44,7 +95,7 @@ export function useRandomPool() {
     const beforeFilter = pool.value.length
     pool.value = pool.value.filter(i => {
       const p = normalize(i.href)
-      // ⚠️ 只排除真正同页面（不排除路径含 base 的情况）
+      // 只排除真正同页面；避免因为 base 导致的误判
       return !isTopPage(p) && p !== cur && !location.pathname.endsWith(p)
     })
     DEBUG && console.info(TAG, `filter current/top: ${beforeFilter} -> ${pool.value.length} (cur=${cur})`)
@@ -65,7 +116,7 @@ export function useRandomPool() {
         out.push(item)
       }
     }
-    DEBUG && console.debug(TAG, `sample(${n}) -> ${out.length}`)
+    DEBUG && console.debug(TAG, `sample(${n}) -> ${out.length}`, out.map(i => i.href))
     return out
   }
 
@@ -74,9 +125,9 @@ export function useRandomPool() {
   return { pool, loaded, load, sample, resolveLink }
 }
 
-/* ================= 工具函数 ================ */
+/* ================= 工具函数（原样保留，少量注释优化） ================ */
 
-/** 解析 random-index.json 为 RandomItem[]（兼容两种结构），并排除顶层页 */
+/** 解析 random-index.json 为 RandomItem[]（兼容两种结构），并排除顶层页/外链/非 .html */
 function normalizeIndex(json: any): RandomItem[] {
   if (!json) return []
 
@@ -84,7 +135,6 @@ function normalizeIndex(json: any): RandomItem[] {
     const raw = String(i?.path ?? i?.link ?? '')
     if (!raw) return null
     const href = normalize(raw)
-    // 仅收 .html，且排除顶层页与外链
     if (!/\.html$/i.test(href) || isTopPage(href) || href.startsWith('http')) {
       DEBUG && console.debug(TAG, 'skip:', { raw, href })
       return null
