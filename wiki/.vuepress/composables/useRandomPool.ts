@@ -88,6 +88,7 @@ function normalizeIndex(json: any): RandomItem[] {
     if (!raw) return null
     // 统一处理为站内路径（去掉可能的域名/基路径）
     const href = normalize(raw)
+    // 仅接受本站的 .html 条目
     if (!/\.html$/.test(href) || href.startsWith('http')) return null
     return {
       href,
@@ -137,25 +138,44 @@ function ensureLeadingSlash(p: string) {
 }
 
 /**
- * 将各种 href（相对/绝对/含 base）标准化为**站内路径**：
- * - 去域名：保留 pathname
- * - 处理 base：把 withBase('/') 以及常见的 '/ZenithWorld/' 前缀去掉
- * - 保证以 / 开头
+ * 【关键修复点】将各种 href（相对/绝对/含 base）标准化为**站内根路径**：
+ * - 绝对 URL（http/https）：直接取 pathname
+ * - 非绝对 URL：
+ *   - 如果不以 "/" 开头（例如 "demo-0.0.1/foo.html"），**强制补 "/"** → "/demo-0.0.1/foo.html"
+ *     这样就不会被浏览器当成“相对当前页面目录”的相对路径，从而避免跳转 404
+ * - 去掉已知的 base 前缀（运行时 base 或常见的 '/ZenithWorld/'）
+ * - 最终返回以 "/" 开头的站内路径
  */
 function normalize(href: string): string {
-  let path = href
-  try {
-    path = new URL(href, location.href).pathname
-  } catch {
-    // 不是绝对 URL，按相对处理
-  }
-  path = ensureLeadingSlash(path)
+  let raw = String(href || '').trim()
+  if (!raw) return '/'
 
-  // 运行时 base（如 / 或 /ZenithWorld/）
+  // 1) 绝对 URL：取 pathname 即可
+  if (/^https?:\/\//i.test(raw)) {
+    try {
+      return new URL(raw).pathname
+    } catch {
+      return '/'
+    }
+  }
+
+  // 2) 非绝对 URL：
+  //    —— 这里是本次修复的核心：不以 "/" 开头的，一律视为“站点根路径”，先补一个 "/"
+  //    例如 "demo-0.0.1/foo.html" -> "/demo-0.0.1/foo.html"
+  //    避免使用 new URL(raw, location.href) 把它解析为“相对当前页面目录”的路径。
+  if (!raw.startsWith('/')) raw = '/' + raw
+
+  // 3) 先得到规范化的 path
+  let path = raw
+
+  // 4) 去掉已知 base 前缀
+  //    - 运行时 base（如 "/" 或 "/ZenithWorld/"），通过 withBase('/') 获取，再去掉域名
+  //    - 手动兼容一个常见的 "/ZenithWorld/"（即使运行时 base 为 "/" 也能匹配）
   const runtimeBase = normalizeBase(withBase('/').replace(location.origin, ''))
   const knownBases = new Set<string>([runtimeBase, '/ZenithWorld/'])
 
   for (const b of knownBases) {
+    // base 为 "/" 时无需处理；其余情况若命中前缀则剥离
     if (b !== '/' && path.startsWith(b)) {
       path = ensureLeadingSlash(path.slice(b.length))
       break
@@ -165,7 +185,7 @@ function normalize(href: string): string {
   return path
 }
 
-/** 规范化 base：确保前后都有斜杠 */
+/** 规范化 base：确保前后都有斜杠（例如 "ZenithWorld" -> "/ZenithWorld/"） */
 function normalizeBase(b: string): string {
   if (!b) return '/'
   let x = b
