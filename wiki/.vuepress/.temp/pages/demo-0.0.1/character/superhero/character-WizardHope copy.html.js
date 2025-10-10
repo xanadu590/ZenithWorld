@@ -1,0 +1,16 @@
+import comp from "C:/Users/super/ZenithWorld/wiki/.vuepress/.temp/pages/demo-0.0.1/character/superhero/character-WizardHope copy.html.vue"
+const data = JSON.parse("{\"path\":\"/demo-0.0.1/character/superhero/character-WizardHope%20copy.html\",\"title\":\"[巫师希望][WizardHope]\",\"lang\":\"zh-CN\",\"frontmatter\":{\"sidebar\":false,\"description\":\"[巫师希望][WizardHope] 基本信息 姓名：\"},\"git\":{},\"readingTime\":{\"minutes\":0.04,\"words\":13},\"filePathRelative\":\"demo-0.0.1/character/superhero/character-WizardHope copy.md\",\"autoDesc\":true}")
+export { comp, data }
+
+if (import.meta.webpackHot) {
+  import.meta.webpackHot.accept()
+  if (__VUE_HMR_RUNTIME__.updatePageData) {
+    __VUE_HMR_RUNTIME__.updatePageData(data)
+  }
+}
+
+if (import.meta.hot) {
+  import.meta.hot.accept(({ data }) => {
+    __VUE_HMR_RUNTIME__.updatePageData(data)
+  })
+}

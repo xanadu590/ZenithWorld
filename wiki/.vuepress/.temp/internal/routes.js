@@ -18,6 +18,9 @@ export const routes = Object.fromEntries([
   ["/demo-0.0.1/character/superhero/character-WizardHope.html", { loader: () => import(/* webpackChunkName: "demo-0.0.1_character_superhero_character-WizardHope.html" */"C:/Users/super/ZenithWorld/wiki/.vuepress/.temp/pages/demo-0.0.1/character/superhero/character-WizardHope.html.js"), meta: {"title":"[巫师希望][WizardHope]"} }],
   ["/demo-0.0.1/character/superhero/", { loader: () => import(/* webpackChunkName: "demo-0.0.1_character_superhero_index.html" */"C:/Users/super/ZenithWorld/wiki/.vuepress/.temp/pages/demo-0.0.1/character/superhero/index.html.js"), meta: {"title":"超级英雄"} }],
   ["/404.html", { loader: () => import(/* webpackChunkName: "404.html" */"C:/Users/super/ZenithWorld/wiki/.vuepress/.temp/pages/404.html.js"), meta: {"title":""} }],
+  ["/demo-0.0.1/character/superhero/1.html", { loader: () => import(/* webpackChunkName: "demo-0.0.1_character_superhero_1.html" */"C:/Users/super/ZenithWorld/wiki/.vuepress/.temp/pages/demo-0.0.1/character/superhero/1.html.js"), meta: {"title":"[1][WizardHope]"} }],
+  ["/demo-0.0.1/character/superhero/2.html", { loader: () => import(/* webpackChunkName: "demo-0.0.1_character_superhero_2.html" */"C:/Users/super/ZenithWorld/wiki/.vuepress/.temp/pages/demo-0.0.1/character/superhero/2.html.js"), meta: {"title":"[2][WizardHope]"} }],
+  ["/demo-0.0.1/character/superhero/3.html", { loader: () => import(/* webpackChunkName: "demo-0.0.1_character_superhero_3.html" */"C:/Users/super/ZenithWorld/wiki/.vuepress/.temp/pages/demo-0.0.1/character/superhero/3.html.js"), meta: {"title":"[3][WizardHope]"} }],
 ]);
 
 if (import.meta.webpackHot) {
