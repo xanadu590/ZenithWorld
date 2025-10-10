@@ -44,7 +44,8 @@ export function useRandomPool() {
     const beforeFilter = pool.value.length
     pool.value = pool.value.filter(i => {
       const p = normalize(i.href)
-      return p !== cur && !isTopPage(p)
+      // ⚠️ 只排除真正同页面（不排除路径含 base 的情况）
+      return !isTopPage(p) && p !== cur && !location.pathname.endsWith(p)
     })
     DEBUG && console.info(TAG, `filter current/top: ${beforeFilter} -> ${pool.value.length} (cur=${cur})`)
 

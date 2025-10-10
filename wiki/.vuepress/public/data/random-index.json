@@ -1,0 +1,64 @@
+{
+  "pages": [
+    {
+      "title": "巅峰世界",
+      "path": "/README.html",
+      "excerpt": "欢迎来到《巅峰世界》百科，英雄与反派的交织在这里上演。"
+    },
+    {
+      "title": "世界观总览",
+      "path": "/demo-0.0.1/",
+      "excerpt": ""
+    },
+    {
+      "title": "世界大事年表",
+      "path": "/demo-0.0.1/timeline.html",
+      "excerpt": "<WorldTimeline :items=\" { date: '2000年', title: '世纪末战争', detail: '五大势力首次交锋，世界秩序崩塌。' }, { date: '2020年', title: '巅峰议会成立',"
+    },
+    {
+      "title": "角色介绍",
+      "path": "/demo-0.0.1/character/",
+      "excerpt": ""
+    },
+    {
+      "title": "灵动骑士",
+      "path": "/demo-0.0.1/character/superhero/character-EtherealKnight.html",
+      "excerpt": "灵动骑士EtherealKnight <div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombatSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\""
+    },
+    {
+      "title": "[赤听][HearTone]",
+      "path": "/demo-0.0.1/character/superhero/character-HearTone.html",
+      "excerpt": "赤听HearTone 基本信息 姓名："
+    },
+    {
+      "title": "[幻绘][Illustra]",
+      "path": "/demo-0.0.1/character/superhero/character-Illustra.html",
+      "excerpt": "幻绘Illustra 基本信息 姓名：高乐乐"
+    },
+    {
+      "title": "[月者五][M-A-Y]",
+      "path": "/demo-0.0.1/character/superhero/character-M-A-Y.html",
+      "excerpt": "月者五MAY 基本信息 姓名：梅小满"
+    },
+    {
+      "title": "[天灾][Scourge]",
+      "path": "/demo-0.0.1/character/superhero/character-Scourge.html",
+      "excerpt": "天灾Scourge 基本信息 姓名：尹守 性别：男 英雄名：天灾（Scourge 昵称：后宫男 年龄：26 种族：人类 出生年月：2004年5月20日 职业：偶像经纪人 学历：高中 加入过的团体：世界英雄（World Hero，九江联盟 外"
+    },
+    {
+      "title": "[警钟][StrikeClock]",
+      "path": "/demo-0.0.1/character/superhero/character-StrikeClock.html",
+      "excerpt": "警钟StrikeClock 基本信息 姓名：钟立明"
+    },
+    {
+      "title": "[巫师希望][WizardHope]",
+      "path": "/demo-0.0.1/character/superhero/character-WizardHope.html",
+      "excerpt": "巫师希望WizardHope 基本信息 姓名："
+    },
+    {
+      "title": "超级英雄",
+      "path": "/demo-0.0.1/character/superhero/",
+      "excerpt": "超级英雄 超级英雄superhero是指拥有超凡能力，凭借强烈的正义感或使命感，以打击邪恶、保护民众为目标的正义人士。 警钟StrikeClock 灵动骑士EtherealKnight 天灾Scourge 赤听HearTone 月者五MAY"
+    }
+  ]
+}
