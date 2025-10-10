@@ -2,7 +2,3 @@
 html[data-theme="dark"] {
   --c-text: #f8fafc; /* 或者纯白 #fff */
 }
-/* wiki/.vuepress/styles/config.scss */
-
-/* 修改 Hope 主题的布局尺寸相关变量 */
-$sidebar-width: 200px;   // 假设 Hope 支持这个变量（具体变量名要查版本）

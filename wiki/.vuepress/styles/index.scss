@@ -25,24 +25,34 @@
   flex: 0 0 auto;
 }
 
-/* ========= 目录栏（此页内容）宽度控制 ========= */
+/* 仅桌面端生效，移动端不改 */
+@media (min-width: 1280px) {
+  /* 选中右侧目录栏（Hope 在中文界面 aria-label=此页内容） */
+  aside[aria-label="此页内容"] {
+    /* ★ 这两个才是真正让“目录栏变窄”的关键 */
+    max-width: 100px !important;   /* 你可以改为 140~200px */
+    flex: 0 0 160px !important;
 
-/* Theme Hope 的目录区域类名一般是 .vp-toc 或 .page-toc */
-.vp-toc,
-.page-toc {
-  max-width: 160px !important; /* ← 默认大约 260px，改成更窄 */
-  flex: 0 0 160px !important;  /* 固定宽度，强制缩短 */
-  overflow: hidden;            /* 超出隐藏 */
-  text-overflow: ellipsis;     /* 超出时用省略号 */
-  white-space: nowrap;         /* 不换行（如果要自动换行可删掉） */
-}
+    /* 给容器隐藏溢出，避免挡住右侧卡片 */
+    overflow: hidden;
+  }
 
-/* 目录里的每个标题链接（左边这一列的文字） */
-.vp-toc .toc-link,
-.page-toc .toc-link {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 150px; /* ← 决定文字开始省略的长度，可再减小，例如 120px */
+  /* —— 方案 A：单行省略（更省空间，不增高） —— */
+  aside[aria-label="此页内容"] a,
+  aside[aria-label="此页内容"] .toc-link {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;     /* ★ 长标题会更早出现省略号 */
+    max-width: 100px;            /* 比容器略小，避免贴边；可调 120~160px */
+  }
+
+  /* —— 方案 B：改为自动换行（不要省略号就注释上面 A，启用下面这段） —— */
+  /* 
+  aside[aria-label="此页内容"] a,
+  aside[aria-label="此页内容"] .toc-link {
+    white-space: normal;         // 允许换行
+    word-break: break-word;      // 长词也可断开
+  }
+  */
 }
