@@ -36,6 +36,21 @@
       "excerpt": "3WizardHope 基本信息 姓名："
     },
     {
+      "title": "[4][WizardHope]",
+      "path": "/demo-0.0.1/character/superhero/4.html",
+      "excerpt": "4WizardHope 基本信息 姓名："
+    },
+    {
+      "title": "[5][WizardHope]",
+      "path": "/demo-0.0.1/character/superhero/5.html",
+      "excerpt": "5WizardHope 基本信息 姓名："
+    },
+    {
+      "title": "[6][WizardHope]",
+      "path": "/demo-0.0.1/character/superhero/6.html",
+      "excerpt": "6WizardHope 基本信息 姓名："
+    },
+    {
       "title": "灵动骑士",
       "path": "/demo-0.0.1/character/superhero/character-EtherealKnight.html",
       "excerpt": "灵动骑士EtherealKnight <div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombatSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\""
