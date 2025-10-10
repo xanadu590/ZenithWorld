@@ -9,6 +9,8 @@ import RelationGraph from './components/RelationGraph.vue'
 import RoleCard from './components/RoleCard.vue'
 import RandomCard from './components/RandomCard.vue'
 import RandomSidebar from './components/RandomSidebar.vue'
+import Layouts from './layouts/Layouts.vue'
+
 
 export type AISetting = {
   show: boolean
@@ -51,6 +53,8 @@ export default defineClientConfig({
     app.component("RandomCard", RandomCard)
 
     app.component("RandomSidebar", RandomSidebar)
+
+    app.component("Layouts", Layouts)
     
   },
 

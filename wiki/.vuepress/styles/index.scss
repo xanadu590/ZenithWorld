@@ -24,35 +24,3 @@
 .role-grid > *{
   flex: 0 0 auto;
 }
-
-/* 仅桌面端生效，移动端不改 */
-@media (min-width: 1280px) {
-  /* 选中右侧目录栏（Hope 在中文界面 aria-label=此页内容） */
-  aside[aria-label="此页内容"] {
-    /* ★ 这两个才是真正让“目录栏变窄”的关键 */
-    max-width: 100px !important;   /* 你可以改为 140~200px */
-    flex: 0 0 160px !important;
-
-    /* 给容器隐藏溢出，避免挡住右侧卡片 */
-    overflow: hidden;
-  }
-
-  /* —— 方案 A：单行省略（更省空间，不增高） —— */
-  aside[aria-label="此页内容"] a,
-  aside[aria-label="此页内容"] .toc-link {
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;     /* ★ 长标题会更早出现省略号 */
-    max-width: 100px;            /* 比容器略小，避免贴边；可调 120~160px */
-  }
-
-  /* —— 方案 B：改为自动换行（不要省略号就注释上面 A，启用下面这段） —— */
-  /* 
-  aside[aria-label="此页内容"] a,
-  aside[aria-label="此页内容"] .toc-link {
-    white-space: normal;         // 允许换行
-    word-break: break-word;      // 长词也可断开
-  }
-  */
-}
