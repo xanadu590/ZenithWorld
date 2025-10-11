@@ -4,7 +4,7 @@
 <AIMedia src="/images/EtherealKnightEverydayWear.jpg" caption="常服"/>
 </div>
 <h2 id="基本信息" tabindex="-1"><a class="header-anchor" href="#基本信息"><span>基本信息</span></a></h2>
-<LeadBlock quote="光之所在，即是吾之归途。" /><ul>
+<LeadBlock quote="天使的容貌，高洁的灵魂，无缺的完人……咳咳，好吧，这句确实有点过了。" /><ul>
 <li>姓名：宇文南城</li>
 <li>性别：女</li>
 <li>英雄名：灵动骑士（Ethereal Knight)</li>
@@ -17,7 +17,7 @@
 <li>加入过的团体：世界英雄（World Hero)，拯救者联盟</li>
 </ul>
 <h3 id="外貌特征" tabindex="-1"><a class="header-anchor" href="#外貌特征"><span>外貌特征</span></a></h3>
-<ul>
+<LeadBlock quote="光之所在，即是吾之归途。" /><ul>
 <li>身高：174cm</li>
 <li>体重：57kg</li>
 <li>发色：黑</li>

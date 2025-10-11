@@ -27,7 +27,7 @@ function mdToRoute(mdAbsPath) {
   // 去掉 .md
   const noExt = rel.replace(/\.md$/i, '')
 
-  // 去掉开头的 .vuepress/ 等（fast-glob 已排除，这里再兜底）
+  // fast-glob 已排除 .vuepress，这里再兜底
   if (noExt.startsWith('.vuepress/')) return null
 
   // README.md 或 index.md => 目录路由
@@ -61,9 +61,10 @@ function extractMeta(content, data) {
   if (!excerpt) {
     const para = content
       .replace(/<!--[\s\S]*?-->/g, '')               // 注释
-      .replace(/`{1,3}[\s\S]*?`{1,3}/g, '')          // 行内/代码块（粗暴去掉）
+      .replace(/```[\s\S]*?```/g, '')                // 三反引号代码块
+      .replace(/`[^`]+`/g, '')                       // 行内代码
       .replace(/!\[[^\]]*]\([^)]+\)/g, '')           // 图片
-      .replace(/\[[^\]]*]\([^)]+\)/g, (_, t) => t)   // 链接 -> 文本
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')       // 链接 -> 文本
       .split(/\n{2,}/)[0] || ''
     excerpt = para
       .replace(/[#>*_\-\[\]()`~]/g, '')              // 简单清理符号
@@ -75,42 +76,103 @@ function extractMeta(content, data) {
   return { title, excerpt }
 }
 
+/**
+ * 提取“台词”：
+ * - frontmatter.quote: string
+ * - frontmatter.quotes: string[]
+ * - 正文里的 <LeadBlock quote="..."> 或 <LeadBlock quote='...'>
+ * - :::quote ... :::（可选）
+ */
+function extractQuotes(content, data) {
+  const set = new Set()
+
+  // 1) frontmatter
+  if (typeof data?.quote === 'string') {
+    const q = data.quote.trim()
+    if (q) set.add(q)
+  }
+  if (Array.isArray(data?.quotes)) {
+    data.quotes.forEach((q) => {
+      if (typeof q === 'string' && q.trim()) set.add(q.trim())
+    })
+  }
+
+  // 2) <LeadBlock quote="...">（支持单双引号；允许组件内有其他属性；可多处）
+  const reLeadBlock = /<LeadBlock\b[^>]*\bquote\s*=\s*(?:"([^"]+)"|'([^']+)')/g
+  for (const m of content.matchAll(reLeadBlock)) {
+    const q = (m[1] ?? m[2] ?? '').trim()
+    if (q) set.add(q)
+  }
+
+  // 3) :::quote ... :::（可选，用不到可保留）
+  const reFence = /:::\s*quote\s*\n([\s\S]*?)\n:::/g
+  for (const m of content.matchAll(reFence)) {
+    const q = (m[1] ?? '').replace(/\s+/g, ' ').trim()
+    if (q) set.add(q)
+  }
+
+  return [...set]
+}
+
+/** 判定首页或顶层目录页（通常不进入随机池） */
+function isTopPage(p) {
+  return p === '/' || /\/(index|README)\.html$/i.test(p)
+}
+
 async function main() {
-  // 1) 扫描 wiki 下所有 .md，排除 .vuepress与 node_modules
+  // 1) 扫描 wiki 下所有 .md，排除 .vuepress 与 node_modules
   const entries = await fg('**/*.md', {
     cwd: ROOT,
     ignore: ['.vuepress/**', 'node_modules/**'],
     absolute: true,
   })
 
-  const pages = []
+  const items = []
+  const seenKey = new Set() // 用于去重：path + '\n' + excerpt
 
   for (const abs of entries) {
     const route = mdToRoute(abs)
     if (!route) continue
+    if (!/\.html$|\/$/.test(route)) continue
+    if (isTopPage(route)) continue
 
     const raw = await fsp.readFile(abs, 'utf8')
     const { data, content } = matter(raw)
-    const { title, excerpt } = extractMeta(content, data)
+    const { title, excerpt: autoExcerpt } = extractMeta(content, data)
+    if (!title) continue
 
-    // 忽略没有标题的页（也可以放开）
-    if (!title && route !== '/') continue
+    // A) 简介卡片：优先 frontmatter.summary，否则用 autoExcerpt
+    const summary = (data?.summary ?? '').toString().trim()
+    const summaryToUse = summary || autoExcerpt
+    if (summaryToUse) {
+      const key = `${route}\n${summaryToUse}`
+      if (!seenKey.has(key)) {
+        items.push({ title, path: route, excerpt: summaryToUse })
+        seenKey.add(key)
+      }
+    }
 
-    pages.push({
-      title: title || route,
-      path: route,       // 你的 RandomCard.vue 用的是 path/href 均可
-      excerpt,
-    })
+    // B) 台词卡片：可能多条
+    const quotes = extractQuotes(content, data)
+    for (const q of quotes) {
+      const key = `${route}\n${q}`
+      if (!seenKey.has(key)) {
+        items.push({ title, path: route, excerpt: q })
+        seenKey.add(key)
+      }
+    }
   }
 
   // 2) 输出目录
   await fsp.mkdir(PUB_DIR, { recursive: true })
 
   // 3) 写入 json
-  const json = { pages }
-  await fsp.writeFile(OUT_FILE, JSON.stringify(json, null, 2), 'utf8')
+  const out = { pages: items }
+  await fsp.writeFile(OUT_FILE, JSON.stringify(out, null, 2), 'utf8')
 
-  console.log(`[gen-random-index] done: ${pages.length} pages -> ${path.relative(process.cwd(), OUT_FILE)}`)
+  console.log(
+    `[gen-random-index] done: ${items.length} items -> ${path.relative(process.cwd(), OUT_FILE)}`
+  )
 }
 
 main().catch((e) => {

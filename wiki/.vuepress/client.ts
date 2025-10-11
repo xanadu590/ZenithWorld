@@ -9,7 +9,6 @@ import RelationGraph from './components/RelationGraph.vue'
 import RoleCard from './components/RoleCard.vue'
 import RandomCard from './components/RandomCard.vue'
 import RandomSidebar from './components/RandomSidebar.vue'
-import Layout from './layouts/Layout.vue'
 import LeadBlock from './components/LeadBlock.vue'
 
 
@@ -23,12 +22,6 @@ const KEY = 'showAIImages'
 export const AI_INJECT_KEY = Symbol('AISetting')
 
 export default defineClientConfig({
-
-   layouts: {
-    // 把主题默认 Layout 映射到你这份，从而全站启用你的插槽覆盖
-    Layout,
-    // 如需自定义 404，可再加 NotFound: NotFoundLayout
-  },
 
   enhance({ app }) {
     const setting = reactive<AISetting>({
