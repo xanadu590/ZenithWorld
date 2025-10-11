@@ -24,7 +24,7 @@ export default defineUserConfig({
 
   theme,
   
-    bundler: viteBundler(), // ← 指定打包器
+  bundler: viteBundler(), // ← 指定打包器
 
   // Enable it with pwa
   // shouldPrefetch: false,
