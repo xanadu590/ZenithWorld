@@ -3,37 +3,33 @@
     <div
       v-for="(p, i) in data"
       :key="i"
-      class="card"
+      class="card card-grid"
       :title="p.note || `${p.role || ''} ${p.name}`.trim()"
     >
-      <!-- 内部路由优先 -->
-      <RouterLink v-if="isInner(p.link)" :to="p.link" class="card-link">
-        <img class="avatar" :src="p.avatar" :alt="p.name" loading="lazy" />
-        <div class="name">{{ p.name }}</div>
-        <div class="role" v-if="p.role">{{ p.role }}</div>
-      </RouterLink>
+      <!-- 第 1 行：标题 -->
+      <div class="card-title">{{ p.name }}</div>
 
-      <!-- 外部链接 -->
-      <a v-else-if="p.link" :href="p.link" class="card-link" target="_blank" rel="noopener">
-        <img class="avatar" :src="p.avatar" :alt="p.name" loading="lazy" />
-        <div class="name">{{ p.name }}</div>
-        <div class="role" v-if="p.role">{{ p.role }}</div>
-      </a >
+      <!-- 第 2 行：左图 -->
+      <img class="avatar" :src="srcUrl(p.avatar)" :alt="p.name" loading="lazy" />
 
-      <!-- 无链接 -->
-      <div v-else class="card-link">
-        <img class="avatar" :src="p.avatar" :alt="p.name" loading="lazy" />
-        <div class="name">{{ p.name }}</div>
-        <div class="role" v-if="p.role">{{ p.role }}</div>
+      <!-- 第 2 行：右侧信息 -->
+      <div class="card-info">
+        <div class="kv" v-if="p.role"><span class="k">别名</span><span class="v">{{ p.role }}</span></div>
+        <div class="kv" v-if="p.note"><span class="k">状态</span><span class="v">{{ p.note }}</span></div>
+        <div class="kv" v-if="p.extra"><span class="k">备注</span><span class="v">{{ p.extra }}</span></div>
+      </div>
+
+      <!-- 第 3 行：附加文本 -->
+      <div class="card-extra" v-if="p.desc">
+        {{ p.desc }}
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-// [CHANGE] 新增：支持 props + Frontmatter 双来源
-import { computed } from 'vue'
-import { usePageFrontmatter } from 'vuepress/client'
+import { computed, ref } from 'vue'
+import { usePageFrontmatter, withBase } from '@vuepress/client'
 
 type RelationItem = {
   name: string
@@ -41,26 +37,33 @@ type RelationItem = {
   avatar: string
   link?: string
   note?: string
+  extra?: string
+  desc?: string
 }
 
-const props = defineProps<{
-  // 可选：直接通过 props 传数据
-  items?: RelationItem[]
-}>()
+const props = defineProps<{ items?: RelationItem[] }>()
 
-// 从 Frontmatter 读取（当 props 未提供时）
-const fm = usePageFrontmatter<{ relations?: RelationItem[] }>()
+/** 安全获取 frontmatter：防止 useClientData() without provider */
+function useFM<T extends Record<string, unknown> = Record<string, unknown>>() {
+  try {
+    return usePageFrontmatter<T>()
+  } catch {
+    return ref({} as T)
+  }
+}
+
+const fm = useFM<{ relations?: RelationItem[] }>()
 const data = computed<RelationItem[]>(() => {
   if (props.items?.length) return props.items
   return (fm.value?.relations || []) as RelationItem[]
 })
 
-// 判断是否为站内路由（以 / 开头）
-const isInner = (link?: string) => !!link && link.startsWith('/')
+/** 图片与链接统一加 base 前缀 */
+const srcUrl = (u?: string) => (!u ? '' : u.startsWith('/') ? withBase(u) : u)
 </script>
 
 <style scoped>
-/* 网格布局：手机 3 列，平板 4 列，桌面 5 列 */
+/* =================== 外层网格 =================== */
 .relation-cards {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -74,48 +77,105 @@ const isInner = (link?: string) => !!link && link.startsWith('/')
   .relation-cards { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 }
 
-.card{
-  /* 颜色全部走变量；使用更柔和的“软底色”变量，找不到再回退到 --c-bg */
-  background: var(--vp-c-bg-soft, var(--c-bg, #111));
+/* =================== 卡片容器 =================== */
+.card {
+  background: var(--vp-c-bg-soft, var(--c-bg, #fff));
   color: var(--c-text, #111);
-  border: 1px solid var(--c-border, #2a2a2a);
+  border: 1px solid var(--c-border, #e5e7eb);
   border-radius: 12px;
-  text-align: center;
   padding: 12px 10px;
   transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
 }
 
-/* 暗色下再给一道稳妥兜底，避免出现白色 */
-html[data-theme="dark"] .card{
+html[data-theme="dark"] .card {
   background: var(--c-bg, #111);
   color: var(--c-text, #e5e5e5);
   border-color: var(--c-border, #333);
 }
 
-.card:hover{
+.card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,.06);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .06);
   border-color: var(--c-brand, #3eaf7c);
 }
 
-/* 暗色下调轻阴影，避免糊 */
-html[data-theme="dark"] .card:hover{
-  box-shadow: 0 6px 16px rgba(0,0,0,.35);
+html[data-theme="dark"] .card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .35);
 }
 
-.card-link { display: block; text-decoration: none; color: inherit; }
+/* =================== 三行两列布局 =================== */
+.card-grid {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  grid-auto-rows: auto;
+  row-gap: var(--card-row-gap, 8px);
+  column-gap: var(--card-col-gap, 12px);
+  align-items: start;
+}
 
+/* =================== 第 1 行：标题 =================== */
+.card-title {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  font-weight: 700;
+  font-size: var(--card-title-size, 16px);
+  line-height: 1.3;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =================== 第 2 行：左图 =================== */
 .avatar {
+  grid-column: 1;
+  grid-row: 2;
   width: 96px;
   height: 96px;
-  border-radius: 9999px;
-  object-fit: cover;         /* [裁剪] 保持比例，超出部分裁掉 */
-  object-position: center;   /* [裁剪] 中心裁剪 */
-  display: block;
-  margin: 4px auto 8px;
+  border-radius: 8px;
+  object-fit: cover;
+  object-position: center;
+  margin: 0;
   background: #f2f3f5;
 }
 
-.name { font-weight: 600; font-size: 14px; line-height: 1.2; }
-.role { font-size: 12px; color: #666; margin-top: 4px; }
+/* =================== 第 2 行：右侧信息 =================== */
+.card-info {
+  grid-column: 2;
+  grid-row: 2;
+  display: grid;
+  grid-auto-rows: min-content;
+  row-gap: var(--card-info-gap, 6px);
+  font-size: var(--card-info-size, 14px);
+  line-height: 1.6;
+}
+
+.card-info .kv {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  column-gap: 8px;
+}
+.card-info .k {
+  color: var(--c-text, #111);
+  font-weight: 600;
+}
+.card-info .v {
+  color: var(--c-text-light, #65758b);
+}
+
+/* =================== 第 3 行：附加文本 =================== */
+.card-extra {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  margin-top: var(--card-extra-gap, 4px);
+  font-size: var(--card-extra-size, 13px);
+  line-height: 1.6;
+  color: var(--c-text-light, #65758b);
+  /* 若要多行省略可取消注释以下：
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  */
+}
 </style>
