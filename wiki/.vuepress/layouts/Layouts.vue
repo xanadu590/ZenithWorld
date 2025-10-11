@@ -1,41 +1,53 @@
 <!-- wiki/.vuepress/layouts/Layout.vue -->
 <script setup lang="ts">
 /**
- * 自定义 Layout：只覆盖 #toc 区域（全站生效）
- * - 使用 theme-hope 原始 Layout 外壳
- * - 自己渲染目录（可控制宽度、省略、缩进）
+ * 自定义 Layout：覆盖默认目录栏 (TOC)
+ * - 让长标题缩略为前 5 个字
+ * - 鼠标悬停显示完整标题
+ * - 可自定义目录宽度
  */
 import { Layout } from "vuepress-theme-hope/client";
 import { usePageData } from "@vuepress/client";
 import { computed } from "vue";
 
-/* ===== 定义 Heading 类型，用于类型安全 ===== */
+/* ===== 类型定义 ===== */
 type Heading = {
   level: number;
   title: string;
+  fullTitle?: string; // 原始标题，用于 tooltip
   text?: string;
   slug: string;
   link: string;
 };
 
-/* ===== 获取当前页的 headers 并标准化 ===== */
+/* ===== 获取页面目录 headers ===== */
 const page = usePageData();
 
+/** ★ 限制标题长度函数：保留前 n 个字，超出加省略号 */
+function truncateTitle(str: string, max = 5) {
+  if (!str) return "";
+  return str.length > max ? str.slice(0, max) + "…" : str;
+}
+
+/** ★ 提取 headers 并处理显示文本 */
 const headings = computed<Heading[]>(() => {
   const raw = (page.value.headers ?? []) as any[];
-  return raw.map((h) => ({
-    level: Number(h?.level ?? 2),
-    title: String(h?.title ?? h?.text ?? ""),
-    text: String(h?.text ?? h?.title ?? ""),
-    slug: String(h?.slug ?? ""),
-    link: String(h?.link ?? (h?.slug ? `#${h.slug}` : "#")),
-  }));
+  return raw.map((h) => {
+    const text = String(h?.title ?? h?.text ?? "");
+    return {
+      level: Number(h?.level ?? 2),
+      title: truncateTitle(text, 5), // ← 控制显示字数
+      fullTitle: text,               // ← 悬停显示完整标题
+      text,
+      slug: String(h?.slug ?? ""),
+      link: String(h?.link ?? (h?.slug ? `#${h.slug}` : "#")),
+    };
+  });
 });
 </script>
 
 <template>
   <Layout>
-    <!-- 覆盖默认 TOC 区域 -->
     <template #toc>
       <aside class="zen-toc" aria-label="此页内容">
         <div class="zen-toc__title">此页内容</div>
@@ -45,8 +57,9 @@ const headings = computed<Heading[]>(() => {
               v-for="h in headings"
               :key="h.slug || h.link"
               :class="'lv-' + (h.level || 2)"
+              :title="h.fullTitle" 
             >
-              <a :href="h.link">{{ h.title || h.text }}</a >
+              <a :href="h.link">{{ h.title }}</a >
             </li>
           </ol>
         </nav>
@@ -56,14 +69,13 @@ const headings = computed<Heading[]>(() => {
 </template>
 
 <style scoped>
-/* ===== 目录外观与宽度控制 ===== */
-
-/* 整个目录容器 */
+/* ===== 右侧目录栏整体样式 ===== */
 .zen-toc {
-  width: var(--zen-toc-w, 180px);     /* ← 改这里控制宽度 (160~220px) */
+  /* ★ 改这里控制宽度（默认 180px）*/
+  width: var(--zen-toc-w, 180px);
   max-width: var(--zen-toc-w, 180px);
   position: sticky;
-  top: var(--zen-toc-top, 84px);      /* ← 改这里控制吸顶距离 */
+  top: var(--zen-toc-top, 84px);
   padding: 12px;
   border: 1px solid var(--vp-c-border, #e5e7eb);
   border-radius: 12px;
@@ -71,7 +83,7 @@ const headings = computed<Heading[]>(() => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-/* 标题 */
+/* ===== 标题文字 ===== */
 .zen-toc__title {
   font-weight: 700;
   margin-bottom: 8px;
@@ -79,39 +91,49 @@ const headings = computed<Heading[]>(() => {
   color: var(--c-text, #111);
 }
 
-/* 列表整体 */
+/* ===== 列表整体 ===== */
 .zen-toc__list {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-/* 每一项 */
+/* ===== 每一项 ===== */
 .zen-toc__list li {
   margin: 6px 0;
   line-height: 1.45;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap; /* ← 想换行就改 normal，并加 word-break: break-word; */
+  white-space: nowrap; /* ← 保持单行 */
   transition: color 0.15s ease;
 }
 .zen-toc__list li:hover {
   color: var(--c-text-accent, #0078e7);
 }
 
-/* 层级缩进 */
+/* ===== 层级缩进 ===== */
 .zen-toc__list li.lv-3 { padding-left: 12px; }
 .zen-toc__list li.lv-4 { padding-left: 22px; }
 .zen-toc__list li.lv-5 { padding-left: 30px; }
 .zen-toc__list li.lv-6 { padding-left: 38px; }
 
-/* 链接样式 */
+/* ===== 链接样式 ===== */
 .zen-toc__list a {
   text-decoration: none;
   color: inherit;
 }
 
-/* 仅桌面端显示 */
+/* ===== 暗色模式 ===== */
+html[data-theme='dark'] .zen-toc {
+  border-color: #333;
+  background: var(--vp-c-bg-soft, #0b0f19);
+  color: var(--c-text, #e5e5e5);
+}
+html[data-theme='dark'] .zen-toc__list li:hover {
+  color: #60a5fa;
+}
+
+/* ===== 小屏隐藏 ===== */
 @media (max-width: 1024px) {
   .zen-toc {
     display: none;
