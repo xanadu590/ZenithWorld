@@ -63,7 +63,7 @@
     {
       "title": "灵动骑士",
       "path": "/demo-0.0.1/character/superhero/character-EtherealKnight.html",
-      "excerpt": "<LeadBlock :summary=\"$frontmatter.summary\" :quote=\"$frontmatter.quote\" / 灵动骑士EtherealKnight <div class=\"airow\" <AIMedia "
+      "excerpt": "灵动骑士EtherealKnight <div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombatSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\""
     },
     {
       "title": "[赤听][HearTone]",
