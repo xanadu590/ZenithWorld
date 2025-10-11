@@ -1,24 +1,9 @@
 {
   "pages": [
     {
-      "title": "巅峰世界",
-      "path": "/README.html",
-      "excerpt": "欢迎来到《巅峰世界》百科，英雄与反派的交织在这里上演。"
-    },
-    {
-      "title": "世界观总览",
-      "path": "/demo-0.0.1/",
-      "excerpt": ""
-    },
-    {
       "title": "世界大事年表",
       "path": "/demo-0.0.1/timeline.html",
       "excerpt": "<WorldTimeline :items=\" { date: '2000年', title: '世纪末战争', detail: '五大势力首次交锋，世界秩序崩塌。' }, { date: '2020年', title: '巅峰议会成立',"
-    },
-    {
-      "title": "角色介绍",
-      "path": "/demo-0.0.1/character/",
-      "excerpt": ""
     },
     {
       "title": "[1][WizardHope]",
@@ -63,7 +48,17 @@
     {
       "title": "灵动骑士",
       "path": "/demo-0.0.1/character/superhero/character-EtherealKnight.html",
-      "excerpt": "灵动骑士EtherealKnight <div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombatSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\""
+      "excerpt": "以速度与直觉见长的近战守护者。"
+    },
+    {
+      "title": "灵动骑士",
+      "path": "/demo-0.0.1/character/superhero/character-EtherealKnight.html",
+      "excerpt": "天使的容貌，高洁的灵魂，无缺的完人……咳咳，好吧，这句确实有点过了。"
+    },
+    {
+      "title": "灵动骑士",
+      "path": "/demo-0.0.1/character/superhero/character-EtherealKnight.html",
+      "excerpt": "光之所在，即是吾之归途。"
     },
     {
       "title": "[赤听][HearTone]",

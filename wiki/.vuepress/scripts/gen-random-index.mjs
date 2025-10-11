@@ -57,20 +57,20 @@ function extractMeta(content, data) {
     if (m) title = m[1].trim()
   }
 
-  // 3) 正文前一段做摘要（去掉 markdown 语法，保留中文/字母/数字和空格）
+  // 3) 正文前一段做摘要
   if (!excerpt) {
     const para = content
       .replace(/<!--[\s\S]*?-->/g, '')               // 注释
-      .replace(/```[\s\S]*?```/g, '')                // 三反引号代码块
+      .replace(/```[\s\S]*?```/g, '')                // 代码块
       .replace(/`[^`]+`/g, '')                       // 行内代码
       .replace(/!\[[^\]]*]\([^)]+\)/g, '')           // 图片
       .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')       // 链接 -> 文本
       .split(/\n{2,}/)[0] || ''
     excerpt = para
-      .replace(/[#>*_\-\[\]()`~]/g, '')              // 简单清理符号
+      .replace(/[#>*_\-\[\]()`~]/g, '')
       .replace(/\s{2,}/g, ' ')
       .trim()
-      .slice(0, 120)                                 // 控制长度
+      .slice(0, 120)
   }
 
   return { title, excerpt }
@@ -97,14 +97,14 @@ function extractQuotes(content, data) {
     })
   }
 
-  // 2) <LeadBlock quote="...">（支持单双引号；允许组件内有其他属性；可多处）
+  // 2) <LeadBlock quote="..."> / '...'
   const reLeadBlock = /<LeadBlock\b[^>]*\bquote\s*=\s*(?:"([^"]+)"|'([^']+)')/g
   for (const m of content.matchAll(reLeadBlock)) {
     const q = (m[1] ?? m[2] ?? '').trim()
     if (q) set.add(q)
   }
 
-  // 3) :::quote ... :::（可选，用不到可保留）
+  // 3) :::quote ... :::
   const reFence = /:::\s*quote\s*\n([\s\S]*?)\n:::/g
   for (const m of content.matchAll(reFence)) {
     const q = (m[1] ?? '').replace(/\s+/g, ' ').trim()
@@ -114,13 +114,31 @@ function extractQuotes(content, data) {
   return [...set]
 }
 
-/** 判定首页或顶层目录页（通常不进入随机池） */
+/** 判定首页或顶层目录页 */
 function isTopPage(p) {
   return p === '/' || /\/(index|README)\.html$/i.test(p)
 }
 
+/** 若没有包裹引号，则用中文双引号“”包裹；已有任何成对引号则保持原样 */
+function ensureQuoted(text) {
+  const s = (text || '').trim()
+  if (!s) return s
+  const pairs = [
+    ['"', '"'],      // 直双引号
+    ['“', '”'],      // 中文双引号
+    ['「', '」'],    // 日式
+    ['『', '』'],
+    ['‘', '’'],      // 英/中文单引号
+    ["'", "'"],
+  ]
+  for (const [l, r] of pairs) {
+    if (s.startsWith(l) && s.endsWith(r)) return s
+  }
+  // 默认包一层中文双引号（更美观；如需直引号改成 `"${s}"`）
+  return `“${s}”`
+}
+
 async function main() {
-  // 1) 扫描 wiki 下所有 .md，排除 .vuepress 与 node_modules
   const entries = await fg('**/*.md', {
     cwd: ROOT,
     ignore: ['.vuepress/**', 'node_modules/**'],
@@ -128,7 +146,7 @@ async function main() {
   })
 
   const items = []
-  const seenKey = new Set() // 用于去重：path + '\n' + excerpt
+  const seenKey = new Set() // path + '\n' + excerpt
 
   for (const abs of entries) {
     const route = mdToRoute(abs)
@@ -141,7 +159,7 @@ async function main() {
     const { title, excerpt: autoExcerpt } = extractMeta(content, data)
     if (!title) continue
 
-    // A) 简介卡片：优先 frontmatter.summary，否则用 autoExcerpt
+    // A) 简介卡片：优先 frontmatter.summary，否则自动提要
     const summary = (data?.summary ?? '').toString().trim()
     const summaryToUse = summary || autoExcerpt
     if (summaryToUse) {
@@ -152,9 +170,10 @@ async function main() {
       }
     }
 
-    // B) 台词卡片：可能多条
+    // B) 台词卡片：保持/补充双引号
     const quotes = extractQuotes(content, data)
-    for (const q of quotes) {
+    for (const qRaw of quotes) {
+      const q = ensureQuoted(qRaw)
       const key = `${route}\n${q}`
       if (!seenKey.has(key)) {
         items.push({ title, path: route, excerpt: q })
@@ -163,10 +182,7 @@ async function main() {
     }
   }
 
-  // 2) 输出目录
   await fsp.mkdir(PUB_DIR, { recursive: true })
-
-  // 3) 写入 json
   const out = { pages: items }
   await fsp.writeFile(OUT_FILE, JSON.stringify(out, null, 2), 'utf8')
 
