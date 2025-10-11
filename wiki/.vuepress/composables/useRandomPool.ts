@@ -2,7 +2,6 @@
 import { ref } from 'vue'
 import { withBase } from '@vuepress/client'
 
-
 /** 调试开关（排查用；上线可设为 false） */
 const DEBUG = true
 const TAG = '[RandomPool]'
@@ -11,15 +10,12 @@ export type RandomItem = {
   href: string
   title?: string
   excerpt?: string
-  /** ★ 新增：记录这是“简介版”还是“台词版”（便于调试/扩展，可选） */
+  /** 记录“简介版/台词版/旧摘要版” */
   variant?: 'summary' | 'quote' | 'excerpt'
 }
 
 /**
  * 统一：从多个可能的 URL 拉取 random-index.json（带版本参数）
- * - 加上 ?v= 构建版本，强制绕过浏览器/CDN 缓存
- * - “开发”通过 hostname 判断（不依赖 env），每次请求都加时间戳
- * - “生产”尽量用 <meta> 注入的 build-rev / build-time；没有则回退为时间戳
  */
 function makeVersionedUrl(raw: string): string {
   const host = location.hostname
@@ -109,17 +105,17 @@ export function useRandomPool() {
     const json = await tryFetch<any>(candidates)
 
     if (json) {
-      pool.value = normalizeIndex(json) // ★ 不在这里去重（允许同 href 的“简介/台词”并存）
+      pool.value = normalizeIndex(json) // 不在这里去重（允许同 href 的“简介/台词”并存）
       DEBUG && console.info(TAG, 'normalizeIndex ->', pool.value.length)
     } else {
       // C) 全部失败：兜底扫描页面链接
       console.warn(`${TAG} all fetch candidates failed, fallback to document scan.`)
       await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))
-      pool.value = collectFromDocument()   // 这里仍会按 href 去重（因为没有“台词/简介”双版本的意义）
+      pool.value = collectFromDocument()   // 这里仍会按 href 去重
       DEBUG && console.info(TAG, 'collectFromDocument ->', pool.value.length)
     }
 
-    // ★ D) 不做 global href 去重（保留同页的两个版本）；仅做轻度清洗
+    // D) 清洗：排除首页/当前页
     const beforeFilter = pool.value.length
     const cur = normalize(location.pathname)
     pool.value = pool.value.filter(i => {
@@ -131,9 +127,9 @@ export function useRandomPool() {
     loaded.value = true
   }
 
-  /** 从池中随机抽取 n 条（不放回；★ 同一 href 只取 1 条，保证“不重复页面”） */
+  /** 从池中随机抽取 n 条（不放回；同一 href 只取 1 条） */
   const sample = (n: number): RandomItem[] => {
-    const seen = new Set<string>()     // ★ 按 href 去重放在抽样阶段
+    const seen = new Set<string>()
     const arr = pool.value.slice()
     const out: RandomItem[] = []
     while (arr.length && out.length < n) {
@@ -149,8 +145,32 @@ export function useRandomPool() {
     return out
   }
 
-  /** 把站内 path 变为最终可跳转的绝对地址（自动加 base） */
-  const resolveLink = (p: string) => withBase(ensureLeadingSlash(p))
+  /**
+   * 把站内 path 变为最终可跳转的绝对地址
+   * 优先：使用 VuePress 的 base
+   * 兜底：动态识别 '/demo-xxx/' 或 '/vxxx/' 前缀
+   */
+  const resolveLink = (p: string) => {
+    const path = ensureLeadingSlash(p)
+
+    // 1) 优先用 vuepress base
+    try {
+      const vueBase = withBase('/') // 例如 '/demo-0.0.1/' 或 '/'
+      if (vueBase && vueBase !== '/') {
+        return vueBase.replace(/\/$/, '') + path
+      }
+    } catch { /* ignore */ }
+
+    // 2) 运行时自动识别 demo-/v* 前缀
+    const m = location.pathname.match(/^\/(demo-[\w.-]+|v[\w.-]+)\//)
+    if (m) {
+      const runtimeBase = `/${m[1]}/`
+      return runtimeBase.replace(/\/$/, '') + path
+    }
+
+    // 3) 再兜底：不加前缀
+    return path
+  }
 
   return { pool, loaded, load, sample, resolveLink }
 }
@@ -159,17 +179,7 @@ export function useRandomPool() {
 
 /**
  * 解析 random-index.json 为 RandomItem[]
- * 兼容两种结构：
- * - { pages: [ { path/title/summary/quote/excerpt } ] }
- * - [ { path/title/summary/quote/excerpt } ]
- *
- * 规则：
- * - 同一页面可产出最多两条：
- *   1) summary 版（variant='summary'）
- *   2) quote   版（variant='quote'）
- * - 若没有 summary/quote，但有 excerpt，则产出 1 条（variant='excerpt'）
- * - 过滤：外链、顶层页、非 .html
- * - ★ 不做 href 去重（留给 sample 阶段控制“同一页面只出 1 条”）
+ * - 同一页面可产出两条（summary/quote），或旧版 excerpt 一条
  */
 function normalizeIndex(json: any): RandomItem[] {
   if (!json) return []
@@ -194,20 +204,12 @@ function normalizeIndex(json: any): RandomItem[] {
     const quote = String(raw?.quote ?? '').trim()
     const excerpt = String(raw?.excerpt ?? '').trim()
 
-    // 1) 人物页可生成 2 条
-    if (summary) {
-      out.push({ href, title, excerpt: summary, variant: 'summary' })
-    }
-    if (quote) {
-      out.push({ href, title, excerpt: quote, variant: 'quote' })
-    }
+    if (summary) out.push({ href, title, excerpt: summary, variant: 'summary' })
+    if (quote)   out.push({ href, title, excerpt: quote,   variant: 'quote' })
 
-    // 2) 兼容旧数据：只有 excerpt（且没有 summary/quote）则进 1 条
     if (!summary && !quote && excerpt) {
       out.push({ href, title, excerpt, variant: 'excerpt' })
     }
-
-    // 3) 如果三者都没有，也可选择丢弃；这里保留为空摘要的单条，便于兜底
     if (!summary && !quote && !excerpt) {
       out.push({ href, title, excerpt: '', variant: 'excerpt' })
     }
@@ -217,7 +219,7 @@ function normalizeIndex(json: any): RandomItem[] {
   return out
 }
 
-/** 从文档中收集“本站 .html”链接；排除顶层页（此分支没有 summary/quote，保留去重即可） */
+/** 从文档中收集“本站 .html”链接；排除顶层页 */
 function collectFromDocument(): RandomItem[] {
   const anchors = Array.from(document.querySelectorAll<HTMLAnchorElement>('a'))
   const items = anchors
@@ -252,13 +254,7 @@ function ensureLeadingSlash(p: string) {
 }
 
 /**
- * 标准化为“站内路径”：
- * - 只保留 pathname（去域名）
- * - 剥离已知 base 前缀：
- *    1) 运行时 base：withBase('/')
- *    2) 历史：'/ZenithWorld/'
- *    3) 自动识别：当前 URL 的首段若形如 'demo-*' 或 'v*'，视作 base
- * - 最终确保以 '/' 开头
+ * 标准化为“站内路径”：剥离 base（含 demo-/v*），用于池内去重与比较
  */
 function normalize(href: string): string {
   let path = href
@@ -304,4 +300,3 @@ function normalizeBase(b: string): string {
   if (!x.endsWith('/')) x = `${x}/`
   return x
 }
-
