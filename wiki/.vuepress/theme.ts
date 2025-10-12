@@ -153,35 +153,6 @@ export default hopeTheme({
       contributors: false,   // 不显示贡献者
     },
 
-    // ✅ slimsearch 搜索插件配置（简洁本地搜索）
-    slimsearch: {
-      indexContent: true, // 是否索引正文内容（默认 false）
-
-      // 搜索框占位符的本地化
-      locales: {
-        '/en/': { placeholder: 'Search' },
-        '/': { placeholder: '搜索文档' },
-      },
-
-      // 搜索框快捷键 —— 通过对象方式定义，避免 TS 报错
-      hotKeys: [
-        { key: 'k', ctrl: true }, // Ctrl + K 打开搜索
-        { key: '/', ctrl: true }, // Ctrl + / 打开搜索
-      ],
-
-      // 搜索历史记录与延迟设置
-      queryHistoryCount: 5, // 搜索历史条目数
-      resultHistoryCount: 5, // 搜索结果缓存条目数
-      searchDelay: 150, // 防抖延时（毫秒）
-
-      // 过滤：可排除不希望被索引的页面
-      // filter: (page) => page.path !== '/drafts/',
-
-      // 针对中文等需要分词的情况，可设置 indexOptions 或 indexLocaleOptions
-      // indexOptions: { ... },
-      // indexLocaleOptions: { '/zh/': { ... } },
-    },
-
     // ⚠️ 如果之前配置过 search 或 search-pro，请删除或关闭，避免冲突
     // search: false,
     // 'search-pro': false,

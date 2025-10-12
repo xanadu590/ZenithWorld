@@ -39,9 +39,6 @@ export default defineUserConfig({
       resultHistoryCount: 5,
       searchDelay: 150,
     }),
-    photoSwipePlugin({
-       selector: '.theme-hope-content :not(a) > img', // 默认就够用
-    }),
   ],
 
   // Enable it with pwa
