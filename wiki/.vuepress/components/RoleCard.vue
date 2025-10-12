@@ -226,6 +226,9 @@ const props = withDefaults(defineProps<{
 const isLinkObj = (v: unknown): v is { text: string; href: string } =>
   !!v && typeof v === 'object' && 'text' in (v as any) && 'href' in (v as any)
 
+/** 判断是否为站内路由（以 / 开头） */
+const isInner = (link?: string) => !!link && link.startsWith('/')
+
 /** 导航函数（用于键盘回车） */
 const go = (href: string) => { window.location.assign(href) }
 
