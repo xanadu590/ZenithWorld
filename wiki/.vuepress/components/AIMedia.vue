@@ -2,7 +2,8 @@
 <template>
   <ClientOnly>
     <figure v-if="ai.show" class="ai-media">
-      <img :src="src" :alt="alt" :width="width" :height="height" loading="lazy" />
+      <!-- ✅ 修复图片路径：加上 withBase 自动补 base 前缀 -->
+      <img :src="srcUrl(src)" :alt="alt" :width="width" :height="height" loading="lazy" />
       <figcaption v-if="caption">{{ caption }}</figcaption>
     </figure>
 
@@ -17,6 +18,7 @@
 <script setup lang="ts">
 import { inject } from 'vue'
 import { AI_INJECT_KEY } from '../client'
+import { withBase } from '@vuepress/client'   // ✅ 新增导入
 
 defineProps<{
   src: string
@@ -27,6 +29,9 @@ defineProps<{
 }>()
 
 const ai = inject(AI_INJECT_KEY) as { show: boolean }
+
+// ✅ 新增：自动补 base 前缀的函数
+const srcUrl = (u?: string) => (!u ? '' : u.startsWith('/') ? withBase(u) : u)
 </script>
 
 <style scoped>
@@ -46,17 +51,17 @@ const ai = inject(AI_INJECT_KEY) as { show: boolean }
 /* 固定显示区域，高度统一、自动裁剪、保持居中 */
 .ai-media img {
   border-radius: 6px;
-  width: 180px;           /* 固定宽度，可根据需要调整 */
-  height: 270px;          /* 固定高度，确保并排统一 */
-  object-fit: cover;      /* 自动裁剪图片而不变形 */
-  object-position: center;/* 居中裁剪区域 */
+  width: 180px;
+  height: 270px;
+  object-fit: cover;
+  object-position: center;
 }
 
 /* 占位符也保持相同尺寸 */
 .ai-placeholder {
-  display: inline-flex; /* 改为 inline-flex 支持横向排列 */
-  align-items: center;  /* 垂直居中 */
-  justify-content: center; /* 水平居中 */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 160px;
   height: 275.5px;
   border: 1px dashed #ddd;
@@ -70,8 +75,8 @@ const ai = inject(AI_INJECT_KEY) as { show: boolean }
 }
 
 html[data-theme='dark'] .ai-placeholder {
-  background: #1e1e1e;     /* 深色背景 */
-  border-color: #333;      /* 深色边框 */
-  color: #aaa;             /* 灰字 */
+  background: #1e1e1e;
+  border-color: #333;
+  color: #aaa;
 }
 </style>
