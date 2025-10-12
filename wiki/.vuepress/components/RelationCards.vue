@@ -7,11 +7,14 @@
       class="card"
       :title="p.note || `${p.role || ''} ${p.name}`.trim()"
     >
-      <!-- ✅ 站内链接：用 RouterLink + resolveLink（最稳；自动处理 base） -->
-      <RouterLink
-        v-if="p.link && isInner(p.link)"
-        class="card-link clickable"
-        :to="resolveLink(p.link)"
+      <!-- ✅ 整卡可点：与 RandomSidebar 一样用 resolveLink + window.location.assign -->
+      <div
+        class="card-link"
+        :class="{ clickable: !!p.link }"
+        role="link"
+        tabindex="0"
+        @click="go(p)"
+        @keydown.enter.prevent="go(p)"
       >
         <!-- 第1行：标题（跨两列） -->
         <div class="name">{{ p.name }}</div>
@@ -27,37 +30,9 @@
         </div>
 
         <!-- 第3行：附加文本（跨两列） -->
-        <div class="extra" v-if="p.desc">{{ p.desc }}</div>
-      </RouterLink>
-
-      <!-- ✅ 外链：常规 <a>，不走 resolveLink -->
-      <a
-        v-else-if="p.link"
-        class="card-link clickable"
-        :href="p.link"
-        target="_blank"
-        rel="noopener"
-      >
-        <div class="name">{{ p.name }}</div>
-        < img class="avatar" :src="srcUrl(p.avatar)" :alt="p.name" loading="lazy" />
-        <div class="info">
-          <div class="kv" v-if="p.role"><span class="k">别名</span><span class="v">{{ p.role }}</span></div>
-          <div class="kv" v-if="p.note"><span class="k">状态</span><span class="v">{{ p.note }}</span></div>
-          <div class="kv" v-if="p.extra"><span class="k">备注</span><span class="v">{{ p.extra }}</span></div>
+        <div class="extra" v-if="p.desc">
+          {{ p.desc }}
         </div>
-        <div class="extra" v-if="p.desc">{{ p.desc }}</div>
-      </a >
-
-      <!-- ✅ 无链接：不可点击的展示块 -->
-      <div class="card-link" v-else>
-        <div class="name">{{ p.name }}</div>
-        < img class="avatar" :src="srcUrl(p.avatar)" :alt="p.name" loading="lazy" />
-        <div class="info">
-          <div class="kv" v-if="p.role"><span class="k">别名</span><span class="v">{{ p.role }}</span></div>
-          <div class="kv" v-if="p.note"><span class="k">状态</span><span class="v">{{ p.note }}</span></div>
-          <div class="kv" v-if="p.extra"><span class="k">备注</span><span class="v">{{ p.extra }}</span></div>
-        </div>
-        <div class="extra" v-if="p.desc">{{ p.desc }}</div>
       </div>
     </div>
   </div>
@@ -66,7 +41,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { usePageFrontmatter, withBase } from '@vuepress/client'
-import { useRandomPool } from '../composables/useRandomPool'
+import { useRandomPool } from '../composables/useRandomPool'  // ✅ 用它的 resolveLink，和 RandomSidebar 保持一致
 
 type RelationItem = {
   name: string
@@ -85,15 +60,22 @@ function useFM<T extends Record<string, unknown> = Record<string, unknown>>() {
 }
 
 const fm = useFM<{ relations?: RelationItem[] }>()
-const data = computed<RelationItem[]>(() => props.items?.length ? props.items : (fm.value?.relations || []) as RelationItem[])
+const data = computed<RelationItem[]>(() => {
+  if (props.items?.length) return props.items
+  return (fm.value?.relations || []) as RelationItem[]
+})
 
-// 🔗 与 RandomSidebar 保持一致：resolveLink 负责补 base / demo- 前缀等
+/** 与 RandomSidebar 一致：内部链接统一用 resolveLink 补 base；外链直接跳转 */
 const { resolveLink } = useRandomPool()
+const isExternal = (u?: string) => !!u && /^https?:\/\//i.test(u)
 
-// 站内路由的判定：以 / 开头（无需强制 .html 或 / 结尾，resolveLink 会处理）
-const isInner = (u?: string) => !!u && u.startsWith('/')
+function go(p: RelationItem) {
+  if (!p.link) return
+  const href = isExternal(p.link) ? p.link : resolveLink(p.link) // ★ 关键：统一走 resolveLink
+  window.location.assign(href)
+}
 
-// 图片静态资源用 withBase 补 base
+/** 图片静态资源补 base（以 / 开头时） */
 const srcUrl = (u?: string) => (!u ? '' : u.startsWith('/') ? withBase(u) : u)
 </script>
 
