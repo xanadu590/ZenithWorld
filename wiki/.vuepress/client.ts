@@ -10,7 +10,7 @@ import RoleCard from './components/RoleCard.vue'
 import RandomCard from './components/RandomCard.vue'
 import RandomSidebar from './components/RandomSidebar.vue'
 import LeadBlock from './components/LeadBlock.vue'
-
+import BlackoutText from './components/BlackoutText.vue'
 
 
 export type AISetting = {
@@ -57,6 +57,8 @@ export default defineClientConfig({
     app.component("RandomSidebar", RandomSidebar)
 
     app.component("LeadBlock", LeadBlock)
+
+    app.component("BlackoutText", BlackoutText)
     
   },
 

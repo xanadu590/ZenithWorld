@@ -2,8 +2,8 @@
 home: true
 icon: house
 title: 巅峰世界
-heroImage: /image/LOGO-light.jpg
-heroImageDark: /image/LOGO-dark.jpg
+heroImage: /images/LOGO-light.jpg
+heroImageDark: /images/LOGO-dark.jpg
 bgImageStyle:
   background-attachment: fixed
 heroText: 巅峰世界

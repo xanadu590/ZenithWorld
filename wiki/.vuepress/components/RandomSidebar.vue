@@ -1,6 +1,15 @@
 <!-- wiki/.vuepress/components/RandomSidebar.vue -->
 <template>
   <ClientOnly>
+    <!--
+      视图说明
+      --------------------------------------------------------------------------
+      - 这是一个“右侧浮动/吸附”的随机推荐侧栏组件。
+      - 当 ready 且 items 有值时渲染推荐列表；否则渲染空态（同样占位）。
+      - 侧栏内部采用“可缩放网格”布局：外层容器绝对居中，标题行绝对定位在网格上方。
+      - 每一项 <li> 整块可点击或按回车触发跳转（无 <a>，用 JS 导航）。
+      - 包裹在 <ClientOnly> 内，避免 SSR 阶段访问 window / ResizeObserver 报错。
+    -->
     <aside
       ref="dockEl"
       class="random-sidebar"
@@ -10,7 +19,7 @@
       aria-label="随机文章推荐"
     >
       <div class="sb-scale-wrap">
-        <!-- 标题+按钮移到 sb-scale-wrap 内部，便于相对网格定位 -->
+        <!-- 标题 + 换一批 按钮（用于重新抽样） -->
         <div class="sb-header" ref="titleEl">
           <div class="sb-title">也许你爱看：</div>
           <button
@@ -37,7 +46,7 @@
             <div class="sb-item-title">
               {{ it.title || nameFromPath(it.href) }}
             </div>
-            <!-- ★ 外层负责“上下居中 + 左对齐”，内层做多行省略 -->
+            <!-- 外层做“垂直居中 + 左对齐”，内层做“多行省略” -->
             <div class="sb-item-excerpt">
               <div class="sb-excerpt-inner">
                 {{ it.excerpt || brief(it) }}
@@ -48,7 +57,7 @@
       </div>
     </aside>
 
-    <!-- 空态 -->
+    <!-- 空态：未能准备就绪时的占位渲染 -->
     <aside
       ref="dockEl"
       v-else
@@ -65,9 +74,35 @@
 </template>
 
 <script setup lang="ts">
+/*
+  组件名称：RandomSidebar
+  核心作用
+  ----------------------------------------------------------------------------
+  - 在正文右侧（大屏）展示一组“随机文章推荐”卡片，并根据容器可用空间智能计算
+    “列数/行数/卡片尺寸/可展示条数”等，使内容尽可能充实又不溢出。
+
+  关键点
+  ----------------------------------------------------------------------------
+  - 链接跳转：通过 useRandomPool.resolveLink() 统一加上 base 前缀，兼容子路径部署。
+  - 自适应布局：窗口尺寸变化时、主题容器变化时，用 requestAnimationFrame + ResizeObserver
+    触发重算，保证网格始终居中并充满侧栏。
+  - 吸附/固定：通过 props.sticky 与 props.dockRight 决定是否吸附滚动与是否固定在右侧。
+
+  可调参数（通过 CSS 自定义属性）
+  ----------------------------------------------------------------------------
+  - --dock-gap            // 正文与侧栏之间的水平间距
+  - --dock-right-safe     // 右侧安全边距
+  - --dock-top            // 顶部安全边距（与导航高度相关）
+  - --dock-bottom-safe    // 底部安全边距
+  - --grid-soft-margin-x  // 侧栏内部“软”左右留白
+  - --grid-soft-margin-y  // 侧栏内部“软”上下留白
+  - --card-ratio          // 单卡片的宽高比（宽→高）
+*/
+
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRandomPool, type RandomItem } from '../composables/useRandomPool'
 
+/* 公开属性：可控制条数 / 是否吸顶 / 是否靠右固定 */
 const props = withDefaults(
   defineProps<{
     count?: number
@@ -81,13 +116,18 @@ const props = withDefaults(
   },
 )
 
-const ready = ref(false)
-const items = ref<RandomItem[]>([])
-const itemsShown = ref<RandomItem[]>([])
+/* 运行时状态 */
+const ready = ref(false)                  // 是否已加载随机池
+const items = ref<RandomItem[]>([])       // 抽样得到的原始候选
+const itemsShown = ref<RandomItem[]>([])  // 根据可用空间最终展示的子集
+
+/* 随机池工具：load 载入；sample 抽样；resolveLink 统一补 base 前缀 */
 const { load, sample, resolveLink } = useRandomPool()
 
+/* 跳转：整项点击或回车触发 */
 const go = (it: RandomItem) => window.location.assign(resolveLink(it.href))
 
+/* 兜底：当没有标题/摘要时，从 href 中提取文件名作为显示文本 */
 function nameFromPath(p: string) {
   const m = p.match(/\/([^/]+)\.html$/)
   return m ? decodeURIComponent(m[1]) : p
@@ -98,11 +138,13 @@ function brief(i: RandomItem) {
   return nameFromPath(i.href)
 }
 
+/* DOM 引用：侧栏宿主、标题（测量高度）、网格列表（写入轨道/尺寸） */
 const dockEl = ref<HTMLElement | null>(null)
-/* titleEl 指向 .sb-header，用于测量 header 自身高度 */
+// titleEl 指向 .sb-header，用于测量 header 自身高度并传回给 CSS 变量
 const titleEl = ref<HTMLElement | null>(null)
 const listEl = ref<HTMLElement | null>(null)
 
+/* 观察器/调度器：ResizeObserver + rAF 节流 */
 let ro: ResizeObserver | null = null
 let rafId: number | null = null
 
@@ -116,15 +158,17 @@ onBeforeUnmount(() => {
   ro?.disconnect()
 })
 
+/* 刷新推荐：首次需先加载随机池，随后按 props.count 抽样 */
 const refresh = async () => {
   if (!ready.value) {
-    await load()
+    await load()        // 只在首次时加载随机池
     ready.value = true
   }
   items.value = sample(Math.max(1, Math.min(6, props.count || 6)))
-  scheduleRecalc()
+  scheduleRecalc()       // 刷新后重算布局
 }
 
+/* 初始化“靠右固定/响应式”逻辑（仅在 dockRight 为真时启用） */
 function setupAutoDock() {
   if (!props.dockRight || !dockEl.value) return
   window.addEventListener('resize', scheduleRecalc, { passive: true })
@@ -132,15 +176,17 @@ function setupAutoDock() {
   ro.observe(document.documentElement)
   scheduleRecalc()
 }
+
+/* rAF 调度：把多次触发的计算合并为一次 */
 function scheduleRecalc() {
   if (rafId) cancelAnimationFrame(rafId)
   rafId = requestAnimationFrame(() => {
-    applyDockLayout()
-    applyGridLayout()
+    applyDockLayout()   // 计算外层容器的几何（位置/宽高）
+    applyGridLayout()   // 计算内部网格的列数/行高/可展示数等
   })
 }
 
-/* 外层尺寸：正文右缘→屏幕右缘 */
+/* 外层尺寸：正文右缘→屏幕右缘，写入 CSS 变量用于 fixed 定位 */
 function applyDockLayout() {
   const host = dockEl.value!
   const vw = window.innerWidth
@@ -166,7 +212,7 @@ function applyDockLayout() {
   host.style.setProperty('--dock-height', height + 'px')
 }
 
-/* 网格计算（header 绝对定位在网格上方；计算时要把 header 高度回写给样式） */
+/* 内部网格：依据可用空间挑选最佳 c×r，并写入轨道尺寸与展示条数 */
 function applyGridLayout() {
   const host = dockEl.value!
   const list = listEl.value!
@@ -191,9 +237,10 @@ function applyGridLayout() {
   const SOFT_Y = parseFloat(hostStyle.getPropertyValue('--grid-soft-margin-y') || '12')
 
   const availW = Math.max(0, outerW - PAD - SOFT_X * 2)
-  /* 不扣标题高度；让 sb-scale-wrap 使用完整可用高 */
+  // 不扣标题高度；让 sb-scale-wrap 使用完整可用高
   const availH = Math.max(0, outerH - PAD - SOFT_Y * 2)
 
+  // 预设候选网格（优先展示更多条）
   const candidates = [
     { c: 2, r: 3 },
     { c: 1, r: 3 },
@@ -226,7 +273,7 @@ function applyGridLayout() {
   const showN = Math.max(0, Math.min(best.n, items.value.length, 6))
   itemsShown.value = items.value.slice(0, showN)
 
-  // 回写 gap / 宽高 / 轨道
+  // 写回 gap / 宽高 / 轨道
   list.style.columnGap = `${gapX}px`
   list.style.rowGap = `${gapY}px`
   list.style.width = `${best.gridW}px`
@@ -235,18 +282,18 @@ function applyGridLayout() {
   list.style.gridTemplateColumns = `repeat(${best.c}, ${best.w}px)`
   list.style.gridAutoRows = `${best.h}px`
 
-  // 写入总高度 & 单卡尺寸：用于上下居中与字体联动
+  // 写入总高度 & 单卡尺寸（用于上下居中与字体联动）
   list.style.height = `${best.gridH}px`
   host.style.setProperty('--card-w', `${best.w}px`)
   host.style.setProperty('--card-h', `${best.h}px`)
 
-  // 把“可用高度 / 网格总高 / 网格总宽 / 行距（纵向间距）”告诉样式
+  // 告诉样式：可用高/网格总高/总宽/纵向行距
   host.style.setProperty('--viewport-h', `${availH}px`)
   host.style.setProperty('--grid-h', `${best.gridH}px`)
   host.style.setProperty('--grid-w', `${best.gridW}px`)
   host.style.setProperty('--grid-gap-y', `${gapY}px`)
 
-  // 计算“摘要可显示行数”
+  // 动态估算可展示摘要行数，并回写给 CSS 变量
   const cardPadding = 20
   const baseFont = Math.max(10, Math.min(16, best.w * 0.08))
   const titleFont = baseFont * 1.1
@@ -258,11 +305,12 @@ function applyGridLayout() {
   host.style.setProperty('--f-base', `${baseFont}px`)
   host.style.setProperty('--excerpt-lines', String(lines))
 
-  // 测量 header 自身高度，写入 --header-h，用于让 header 不与网格重叠
+  // 测量 header 自身高度，写入 --header-h，防止与网格重叠
   const headerH = (titleEl.value?.getBoundingClientRect().height || 0)
   host.style.setProperty('--header-h', `${headerH}px`)
 }
 
+/* 仅用于模板 class 绑定，便于少写 props.dockRight */
 const dockRight = props.dockRight
 </script>
 
@@ -446,6 +494,7 @@ const dockRight = props.dockRight
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: var(--excerpt-lines, 3);
+  line-clamp: var(--excerpt-lines, 3);
 }
 
 /* 按钮（通用 & 内联修饰） */
@@ -460,7 +509,11 @@ const dockRight = props.dockRight
   cursor: pointer;
   flex-shrink: 0;
 }
-.sb-refresh--inline {}
+
+/* 修饰符：行内刷新按钮（暂无样式，占位备用） */
+.sb-refresh--inline {
+  --_noop: 1;
+}
 
 html[data-theme='dark'] .random-sidebar,
 html[data-theme='dark'] .sb-item,
