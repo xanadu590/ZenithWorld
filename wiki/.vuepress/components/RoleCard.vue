@@ -417,6 +417,33 @@ html[data-theme="dark"] .role-card{
   cursor: pointer;
 }
 
+/* ============================================================
+   🎨 三行模式（stacked + titleOnTop）字体样式个性化控制
+   ============================================================ */
+
+/* 第1行：标题 */
+.role-card.stacked .title-top {
+  font-size: var(--card-title-size, 1.2rem);    /* 字体大小 */
+  color: var(--card-title-color, #111);       /* 字体颜色 */
+  text-align: var(--card-title-align, center);  /* 对齐方式：left / center / right */
+  margin: 0px 0px 0px;
+  margin-bottom: var(--card-title-gap, -6px); /* 默认10px，可自由改 */
+}
+
+/* 第2行：关键信息（meta） */
+.role-card.stacked .basic {
+  font-size: var(--card-meta-size, 0.8rem);
+  color: var(--card-meta-color, #333);
+  text-align: var(--card-meta-align, left);
+}
+
+/* 第3行：能力 & 简介 */
+.role-card.stacked .bottom {
+  font-size: var(--card-summary-size, 0.8rem);
+  color: var(--card-summary-color, #444);
+  text-align: var(--card-summary-align, left);
+}
+
 .role-card { font-size: 0.7rem; }
 .title { font-size: 13px; }
 .meta { gap: 8px; }

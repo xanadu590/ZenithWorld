@@ -19,15 +19,22 @@
     title="韩桉宁"
     avatar="/images/roles/han-anning.png"
     :abilities="['支援']"
+    to="/demo-0.0.1/character/superhero/1.html"
   />
   <!-- 4. 灵动骑士（完整版，可点击跳转） -->
   <RoleCard
-    stacked
+    :title="'灵动骑士'"
     :width="220"
     :height="330"
     :avatarWidth="100"
     :avatarHeight="150"
-    title="灵动骑士"
+    style="
+    --card-title-color:#111;
+    --card-title-align:center;
+    --card-meta-color:#333;
+    --card-summary-size:0.8rem;
+    --card-summary-align:justify;
+    "
     avatar="/images/EtherealKnightCombatSuit.jpg"
     alias="Ether Knight"
     faction="中域团体"
@@ -35,6 +42,8 @@
     :abilities="['风元素强化', '轻盈术（滑翔）']"
     firstAppearance="2024-11-01"
     to="/demo-0.0.1/character/superhero/character-EtherealKnight.html"
+    stacked
+    titleOnTop
   />
 </div>
 <RandomCard /></div></template>

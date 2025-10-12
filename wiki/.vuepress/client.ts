@@ -11,7 +11,7 @@ import RandomCard from './components/RandomCard.vue'
 import RandomSidebar from './components/RandomSidebar.vue'
 import LeadBlock from './components/LeadBlock.vue'
 import BlackoutText from './components/BlackoutText.vue'
-
+import MapJump from './components/MapJump.vue'
 
 export type AISetting = {
   show: boolean
@@ -59,7 +59,9 @@ export default defineClientConfig({
     app.component("LeadBlock", LeadBlock)
 
     app.component("BlackoutText", BlackoutText)
-    
+
+    app.component("MapJump", MapJump)
+
   },
 
   // 右上角悬浮的总开关
