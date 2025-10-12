@@ -6,9 +6,10 @@
        - 当传入 stacked 时，会额外加上 'stacked'，只影响新增的上下分段布局样式
   -->
   <component
-    :is="to ? 'a' : 'div'"
+    :is="to ? (isInner(to) ? 'RouterLink' : 'a') : 'div'"
     :class="['role-card', { stacked }]"
-    :href="to || undefined"
+    :to="to && isInner(to) ? to : undefined"
+    :href="to && !isInner(to) ? to : undefined"
     :style="cardStyle"
     role="link"
     tabindex="0"
@@ -33,7 +34,7 @@
             <ul>
               <li v-for="(a, i) in abilities" :key="i">
                 <template v-if="isLinkObj(a)">
-                  <a :href="a.href" @click.stop>{{ a.text }}</a>
+                  <a :href="a.href" @click.stop>{{ a.text }}</a >
                 </template>
                 <template v-else>{{ a }}</template>
               </li>
@@ -42,7 +43,7 @@
 
           <div v-if="summary" class="summary">
             <b>简介：</b>
-            <p>{{ summary }}</p>
+            <p>{{ summary }}</p >
           </div>
         </div>
       </div>
@@ -51,7 +52,7 @@
       <div class="right">
         <h2 class="title">
           <template v-if="isLinkObj(title)">
-            <a :href="title.href" @click.stop>{{ title.text }}</a>
+            <a :href="title.href" @click.stop>{{ title.text }}</a >
           </template>
           <template v-else>{{ title }}</template>
         </h2>
@@ -61,7 +62,7 @@
             <span class="k">别名</span>
             <span class="v">
               <template v-if="isLinkObj(alias)">
-                <a :href="alias.href" @click.stop>{{ alias.text }}</a>
+                <a :href="alias.href" @click.stop>{{ alias.text }}</a >
               </template>
               <template v-else>{{ alias }}</template>
             </span>
@@ -71,7 +72,7 @@
             <span class="k">阵营</span>
             <span class="v">
               <template v-if="isLinkObj(faction)">
-                <a :href="faction.href" @click.stop>{{ faction.text }}</a>
+                <a :href="faction.href" @click.stop>{{ faction.text }}</a >
               </template>
               <template v-else>{{ faction }}</template>
             </span>
@@ -81,7 +82,7 @@
             <span class="k">状态</span>
             <span class="v">
               <template v-if="isLinkObj(status)">
-                <a :href="status.href" @click.stop>{{ status.text }}</a>
+                <a :href="status.href" @click.stop>{{ status.text }}</a >
               </template>
               <template v-else>{{ status }}</template>
             </span>
@@ -91,7 +92,7 @@
             <span class="k">出场</span>
             <span class="v">
               <template v-if="isLinkObj(firstAppearance)">
-                <a :href="firstAppearance.href" @click.stop>{{ firstAppearance.text }}</a>
+                <a :href="firstAppearance.href" @click.stop>{{ firstAppearance.text }}</a >
               </template>
               <template v-else>{{ firstAppearance }}</template>
             </span>
@@ -114,7 +115,7 @@
         <div class="basic">
           <h2 class="title">
             <template v-if="isLinkObj(title)">
-              <a :href="title.href" @click.stop>{{ title.text }}</a>
+              <a :href="title.href" @click.stop>{{ title.text }}</a >
             </template>
             <template v-else>{{ title }}</template>
           </h2>
@@ -124,7 +125,7 @@
               <span class="k">别名</span>
               <span class="v">
                 <template v-if="isLinkObj(alias)">
-                  <a :href="alias.href" @click.stop>{{ alias.text }}</a>
+                  <a :href="alias.href" @click.stop>{{ alias.text }}</a >
                 </template>
                 <template v-else>{{ alias }}</template>
               </span>
@@ -134,7 +135,7 @@
               <span class="k">阵营</span>
               <span class="v">
                 <template v-if="isLinkObj(faction)">
-                  <a :href="faction.href" @click.stop>{{ faction.text }}</a>
+                  <a :href="faction.href" @click.stop>{{ faction.text }}</a >
                 </template>
                 <template v-else>{{ faction }}</template>
               </span>
@@ -144,7 +145,7 @@
               <span class="k">状态</span>
               <span class="v">
                 <template v-if="isLinkObj(status)">
-                  <a :href="status.href" @click.stop>{{ status.text }}</a>
+                  <a :href="status.href" @click.stop>{{ status.text }}</a >
                 </template>
                 <template v-else>{{ status }}</template>
               </span>
@@ -154,7 +155,7 @@
               <span class="k">出场</span>
               <span class="v">
                 <template v-if="isLinkObj(firstAppearance)">
-                  <a :href="firstAppearance.href" @click.stop>{{ firstAppearance.text }}</a>
+                  <a :href="firstAppearance.href" @click.stop>{{ firstAppearance.text }}</a >
                 </template>
                 <template v-else>{{ firstAppearance }}</template>
               </span>
@@ -170,7 +171,7 @@
           <ul>
             <li v-for="(a, i) in abilities" :key="i">
               <template v-if="isLinkObj(a)">
-                <a :href="a.href" @click.stop>{{ a.text }}</a>
+                <a :href="a.href" @click.stop>{{ a.text }}</a >
               </template>
               <template v-else>{{ a }}</template>
             </li>
@@ -179,7 +180,7 @@
 
         <div v-if="summary" class="summary">
           <b>简介：</b>
-          <p>{{ summary }}</p>
+          <p>{{ summary }}</p >
         </div>
       </div>
     </template>
@@ -230,7 +231,12 @@ const isLinkObj = (v: unknown): v is { text: string; href: string } =>
 const isInner = (link?: string) => !!link && link.startsWith('/')
 
 /** 导航函数（用于键盘回车） */
-const go = (href: string) => { window.location.assign(href) }
+import { withBase } from '@vuepress/client'
+const go = (href: string) => {
+  // 站内路径：补 base，外链：原样
+  const url = isInner(href) ? withBase(href) : href
+  window.location.assign(url)
+}
 
 /**
  * 把卡片尺寸 + 头像尺寸传入：
