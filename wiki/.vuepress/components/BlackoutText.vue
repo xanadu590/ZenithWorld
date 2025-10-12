@@ -23,9 +23,9 @@ const open = ref(false) // 默认遮住；点击展开/收起
 /* 可调参数 */
 .zw-blackout{
   --blk-bg: #000;     /* 黑幕颜色 */
-  --blk-radius: .25em;
-  --blk-pad-x: .2em;
-  --blk-pad-y: .05em;
+  --blk-radius: 0;      /* .25em; */
+  --blk-pad-x: 0;       /*.2em; */
+  --blk-pad-y: 0;       /*.05em; */
 }
 
 /* 直接用背景做“黑幕”，不需要 ::before 也不需要定位 */
@@ -57,7 +57,7 @@ const open = ref(false) // 默认遮住；点击展开/收起
 
 /* 无障碍：键盘聚焦可见 */
 .zw-blackout:focus-visible{
-  outline: 0px solid color-mix(in oklab, var(--blk-bg), transparent 70%);
-  outline-offset: 0px;
+  outline: 2px solid color-mix(in oklab, var(--blk-bg), transparent 70%);
+  outline-offset: 2px;
 }
 </style>
