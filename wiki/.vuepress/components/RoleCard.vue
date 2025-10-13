@@ -1,4 +1,14 @@
 <template>
+  <!--
+    RoleCard（角色卡片组件）
+    · 支持两种布局：
+      - 默认：左右布局（左头像，右信息）—— stacked = false
+      - 三行布局：标题（第1行）/ 基本信息（第2行）/ 底部条目（第3行）—— stacked = true 且 titleOnTop 可控制第1行是否单独显示
+
+    · 点击整卡跳转（可选）：传入 props.to 即可
+      - 站内路由（以 / 开头）使用 RouterLink
+      - 外链（http/https）使用 <a>
+  -->
   <component
     :is="to ? (isInner(to) ? 'RouterLink' : 'a') : 'div'"
     :class="['role-card', { stacked }]"
@@ -9,6 +19,7 @@
     tabindex="0"
     @keydown.enter.prevent="to && go(to)"
   >
+    <!-- ===================== 左右布局（保持老视觉，不用可忽略） ===================== -->
     <template v-if="!stacked">
       <div class="left">
         <img
@@ -18,22 +29,23 @@
           alt="角色立绘"
           loading="lazy"
         />
-        <div class="extra">
-          <div v-if="abilities?.length" class="abilities">
-            <b>能力：</b>
-            <ul>
-              <li v-for="(a, i) in abilities" :key="i">
-                <template v-if="isLinkObj(a)">
-                  <a :href="a.href" @click.stop>{{ a.text }}</a >
-                </template>
-                <template v-else>{{ a }}</template>
-              </li>
-            </ul>
-          </div>
 
-          <div v-if="summary" class="summary">
-            <b>简介：</b>
-            <p>{{ summary }}</p >
+        <!-- 左侧下方补充信息区：你可以放入 bottomItems 的第一个分组，或直接不显示 -->
+        <div class="extra" v-if="bottomItems?.length">
+          <!-- 仅渲染第一个分组作为示例；如需全部可自行改为 v-for -->
+          <div class="bottom-item" v-if="bottomItems[0]">
+            <b>{{ bottomItems[0].label || '补充' }}：</b>
+            <template v-if="Array.isArray(bottomItems[0].list)">
+              <ul>
+                <li v-for="(a, i) in bottomItems[0].list" :key="i">
+                  <template v-if="isLinkObj(a)">
+                    <a :href="a.href" @click.stop>{{ a.text }}</a >
+                  </template>
+                  <template v-else>{{ a }}</template>
+                </li>
+              </ul>
+            </template>
+            <p v-else-if="bottomItems[0].content">{{ bottomItems[0].content }}</p >
           </div>
         </div>
       </div>
@@ -46,50 +58,22 @@
           <template v-else>{{ title }}</template>
         </h2>
 
+        <!-- 第 2 行信息：使用 metaFields，只有你提供的才显示 -->
         <ul class="meta">
-          <li v-if="alias">
-            <span class="k">别名</span>
+          <li v-for="(m, idx) in metaFields" :key="idx">
+            <span class="k">{{ m.label }}</span>
             <span class="v">
-              <template v-if="isLinkObj(alias)">
-                <a :href="alias.href" @click.stop>{{ alias.text }}</a >
+              <template v-if="isLinkObj(m.value)">
+                <a :href="m.value.href" @click.stop>{{ m.value.text }}</a >
               </template>
-              <template v-else>{{ alias }}</template>
-            </span>
-          </li>
-
-          <li v-if="faction">
-            <span class="k">阵营</span>
-            <span class="v">
-              <template v-if="isLinkObj(faction)">
-                <a :href="faction.href" @click.stop>{{ faction.text }}</a >
-              </template>
-              <template v-else>{{ faction }}</template>
-            </span>
-          </li>
-
-          <li v-if="status">
-            <span class="k">状态</span>
-            <span class="v">
-              <template v-if="isLinkObj(status)">
-                <a :href="status.href" @click.stop>{{ status.text }}</a >
-              </template>
-              <template v-else>{{ status }}</template>
-            </span>
-          </li>
-
-          <li v-if="firstAppearance">
-            <span class="k">出场</span>
-            <span class="v">
-              <template v-if="isLinkObj(firstAppearance)">
-                <a :href="firstAppearance.href" @click.stop>{{ firstAppearance.text }}</a >
-              </template>
-              <template v-else>{{ firstAppearance }}</template>
+              <template v-else>{{ m.value }}</template>
             </span>
           </li>
         </ul>
       </div>
     </template>
 
+    <!-- ===================== 三行布局：标题 / 信息 / 底部条目 ===================== -->
     <template v-else>
       <!-- 第 1 行：标题整行（仅在 titleOnTop=true 时渲染） -->
       <h2 v-if="titleOnTop" class="title title-top">
@@ -99,7 +83,7 @@
         <template v-else>{{ title }}</template>
       </h2>
 
-      <!-- 第 2 行：图片 + 基本信息 -->
+      <!-- 第 2 行：图片 + 基本信息（根据 showTitleInsideTop 控制标题是否出现在这里） -->
       <div class="top" :class="{ 'has-title-on-top': titleOnTop }">
         <img
           v-if="avatar"
@@ -109,7 +93,7 @@
           loading="lazy"
         />
         <div class="basic">
-          <!-- 若标题已在第一行，则此处不再显示 -->
+          <!-- 若标题没放在第 1 行，这里显示标题 -->
           <h2 v-if="showTitleInsideTop" class="title">
             <template v-if="isLinkObj(title)">
               <a :href="title.href" @click.stop>{{ title.text }}</a >
@@ -117,67 +101,40 @@
             <template v-else>{{ title }}</template>
           </h2>
 
+          <!-- 关键信息（可自由增删），只显示你传入的 metaFields -->
           <ul class="meta">
-            <li v-if="alias">
-              <span class="k">别名</span>
+            <li v-for="(m, idx) in metaFields" :key="idx">
+              <span class="k">{{ m.label }}</span>
               <span class="v">
-                <template v-if="isLinkObj(alias)">
-                  <a :href="alias.href" @click.stop>{{ alias.text }}</a >
+                <template v-if="isLinkObj(m.value)">
+                  <a :href="m.value.href" @click.stop>{{ m.value.text }}</a >
                 </template>
-                <template v-else>{{ alias }}</template>
-              </span>
-            </li>
-
-            <li v-if="faction">
-              <span class="k">阵营</span>
-              <span class="v">
-                <template v-if="isLinkObj(faction)">
-                  <a :href="faction.href" @click.stop>{{ faction.text }}</a >
-                </template>
-                <template v-else>{{ faction }}</template>
-              </span>
-            </li>
-
-            <li v-if="status">
-              <span class="k">状态</span>
-              <span class="v">
-                <template v-if="isLinkObj(status)">
-                  <a :href="status.href" @click.stop>{{ status.text }}</a >
-                </template>
-                <template v-else>{{ status }}</template>
-              </span>
-            </li>
-
-            <li v-if="firstAppearance">
-              <span class="k">出场</span>
-              <span class="v">
-                <template v-if="isLinkObj(firstAppearance)">
-                  <a :href="firstAppearance.href" @click.stop>{{ firstAppearance.text }}</a >
-                </template>
-                <template v-else>{{ firstAppearance }}</template>
+                <template v-else>{{ m.value }}</template>
               </span>
             </li>
           </ul>
         </div>
       </div>
 
-      <!-- 第 3 行：能力 + 简介 -->
-      <div class="bottom">
-        <div v-if="abilities?.length" class="abilities">
-          <b>能力：</b>
-          <ul>
-            <li v-for="(a, i) in abilities" :key="i">
-              <template v-if="isLinkObj(a)">
-                <a :href="a.href" @click.stop>{{ a.text }}</a >
-              </template>
-              <template v-else>{{ a }}</template>
-            </li>
-          </ul>
-        </div>
+      <!-- 第 3 行：底部分组条目（完全自定义的区块，可任意增删改名） -->
+      <div class="bottom" v-if="bottomItems?.length">
+        <div class="bottom-item" v-for="(sec, i) in bottomItems" :key="i">
+          <b v-if="sec.label">{{ sec.label }}：</b>
 
-        <div v-if="summary" class="summary">
-          <b>简介：</b>
-          <p>{{ summary }}</p >
+          <!-- 列表型条目（如“能力：·飞行 ·火球 ·治疗”） -->
+          <template v-if="Array.isArray(sec.list)">
+            <ul>
+              <li v-for="(a, j) in sec.list" :key="j">
+                <template v-if="isLinkObj(a)">
+                  <a :href="a.href" @click.stop>{{ a.text }}</a >
+                </template>
+                <template v-else>{{ a }}</template>
+              </li>
+            </ul>
+          </template>
+
+          <!-- 文本型条目（如“简介：她是……”） -->
+          <p v-else-if="sec.content">{{ sec.content }}</p >
         </div>
       </div>
     </template>
@@ -185,42 +142,69 @@
 </template>
 
 <script setup lang="ts">
-/*
-  组件名：RoleCard
-  功能概述：
-    - 渲染一个角色信息卡片，可选择左右布局或上下分段布局。
-    - 若传入 props.to，则整卡可点击跳转；站内路径使用 RouterLink，外链使用 <a>。
-    - 头像图片自动适配部署 base（含 GitHub Pages 子路径）。
-*/
-type MaybeLink = string | { text: string; href: string }
+/**
+ * ===================== 可视参数（props）—— 只保留新功能 =====================
+ *
+ * 你只需要传这些字段：
+ * - title:         标题（可为字符串，或 { text, href } 链接对象）
+ * - avatar:        头像图片（字符串路径，/ 开头会按 base 补全）
+ * - to:            整卡点击跳转（站内以 / 开头，外链 http/https）
+ *
+ * - stacked:       是否启用“三行布局”（默认 false 为左右布局）
+ * - titleOnTop:    三行布局下，标题是否独占第 1 行（默认 false）
+ *
+ * - width / height:      卡片整体宽高（数值，单位 px）
+ * - avatarWidth / avatarHeight: 头像盒宽高（数值，单位 px）
+ *
+ * - metaFields:    第 2 行信息：数组，每项 { label: string, value: string | LinkObj }
+ *                  仅渲染你提供的项，可任意增删顺序
+ * - bottomItems:   第 3 行分组区块：数组，每项 { label?: string, content?: string, list?: (string | LinkObj)[] }
+ *                  只渲染存在的字段，可任意增删改名
+ *
+ * LinkObj 结构: { text: string, href: string }
+ */
+
+type LinkObj = { text: string; href: string }
+type MaybeLink = string | LinkObj
+
+type MetaField = { label: string; value: MaybeLink }
+type BottomItem = {
+  label?: string
+  content?: string
+  list?: MaybeLink[]
+}
 
 const props = withDefaults(defineProps<{
   title: MaybeLink
   avatar?: string
-  alias?: MaybeLink
-  faction?: MaybeLink
-  status?: MaybeLink
-  firstAppearance?: MaybeLink
-  abilities?: MaybeLink[]
-  summary?: string
   to?: string
+
+  /* —— 布局控制 —— */
+  stacked?: boolean
+  titleOnTop?: boolean
+
+  /* —— 尺寸（px）—— */
   width?: number
   height?: number
   avatarWidth?: number
   avatarHeight?: number
-  stacked?: boolean
-  /** ★ 新增：标题是否单独占据第 1 行（仅 stacked 模式生效） */
-  titleOnTop?: boolean
+
+  /* —— 数据 —— */
+  metaFields?: MetaField[]     // ← 第 2 行关键信息（只渲染你提供的项）
+  bottomItems?: BottomItem[]   // ← 第 3 行分组条目（可自由增删改名）
 }>(), {
   width: 220,
   height: 330,
-  avatarWidth: 100,
-  avatarHeight: 150,
+  avatarWidth: 90,
+  avatarHeight: 135,
   stacked: false,
   titleOnTop: false,
+  metaFields: () => [],       // 默认空
+  bottomItems: () => [],      // 默认空
 })
 
-const isLinkObj = (v: unknown): v is { text: string; href: string } =>
+/* =============== 工具函数（无需改动） =============== */
+const isLinkObj = (v: unknown): v is LinkObj =>
   !!v && typeof v === 'object' && 'text' in (v as any) && 'href' in (v as any)
 
 const isInner = (link?: string) => !!link && link.startsWith('/')
@@ -237,6 +221,15 @@ function imgUrl(u?: string) {
   return u.startsWith('/') ? withBase(u) : u
 }
 
+/**
+ * =============== 外观可调（CSS 变量） ===============
+ * · 你可以在使用组件时通过内联 style 或外层选择器覆写以下变量：
+ *   --avatar-w / --avatar-h / --avatar-pos
+ *   --card-title-size / --card-title-color / --card-title-align / --card-title-gap
+ *   --card-meta-size / --card-meta-color / --card-meta-align / --card-meta-line-height / --card-meta-gap
+ *   --card-summary-size / --card-summary-color / --card-summary-align / --card-summary-gap
+ *   --card-bottom-bg / --card-bottom-bg-dark
+ */
 const cardStyle = {
   width: `${props.width}px`,
   height: `${props.height}px`,
@@ -245,15 +238,14 @@ const cardStyle = {
   '--avatar-pos': '50% 50%',
 } as Record<string, string>
 
-const { stacked, titleOnTop } = props
-
-/** ★ 计算：是否在「图+基本信息」区域里显示标题 */
+/** 三行模式下，是否在第 2 行中显示标题（当 titleOnTop=false 时为 true） */
+const { stacked, titleOnTop, metaFields, bottomItems } = props
 const showTitleInsideTop = !(stacked && titleOnTop)
 </script>
 
 <style scoped>
 /* ===========================
-   1) 卡片整体容器（固定宽高）
+   1) 卡片容器（可改圆角/阴影/边框/背景）
    =========================== */
 .role-card{
   display: grid;
@@ -261,12 +253,15 @@ const showTitleInsideTop = !(stacked && titleOnTop)
   grid-template-rows: auto;
   gap: 12px 16px;
   padding: 14px;
+
+  /* 🟡 外框风格（亮色）*/
   border: 1px solid var(--c-border, #e5e7eb);
   background: var(--vp-c-bg-soft, var(--c-bg, #fff));
   border-radius: 14px;
   box-shadow: 0 2px 12px rgba(0,0,0,.05);
-  text-decoration: none;
+
   color: var(--c-text, #111);
+  text-decoration: none;
   overflow: hidden;
   transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
 }
@@ -276,7 +271,7 @@ const showTitleInsideTop = !(stacked && titleOnTop)
   border-color: var(--c-border, #d6dee6);
 }
 
-/* 暗色主题适配 */
+/* 🌚 暗色主题 */
 html[data-theme="dark"] .role-card{
   border-color: #333;
   background: var(--vp-c-bg-soft, #0b0f19);
@@ -284,7 +279,9 @@ html[data-theme="dark"] .role-card{
 }
 
 /* ===========================
-   2) 左列：图片 + 额外信息（能力/简介）
+   2) 左列（头像 + 可放少量补充）
+   - 可调头像尺寸：--avatar-w / --avatar-h
+   - 可调头像裁剪重心：--avatar-pos (如 '50% 35%')
    =========================== */
 .left{
   display: flex;
@@ -294,8 +291,8 @@ html[data-theme="dark"] .role-card{
 }
 
 .avatar{
-  width: 100px;
-  height: 150px;
+  width: var(--avatar-w, 90px);
+  height: var(--avatar-h, 135px);
   object-fit: cover;
   object-position: var(--avatar-pos, 50% 50%);
   background: #f2f3f5;
@@ -309,23 +306,16 @@ html[data-theme="dark"] .role-card{
   max-width: 220px;
 }
 
-.abilities ul{
-  margin: 6px 0 0 16px;
-}
-.summary{
-  margin-top: 6px;
-}
-.summary p{
-  margin: 2px 0 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  line-clamp: 3;
-}
+.bottom-item { margin-top: 4px; }
+.bottom-item b { display: inline-block; margin-right: 4px; }
+.bottom-item ul { margin: 4px 0 0 16px; }
+.bottom-item p { display: inline; }
 
 /* ===========================
-   3) 右列：关键信息（单项纵排）
+   3) 右列：标题 + 关键信息（meta）
+   - 调整标题大小：.title { font-size }
+   - 调整标题上下间距：margin
+   - 调整信息行距：--card-meta-line-height（或 .meta li 的 line-height）
    =========================== */
 .right{
   min-width: 0;
@@ -335,9 +325,9 @@ html[data-theme="dark"] .role-card{
 }
 
 .title{
-  font-size: 20px;
-  line-height: 1.2;
-  margin: 2px 0 10px;
+  font-size: 20px;     /* ← 调标题字号 */
+  line-height: 1;    /* ← 调标题行高 */
+  margin: 0px 0 0px;  /* ← 调标题与下方间距 */
   font-weight: 700;
 }
 .title a{
@@ -348,28 +338,35 @@ html[data-theme="dark"] .role-card{
   text-decoration: none;
 }
 
+/* 关键信息（第 2 行） */
 .meta{
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--card-meta-gap, 8px);         /* ← 调整每两条信息之间的间距 */
   list-style: none;
   padding: 0;
   margin: 0;
+  font-size: var(--card-meta-size, 0.85rem); /* ← 调整体字号 */
+  color: var(--card-meta-color, inherit);    /* ← 调整颜色（默认继承主题色） */
 }
 .meta li{
   display: flex;
   align-items: baseline;
   gap: 6px;
-  line-height: 1.5;
+  line-height: var(--card-meta-line-height, 1.2); /* ← 调每一行的行高 */
 }
 .meta .k{
   flex: none;
   font-weight: 600;
-  color: var(--c-text-light, #65758b);
+  color: var(--c-text-light, #65758b); /* 键名颜色 */
+}
+html[data-theme="dark"] .role-card .meta .k{
+  color: var(--c-text-light, #a8b3cf); /* 暗色下键名颜色 */
 }
 .meta .v{
   flex: 1;
   min-width: 0;
+  color: inherit;
 }
 .meta .v a{
   color: var(--c-brand, #3eaf7c);
@@ -380,12 +377,26 @@ html[data-theme="dark"] .role-card{
 }
 
 /* ===========================
-   4) 上下分段布局覆盖（stacked）
+   4) 三行布局（stacked 模式）
+   - 第 1 行标题样式：.title-top
+   - 第 2 行信息容器：.top / .basic
+   - 第 3 行分组条目：.bottom / .bottom-item
    =========================== */
 .role-card.stacked{
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 12px; /* ← 第 1/2/3 行之间的整体垂直间距 */
+}
+.role-card.stacked .title-top{
+  margin: 2px 0 8px;                      /* ← 标题与第2行间距 */
+  margin-bottom: var(--card-title-gap, 0px);
+  line-height: 1.2;
+  font-weight: 700;
+
+  /* 也支持 CSS 变量重写以下属性 */
+  font-size: var(--card-title-size, 1rem);
+  color: var(--card-title-color, inherit);
+  text-align: var(--card-title-align, center);
 }
 .role-card.stacked .top{
   display: flex;
@@ -395,56 +406,29 @@ html[data-theme="dark"] .role-card{
 .role-card.stacked .basic{
   flex: 1;
   min-width: 0;
+  font-size: var(--card-meta-size, 0.85rem);
+  color: var(--card-meta-color, inherit);
+  text-align: var(--card-meta-align, left);
 }
 .role-card.stacked .bottom{
-  display: block;
+  /* 第 3 行整体背景色 —— 你可以改成品牌色块 */
+  background: var(--card-bottom-bg, rgba(0, 0, 0, 0.05));
+  border-radius: 8px;
+  padding: var(--card-summary-gap, 8px);     /* ← 调整第 3 行内边距 */
+  font-size: var(--card-summary-size, 0.85rem);
+  color: var(--card-summary-color, inherit);
+  text-align: var(--card-summary-align, left);
+  margin-top: var(--card-section-gap, 0px); 
 }
-
-/* ★ 新增：三行模式时，顶行标题样式与间距 */
-.role-card.stacked .title-top{
-  margin: 2px 0 8px;
-  line-height: 1.2;
-  font-weight: 700;
-}
-.role-card.stacked .top.has-title-on-top{
-  margin-top: 2px;
+html[data-theme="dark"] .role-card.stacked .bottom {
+  background: var(--card-bottom-bg-dark, rgba(255, 255, 255, 0.08));
 }
 
 /* ===========================
-   5) 交互细节与字号缩放
+   5) 交互
    =========================== */
-.role-card a{
-  cursor: pointer;
-}
+.role-card a{ cursor: pointer; }
 
-/* ============================================================
-   🎨 三行模式（stacked + titleOnTop）字体样式个性化控制
-   ============================================================ */
-
-/* 第1行：标题 */
-.role-card.stacked .title-top {
-  font-size: var(--card-title-size, 1.2rem);    /* 字体大小 */
-  color: var(--card-title-color, #111);       /* 字体颜色 */
-  text-align: var(--card-title-align, center);  /* 对齐方式：left / center / right */
-  margin: 0px 0px 0px;
-  margin-bottom: var(--card-title-gap, -6px); /* 默认10px，可自由改 */
-}
-
-/* 第2行：关键信息（meta） */
-.role-card.stacked .basic {
-  font-size: var(--card-meta-size, 0.8rem);
-  color: var(--card-meta-color, #333);
-  text-align: var(--card-meta-align, left);
-}
-
-/* 第3行：能力 & 简介 */
-.role-card.stacked .bottom {
-  font-size: var(--card-summary-size, 0.8rem);
-  color: var(--card-summary-color, #444);
-  text-align: var(--card-summary-align, left);
-}
-
-.role-card { font-size: 0.7rem; }
-.title { font-size: 13px; }
-.meta { gap: 8px; }
+/* （可选）统一缩放整卡内默认字体，不影响自定义变量 */
+.role-card { font-size: 0.8rem; }
 </style>
