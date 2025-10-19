@@ -64,6 +64,18 @@
   }"
 />
 </div>
+<!-- 问答卡片（无头像，只显示问答） -->
+<ClientOnly>
+  <PersonaQACard sourceId="qa-bank" :allowNext="true" :randomOnMount="true" />
+</ClientOnly>
+<!-- 同页问答库：用 textarea 承载 JSON -->
+<textarea id="qa-bank" style="display:none;">
+[
+  { "q": "你会救小猫吗？", "a": "可爱的就会。" },
+  { "q": "你的弱点是什么？", "a": "我不喜欢让朋友失望。" },
+  { "q": "遇到困难会怎么做？", "a": "先冷静，再分析，再行动。" }
+]
+</textarea>
 <RandomCard /></div></template>
 
 

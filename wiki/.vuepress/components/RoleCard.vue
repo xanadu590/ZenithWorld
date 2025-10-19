@@ -389,7 +389,7 @@ html[data-theme="dark"] .role-card .meta .k{
 }
 .role-card.stacked .title-top{
   margin: 2px 0 8px;                      /* ← 标题与第2行间距 */
-  margin-bottom: var(--card-title-gap, 0px);
+  margin-bottom: var(--card-title-gap, -5px);
   line-height: 1.2;
   font-weight: 700;
 

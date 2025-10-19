@@ -12,6 +12,8 @@ import RandomSidebar from './components/RandomSidebar.vue'
 import LeadBlock from './components/LeadBlock.vue'
 import BlackoutText from './components/BlackoutText.vue'
 import MapJump from './components/MapJump.vue'
+import PersonaQACard from './components/PersonaQACard.vue'
+
 
 export type AISetting = {
   show: boolean
@@ -61,6 +63,9 @@ export default defineClientConfig({
     app.component("BlackoutText", BlackoutText)
 
     app.component("MapJump", MapJump)
+
+    app.component("PersonaQACard", PersonaQACard)
+    
 
   },
 
