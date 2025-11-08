@@ -22,13 +22,6 @@ export default hopeTheme({
 
   // 文档源目录（相对仓库根路径）
   docsDir: "wiki",
-
-  navbarLayout: {
-    start: ['Brand'],
-    center: ['Links'],
-    end: ['Search'], // ✅ 只保留搜索，其它交给汉堡菜单
-  },
-  // 如果你之前单独开启了 repo / outlook / language，也可以显式隐藏
   
   locales: {
     "/en/": {
