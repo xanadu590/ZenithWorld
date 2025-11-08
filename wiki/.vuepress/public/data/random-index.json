@@ -43,7 +43,7 @@
     {
       "title": "灵动骑士",
       "path": "/demo-0.0.1/character/superhero/character-EtherealKnight.html",
-      "excerpt": "以速度与直觉见长的近战守护者。"
+      "excerpt": "<div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombatSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\"/images/EtherealKni"
     },
     {
       "title": "灵动骑士",
@@ -71,34 +71,64 @@
       "excerpt": "“光之所在，即是吾之归途。”"
     },
     {
-      "title": "[赤听][HearTone]",
+      "title": "赤听",
       "path": "/demo-0.0.1/character/superhero/character-HearTone.html",
-      "excerpt": "赤听HearTone 基本信息 姓名： <RandomSidebar :count=\"6\" :sticky=\"true\" /"
+      "excerpt": "<div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\"/images/EtherealKnigh"
     },
     {
-      "title": "[幻绘][Illustra]",
+      "title": "赤听",
+      "path": "/demo-0.0.1/character/superhero/character-HearTone.html",
+      "excerpt": "“我确实说过不会对女人出手……但我的意思并不是让你把我变成女人！你这混账神明，快把我变回去！”"
+    },
+    {
+      "title": "幻绘星",
       "path": "/demo-0.0.1/character/superhero/character-Illustra.html",
-      "excerpt": "幻绘Illustra 基本信息 姓名：高乐乐"
+      "excerpt": "<div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\"/images/EtherealKnigh"
     },
     {
-      "title": "[月者五][M-A-Y]",
+      "title": "幻绘星",
+      "path": "/demo-0.0.1/character/superhero/character-Illustra.html",
+      "excerpt": "“啊啊！烦死了烦死了！我爸根的真的不想出来营业啊！”"
+    },
+    {
+      "title": "月五",
       "path": "/demo-0.0.1/character/superhero/character-M-A-Y.html",
-      "excerpt": "月者五MAY 基本信息 姓名：梅小满"
+      "excerpt": "<div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\"/images/EtherealKnigh"
+    },
+    {
+      "title": "月五",
+      "path": "/demo-0.0.1/character/superhero/character-M-A-Y.html",
+      "excerpt": "“瓦尔德！开庭！行于汝应当审判！罪于汝该当裁决！”"
     },
     {
       "title": "[天灾][Scourge]",
       "path": "/demo-0.0.1/character/superhero/character-Scourge.html",
-      "excerpt": "天灾Scourge 基本信息 姓名：尹守 性别：男 英雄名：天灾（Scourge 昵称：后宫男 年龄：26 种族：人类 出生年月：2004年5月20日 职业：偶像经纪人 学历：高中 加入过的团体：世界英雄（World Hero，九江联盟 外"
+      "excerpt": "天灾Scourge 基本信息 <LeadBlock quote=\"啊哈哈！我很强的……干嘛！不要那样看着我！\" / 姓名：尹守 性别：男 英雄名：天灾（Scourge 昵称：后宫男 年龄：26 种族：人类 出生年月：2004年5月20日 职"
     },
     {
-      "title": "[警钟][StrikeClock]",
+      "title": "[天灾][Scourge]",
+      "path": "/demo-0.0.1/character/superhero/character-Scourge.html",
+      "excerpt": "“啊哈哈！我很强的……干嘛！不要那样看着我！”"
+    },
+    {
+      "title": "警钟",
       "path": "/demo-0.0.1/character/superhero/character-StrikeClock.html",
-      "excerpt": "警钟StrikeClock 基本信息 姓名：钟立明"
+      "excerpt": "<div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\"/images/EtherealKnigh"
     },
     {
-      "title": "[巫师希望][WizardHope]",
+      "title": "警钟",
+      "path": "/demo-0.0.1/character/superhero/character-StrikeClock.html",
+      "excerpt": "“嗯，对于成为救世主这件事，我并不是自愿的，只是……那些无法自救的人，不应被抛弃。”"
+    },
+    {
+      "title": "巫师希望",
       "path": "/demo-0.0.1/character/superhero/character-WizardHope.html",
-      "excerpt": "巫师希望WizardHope 基本信息 姓名："
+      "excerpt": "<div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\"/images/EtherealKnigh"
+    },
+    {
+      "title": "巫师希望",
+      "path": "/demo-0.0.1/character/superhero/character-WizardHope.html",
+      "excerpt": "“生活也许很艰难，但是有家人和朋友在一起，我就有勇气面对。”"
     },
     {
       "title": "超级英雄",

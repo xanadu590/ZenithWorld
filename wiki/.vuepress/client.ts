@@ -13,6 +13,8 @@ import LeadBlock from './components/LeadBlock.vue'
 import BlackoutText from './components/BlackoutText.vue'
 import MapJump from './components/MapJump.vue'
 import PersonaQACard from './components/PersonaQACard.vue'
+import HamburgerMenu from './components/HamburgerMenu.vue'
+
 
 
 export type AISetting = {
@@ -66,9 +68,9 @@ export default defineClientConfig({
 
     app.component("PersonaQACard", PersonaQACard)
     
-
+    app.component("HamburgerMenu", HamburgerMenu)
   },
 
   // 右上角悬浮的总开关
-  rootComponents: [h(AIToggle)],
+  rootComponents: [HamburgerMenu],
 })

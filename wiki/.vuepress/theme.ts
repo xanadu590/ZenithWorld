@@ -23,6 +23,13 @@ export default hopeTheme({
   // 文档源目录（相对仓库根路径）
   docsDir: "wiki",
 
+  navbarLayout: {
+    start: ['Brand'],
+    center: ['Links'],
+    end: ['Search'], // ✅ 只保留搜索，其它交给汉堡菜单
+  },
+  // 如果你之前单独开启了 repo / outlook / language，也可以显式隐藏
+  
   locales: {
     "/en/": {
       // 英文站导航栏
@@ -192,6 +199,10 @@ export default hopeTheme({
     icon: {
       prefix: "fa6-solid:", // 使用 Font Awesome 6 实心图标
     },
+
+    
+
+    
 
     // ✅ 渐进式 Web 应用（PWA）配置（如需离线与桌面安装功能）
     // 使用前请安装 @vuepress/plugin-pwa
