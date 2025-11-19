@@ -226,7 +226,7 @@ export function useRandomPool() {
 
     // 1) 优先用 vuepress base
     try {
-      const vueBase = withBase('/') // 例如 '/demo-0.0.1/' 或 '/'
+      const vueBase = withBase('/') // 例如 '/docs/' 或 '/'
       if (vueBase && vueBase !== '/') {
         return vueBase.replace(/\/$/, '') + path
       }

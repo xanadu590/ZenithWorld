@@ -16,22 +16,22 @@ highlights:
       - title: 角色总览
         icon: star
         details: 对本世界的传奇人物有个基本认知。
-        link: ./character/
+        link: ./world/characters/
 
       - title: 超级英雄
         icon: star
         details: 身负盛名、众心所向的英雄角色。
-        link: ./character/superhero/
+        link: ./world/characters/superhero/
 
       - title: 异常管理
         icon: star
         details: 由巅峰议会直接管辖的维稳组织。
-        link: ./character/
+        link: ./world/characters/
 
       - title: 神明代行
         icon: star
         details: 神明的从属，拥有分散的神权。
-        link: ./character/
+        link: ./world/characters/
 
   - header: 角色总览
     description: 这个世界是属于少数精英的世界，他们是舞台的主角。

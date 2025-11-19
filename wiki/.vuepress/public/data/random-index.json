@@ -2,137 +2,137 @@
   "pages": [
     {
       "title": "世界大事年表",
-      "path": "/demo-0.0.1/timeline.html",
+      "path": "/docs/timeline.html",
       "excerpt": "<WorldTimeline :items=\" { date: '2000年', title: '世纪末战争', detail: '五大势力首次交锋，世界秩序崩塌。\\n 123' }, { date: '2020年', title: '巅峰"
     },
     {
       "title": "[2][WizardHope]",
-      "path": "/demo-0.0.1/character/superhero/2.html",
+      "path": "/docs/world/characters/superhero/2.html",
       "excerpt": "2WizardHope 基本信息 姓名："
     },
     {
       "title": "[3][WizardHope]",
-      "path": "/demo-0.0.1/character/superhero/3.html",
+      "path": "/docs/world/characters/superhero/3.html",
       "excerpt": "3WizardHope 基本信息 姓名："
     },
     {
       "title": "[4][WizardHope]",
-      "path": "/demo-0.0.1/character/superhero/4.html",
+      "path": "/docs/world/characters/superhero/4.html",
       "excerpt": "4WizardHope 基本信息 姓名："
     },
     {
       "title": "[5][WizardHope]",
-      "path": "/demo-0.0.1/character/superhero/5.html",
+      "path": "/docs/world/characters/superhero/5.html",
       "excerpt": "5WizardHope 基本信息 姓名："
     },
     {
       "title": "[6][WizardHope]",
-      "path": "/demo-0.0.1/character/superhero/6.html",
+      "path": "/docs/world/characters/superhero/6.html",
       "excerpt": "6WizardHope 基本信息 姓名："
     },
     {
       "title": "[7][WizardHope]",
-      "path": "/demo-0.0.1/character/superhero/7.html",
+      "path": "/docs/world/characters/superhero/7.html",
       "excerpt": "7WizardHope 基本信息 姓名："
     },
     {
       "title": "[8][WizardHope]",
-      "path": "/demo-0.0.1/character/superhero/8.html",
+      "path": "/docs/world/characters/superhero/8.html",
       "excerpt": "8WizardHope 基本信息 姓名："
     },
     {
       "title": "灵动骑士",
-      "path": "/demo-0.0.1/character/superhero/character-EtherealKnight.html",
+      "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
       "excerpt": "<div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombatSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\"/images/EtherealKni"
     },
     {
       "title": "灵动骑士",
-      "path": "/demo-0.0.1/character/superhero/character-EtherealKnight.html",
+      "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
       "excerpt": "“绝世的容貌，高洁的灵魂，无缺的完人……咳咳，好吧，这句确实有点过了。”"
     },
     {
       "title": "灵动骑士",
-      "path": "/demo-0.0.1/character/superhero/character-EtherealKnight.html",
+      "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
       "excerpt": "“也许这份容貌……并不是赐福。”"
     },
     {
       "title": "灵动骑士",
-      "path": "/demo-0.0.1/character/superhero/character-EtherealKnight.html",
+      "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
       "excerpt": "“你说的这些，我一个字，都听不懂！”"
     },
     {
       "title": "灵动骑士",
-      "path": "/demo-0.0.1/character/superhero/character-EtherealKnight.html",
+      "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
       "excerpt": "“冰附魔接凯利河之鹰羽接魔力连击接斗志昂扬接剑己相随接利莫格剑芒接落雨三尺青锋！最后一击！梅尔美伦的跳斩！”"
     },
     {
       "title": "灵动骑士",
-      "path": "/demo-0.0.1/character/superhero/character-EtherealKnight.html",
+      "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
       "excerpt": "“光之所在，即是吾之归途。”"
     },
     {
       "title": "赤听",
-      "path": "/demo-0.0.1/character/superhero/character-HearTone.html",
+      "path": "/docs/world/characters/superhero/character-HearTone.html",
       "excerpt": "<div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\"/images/EtherealKnigh"
     },
     {
       "title": "赤听",
-      "path": "/demo-0.0.1/character/superhero/character-HearTone.html",
+      "path": "/docs/world/characters/superhero/character-HearTone.html",
       "excerpt": "“我确实说过不会对女人出手……但我的意思并不是让你把我变成女人！你这混账神明，快把我变回去！”"
     },
     {
       "title": "幻绘星",
-      "path": "/demo-0.0.1/character/superhero/character-Illustra.html",
+      "path": "/docs/world/characters/superhero/character-Illustra.html",
       "excerpt": "<div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\"/images/EtherealKnigh"
     },
     {
       "title": "幻绘星",
-      "path": "/demo-0.0.1/character/superhero/character-Illustra.html",
+      "path": "/docs/world/characters/superhero/character-Illustra.html",
       "excerpt": "“啊啊！烦死了烦死了！我爸根的真的不想出来营业啊！”"
     },
     {
       "title": "月五",
-      "path": "/demo-0.0.1/character/superhero/character-M-A-Y.html",
+      "path": "/docs/world/characters/superhero/character-M-A-Y.html",
       "excerpt": "<div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\"/images/EtherealKnigh"
     },
     {
       "title": "月五",
-      "path": "/demo-0.0.1/character/superhero/character-M-A-Y.html",
+      "path": "/docs/world/characters/superhero/character-M-A-Y.html",
       "excerpt": "“瓦尔德！开庭！行于汝应当审判！罪于汝该当裁决！”"
     },
     {
       "title": "[天灾][Scourge]",
-      "path": "/demo-0.0.1/character/superhero/character-Scourge.html",
+      "path": "/docs/world/characters/superhero/character-Scourge.html",
       "excerpt": "天灾Scourge 基本信息 <LeadBlock quote=\"啊哈哈！我很强的……干嘛！不要那样看着我！\" / 姓名：尹守 性别：男 英雄名：天灾（Scourge 昵称：后宫男 年龄：26 种族：人类 出生年月：2004年5月20日 职"
     },
     {
       "title": "[天灾][Scourge]",
-      "path": "/demo-0.0.1/character/superhero/character-Scourge.html",
+      "path": "/docs/world/characters/superhero/character-Scourge.html",
       "excerpt": "“啊哈哈！我很强的……干嘛！不要那样看着我！”"
     },
     {
       "title": "警钟",
-      "path": "/demo-0.0.1/character/superhero/character-StrikeClock.html",
+      "path": "/docs/world/characters/superhero/character-StrikeClock.html",
       "excerpt": "<div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\"/images/EtherealKnigh"
     },
     {
       "title": "警钟",
-      "path": "/demo-0.0.1/character/superhero/character-StrikeClock.html",
+      "path": "/docs/world/characters/superhero/character-StrikeClock.html",
       "excerpt": "“嗯，对于成为救世主这件事，我并不是自愿的，只是……那些无法自救的人，不应被抛弃。”"
     },
     {
       "title": "巫师希望",
-      "path": "/demo-0.0.1/character/superhero/character-WizardHope.html",
+      "path": "/docs/world/characters/superhero/character-WizardHope.html",
       "excerpt": "<div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\"/images/EtherealKnigh"
     },
     {
       "title": "巫师希望",
-      "path": "/demo-0.0.1/character/superhero/character-WizardHope.html",
+      "path": "/docs/world/characters/superhero/character-WizardHope.html",
       "excerpt": "“生活也许很艰难，但是有家人和朋友在一起，我就有勇气面对。”"
     },
     {
       "title": "超级英雄",
-      "path": "/demo-0.0.1/character/superhero/",
+      "path": "/docs/world/characters/superhero/",
       "excerpt": "超级英雄 超级英雄superhero是指拥有超凡能力，凭借强烈的正义感或使命感，以打击邪恶、保护民众为目标的正义人士。 警钟StrikeClock 灵动骑士EtherealKnight 天灾Scourge 赤听HearTone 月者五MAY"
     }
   ]

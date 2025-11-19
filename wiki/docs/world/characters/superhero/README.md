@@ -17,14 +17,14 @@ sidebar: false
 
 
 
-[superhero]: /demo-0.0.1/character/superhero/#超级英雄
-[EtherealKnight]: /demo-0.0.1/character/superhero/character-EtherealKnight.md
-[Scourge]: /demo-0.0.1/character/superhero/character-Scourge.md
-[HearTone]:/demo-0.0.1/character/superhero/character-HearTone.md
-[M-A-Y]:/demo-0.0.1/character/superhero/character-M-A-Y.md
-[StrikeClock]:/demo-0.0.1/character/superhero/character-StrikeClock.md
-[WizardHope]:/demo-0.0.1/character/superhero/character-WizardHope.md
-[Illustra]:/demo-0.0.1/character/superhero/character-Illustra.md
+[superhero]: /docs/world/characters/superhero/#超级英雄
+[EtherealKnight]: /docs/world/characters/superhero/character-EtherealKnight.md
+[Scourge]: /docs/world/characters/superhero/character-Scourge.md
+[HearTone]:/docs/world/characters/superhero/character-HearTone.md
+[M-A-Y]:/docs/world/characters/superhero/character-M-A-Y.md
+[StrikeClock]:/docs/world/characters/superhero/character-StrikeClock.md
+[WizardHope]:/docs/world/characters/superhero/character-WizardHope.md
+[Illustra]:/docs/world/characters/superhero/character-Illustra.md
 
 
 

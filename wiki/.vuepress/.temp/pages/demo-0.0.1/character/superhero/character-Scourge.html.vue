@@ -1,4 +1,4 @@
-<template><div><h1 id="天灾" tabindex="-1"><a class="header-anchor" href="#天灾"><span><RouteLink to="/demo-0.0.1/character/superhero/character-Scourge.html">天灾</RouteLink></span></a></h1>
+<template><div><h1 id="天灾" tabindex="-1"><a class="header-anchor" href="#天灾"><span><RouteLink to="/docs/world/characters/superhero/character-Scourge.html">天灾</RouteLink></span></a></h1>
 <h2 id="基本信息" tabindex="-1"><a class="header-anchor" href="#基本信息"><span>基本信息</span></a></h2>
 <hr>
 <LeadBlock quote="啊哈哈！我很强的……干嘛！不要那样看着我！" /><ul>

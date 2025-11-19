@@ -56,4 +56,4 @@ sidebar: false
 * 战友：无
 * 宿敌：秦烨（红皇帝）
 
-[Scourge]: /demo-0.0.1/character/superhero/character-Scourge.md
+[Scourge]: /docs/world/characters/superhero/character-Scourge.md

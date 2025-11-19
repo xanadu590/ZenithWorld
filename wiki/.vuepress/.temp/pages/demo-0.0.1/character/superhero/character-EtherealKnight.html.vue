@@ -61,7 +61,7 @@
   <RelationGraph
     :height="420"
     :nodes="[ 
-      { id: 'ek', label: '灵动骑士', url: '/demo-0.0.1/character/superhero/character-EtherealKnight.html', image: '/images/EtherealKnightCombatSuit.jpg' },
+      { id: 'ek', label: '灵动骑士', url: '/docs/world/characters/superhero/character-EtherealKnight.html', image: '/images/EtherealKnightCombatSuit.jpg' },
       { id: 'sx', label: '舒雪' },
       { id: 'hn', label: '韩桉宁' }
     ]"
@@ -84,8 +84,8 @@
 </blockquote>
 <hr>
 <RelationCards :items='[
-  { "name":"尹守", "role":"朋友", "avatar":"/images/EtherealKnightCombatSuit.jpg", "link":"/demo-0.0.1/character/superhero/character-Scourge.md" },
-  { "name":"梅小满", "role":"朋友", "avatar":"/images/EtherealKnightCombatSuit.jpg", "link":"/demo-0.0.1/character/superhero/character-M-A-Y.md" }
+  { "name":"尹守", "role":"朋友", "avatar":"/images/EtherealKnightCombatSuit.jpg", "link":"/docs/world/characters/superhero/character-Scourge.md" },
+  { "name":"梅小满", "role":"朋友", "avatar":"/images/EtherealKnightCombatSuit.jpg", "link":"/docs/world/characters/superhero/character-M-A-Y.md" }
 ]' />
 <h1 id="人物故事" tabindex="-1"><a class="header-anchor" href="#人物故事"><span>人物故事</span></a></h1>
 <hr>

@@ -19,12 +19,12 @@
     title="韩桉宁"
     avatar="/images/roles/han-anning.png"
     :abilities="['支援']"
-    to="/demo-0.0.1/character/superhero/1.html"
+    to="/docs/world/characters/superhero/1.html"
   />
   <RoleCard
   :stacked="true"
   :titleOnTop="true"
-  to="/demo-0.0.1/character/superhero/character-EtherealKnight.html"
+  to="/docs/world/characters/superhero/character-EtherealKnight.html"
   title="灵动骑士"
   avatar="/images/EtherealKnightCombatSuit.jpg"
   :metaFields="[

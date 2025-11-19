@@ -11,17 +11,17 @@ tagline: ZenithWorld,我正在创造的原创世界观百科
 actions:
   - text: 进入了解
     icon: lightbulb
-    link: ./demo-0.0.1/
+    link: ./docs/
     type: primary
 
   - text: 角色列表
-    link: ./demo-0.0.1/character/
+    link: ./docs/world/characters/
 
   - text: 时间线
-    link: ./demo-0.0.1/timeline.md
+    link: ./docs/timeline.md
 
   - text: 关系图谱
-    link: ./demo-0.0.1/characterline.md
+    link: ./docs/characterline.md
 
 features:
   - title: 信念与冲突
