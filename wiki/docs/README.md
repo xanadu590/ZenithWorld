@@ -26,7 +26,7 @@ highlights:
       - title: 异常管理
         icon: star
         details: 由巅峰议会直接管辖的维稳组织。
-        link: ./world/characters/
+        link: ./world/factions/official/AMA
 
       - title: 神明代行
         icon: star
@@ -62,3 +62,4 @@ highlights:
     image: /image/LOGO-influence.png
     bgImage: https://theme-hope-assets.vuejs.press/bg/4-light.svg
     bgImageDark: https://theme-hope-assets.vuejs.press/bg/4-dark.svg
+
