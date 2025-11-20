@@ -48,7 +48,7 @@ tag:
 
 ## 分类体系（13类）
 根据异常管理局的官方划分，超自然事物共分为十三类：
-1. [异常构造](/wiki/docs/world/concepts/isomer/)
+1. [异常构造](/docs/world/concepts/isomer/)
 2. 历史记录
 3. 宗教传承
 4. 东方神秘
