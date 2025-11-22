@@ -17,6 +17,7 @@
     :style="cardStyle"
     role="link"
     tabindex="0"
+    ref="cardRef"
     @keydown.enter.prevent="to && go(to)"
   >
     <!-- ===================== 左右布局（保持老视觉，不用可忽略） ===================== -->
@@ -117,7 +118,7 @@
       </div>
 
       <!-- 第 3 行：底部分组条目（完全自定义的区块，可任意增删改名） -->
-      <div class="bottom" v-if="bottomItems?.length">
+      <div class="bottom" v-if="bottomItems?.length" ref="bottomRef">
         <div class="bottom-item" v-for="(sec, i) in bottomItems" :key="i">
           <b v-if="sec.label">{{ sec.label }}：</b>
 
@@ -210,6 +211,8 @@ const isLinkObj = (v: unknown): v is LinkObj =>
 const isInner = (link?: string) => !!link && link.startsWith('/')
 
 import { withBase } from '@vuepress/client'
+import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
+
 const go = (href: string) => {
   const url = isInner(href) ? withBase(href) : href
   window.location.assign(url)
@@ -241,6 +244,111 @@ const cardStyle = {
 /** 三行模式下，是否在第 2 行中显示标题（当 titleOnTop=false 时为 true） */
 const { stacked, titleOnTop, metaFields, bottomItems } = props
 const showTitleInsideTop = !(stacked && titleOnTop)
+
+/* ==================== 触底检测 + 自动省略号 ==================== */
+
+/** 整卡引用 & 底部区引用 */
+const cardRef = ref<any | null>(null)
+const bottomRef = ref<HTMLElement | null>(null)
+
+/** 记录最后一个段落的完整文本，只截断显示，不改数据源 */
+const fullBottomText = ref<string | null>(null)
+
+/** 希望与卡片底部至少保留的安全距离（px） */
+const SAFE_BOTTOM_GAP = 12
+
+/** 兼容 <component> / RouterLink 拿到真实 DOM 元素 */
+const getCardElement = (): HTMLElement | null => {
+  const raw = cardRef.value
+  if (!raw) return null
+  // 直接就是 DOM
+  if (raw instanceof HTMLElement) return raw
+  // 组件实例（如 RouterLink），取 $el
+  if ((raw as any).$el instanceof HTMLElement) return (raw as any).$el
+  return null
+}
+
+const adjustBottomText = async () => {
+  await nextTick()
+
+  // 只在三行布局时处理
+  if (!props.stacked) return
+
+  const cardEl = getCardElement()
+  const bottomEl = bottomRef.value
+  if (!cardEl || !bottomEl) return
+
+  // 查找 bottom 内最后一个 <p>，一般就是“简介：xxx”
+  const lastP = bottomEl.querySelector('p:last-of-type') as HTMLElement | null
+  if (!lastP) return
+
+  // 首次记录原始文本
+  if (fullBottomText.value === null) {
+    fullBottomText.value = lastP.textContent || ''
+  }
+
+  // 每次计算前先还原
+  lastP.textContent = fullBottomText.value || ''
+  await nextTick()
+
+  const cardRect = cardEl.getBoundingClientRect()
+  let bottomRect = bottomEl.getBoundingClientRect()
+
+  // 如果距离底部本来就够远，不用截断
+  if (cardRect.bottom - bottomRect.bottom >= SAFE_BOTTOM_GAP) {
+    return
+  }
+
+  const text = fullBottomText.value || ''
+  let left = 0
+  let right = text.length
+
+  // 二分查找合适长度，确保不贴底
+  while (left < right) {
+    const mid = Math.floor((left + right) / 2)
+
+    const truncated =
+      text
+        .slice(0, mid)
+        .replace(/[，。！？,.!?\s]*$/, '') + '...'
+
+    lastP.textContent = truncated
+    await nextTick()
+
+    bottomRect = bottomEl.getBoundingClientRect()
+    const gap = cardRect.bottom - bottomRect.bottom
+
+    if (gap >= SAFE_BOTTOM_GAP) {
+      // 已经离底部够远，可以尝试多显示一点字
+      left = mid + 1
+    } else {
+      // 还是太靠近底部，继续缩短
+      right = mid
+    }
+  }
+}
+
+onMounted(() => {
+  adjustBottomText()
+  // 图片加载完成后高度会变，再跑一次
+  window.addEventListener('load', adjustBottomText)
+  window.addEventListener('resize', adjustBottomText)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('load', adjustBottomText)
+  window.removeEventListener('resize', adjustBottomText)
+})
+
+/** 当底部内容变化（例如路由切换到另一张卡）时，重置并重新计算 */
+watch(
+  () => props.bottomItems,
+  () => {
+    fullBottomText.value = null
+    adjustBottomText()
+  },
+  { deep: true }
+)
 </script>
 
 <style scoped>

@@ -2,9 +2,7 @@
 <AIMedia src="/images/EtherealKnightCombatSuit.jpg" caption="战斗状态"/>
 <AIMedia src="/images/EtherealKnightEverydayWear.jpg" caption="常服"/>
 </div>
-<div style="text-align:left">
 <figure><img src="/images/EtherealKnightCombatSuit.jpg" alt="宇文南城001" width="180" tabindex="0" loading="lazy"><figcaption>宇文南城001</figcaption></figure>
-</div>
 <h1 id="基本信息" tabindex="-1"><a class="header-anchor" href="#基本信息"><span>基本信息</span></a></h1>
 <hr>
 <LeadBlock quote="绝世的容貌，高洁的灵魂，无缺的完人……咳咳，好吧，这句确实有点过了。" /><ul>

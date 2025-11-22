@@ -16,9 +16,9 @@ isOriginal: true
 <AIMedia src="/images/EtherealKnightEverydayWear.jpg" caption="常服"/>
 </div>
 
-::: left
+
 ![宇文南城001 =180x](/images/EtherealKnightCombatSuit.jpg)
-:::
+
 
 # 基本信息
 ---
