@@ -85,6 +85,7 @@ export default hopeTheme({
     figure: true,        // 启用图片 <figure> 包裹
     gfm: true,           // 启用 GitHub 风格 Markdown (GFM)
     imgLazyload: true,   // 图片懒加载
+    imgMark: true,       // 图片标记
     imgSize: true,       // 支持指定图片尺寸语法
     include: true,       // 支持 include 文件引入
     mark: true,          // 启用 ==高亮== 语法
