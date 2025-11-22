@@ -2,7 +2,9 @@
 <AIMedia src="/images/EtherealKnightCombatSuit.jpg" caption="战斗状态"/>
 <AIMedia src="/images/EtherealKnightEverydayWear.jpg" caption="常服"/>
 </div>
-<figure><img src="/images/EtherealKnightCombatSuit.jpg" alt="宇文南城001" width="180" tabindex="0" loading="lazy"><figcaption>战斗姿态</figcaption></figure>
+<div style="text-align:left">
+<figure><img src="/images/EtherealKnightCombatSuit.jpg" alt="宇文南城001" width="180" tabindex="0" loading="lazy"><figcaption>宇文南城001</figcaption></figure>
+</div>
 <h1 id="基本信息" tabindex="-1"><a class="header-anchor" href="#基本信息"><span>基本信息</span></a></h1>
 <hr>
 <LeadBlock quote="绝世的容貌，高洁的灵魂，无缺的完人……咳咳，好吧，这句确实有点过了。" /><ul>
@@ -106,7 +108,7 @@
 【黑蝮蛇】，武当山的弟子，他对于黑道有着不切实际的幻想，他妄图创造一个心中的理想国，在这个理想国，所有人都可以用拳头来为自己争理。因此，他在腾海市内部发掘打手，从腾海市外引入势力，并凭借强大的实力抢劫警察局，武装手下，最后在腾海市掀起混乱，砸摄像头，收保护费。如果遇见警察，黑腹蛇就会让手下躲好，自己冲过来以强大的实力解决，一时间，警察还真对他毫无办法。<br>
 与此同时，宇文南城一行人也在调查黑腹蛇。<br>
 黑腹蛇是腾海市前黑社会首领徐天虎的弟弟，他本名徐空龙，极其仰慕他的哥哥，但是就是这个他心目中的英雄，却是一个恶贯满盈的大坏蛋，最终在扫黑行动中被一网打尽。在徐天虎被执行死刑后，他便消失的无影无踪，直到再出现，人们才知道这些年他去了哪里——武当山，他拜入武当山成为了那里地弟子，山中的清修并未让他放下心中的执念，反而让拥有力量的他开始了谋划。<br>
-事情的转折在于黑腹蛇也对宇文南城一见钟情，他绑架了她，并许诺让她成为这个理想国的第一夫人，宇文南城当然不从，于是黑腹蛇就将她关了起来。在外的卞体羽，韩英宇和舒雪三人得知</p>
+事情的转折在于黑腹蛇也对宇文南城一见钟情，他绑架了她，并许诺让她成为这个理想国的第一夫人，宇文南城当然不从，于 <span class="spoiler" tabindex="-1">是黑腹蛇就将</span> 她关了起来。在外的卞体羽，韩英宇和舒雪三人得知</p>
 <RandomSidebar :count="6" :sticky="true" /><RandomCard /></div></template>
 
 

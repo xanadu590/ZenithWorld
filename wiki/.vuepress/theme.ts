@@ -78,14 +78,19 @@ export default hopeTheme({
   // 以下为演示配置，生产环境仅保留你需要的部分功能
   markdown: {
     align: true,         // 启用对齐语法（文本居中等）
+    alert: true,         // 启用GFM警告
     attrs: true,         // 启用属性语法（在 Markdown 元素中添加属性）
     codeTabs: true,      // 启用代码分组标签
     component: true,     // 启用在 Markdown 中使用 Vue 组件
     demo: true,          // 启用 <Demo /> 演示块
     figure: true,        // 启用图片 <figure> 包裹
+    footnote: true,      // 启用脚注
     gfm: true,           // 启用 GitHub 风格 Markdown (GFM)
     imgLazyload: true,   // 图片懒加载
-    imgMark: true,       // 图片标记
+    imgMark: {
+      light: ["light"],
+      dark: ["dark"],
+    },       // 图片标记
     imgSize: true,       // 支持指定图片尺寸语法
     include: true,       // 支持 include 文件引入
     mark: true,          // 启用 ==高亮== 语法
