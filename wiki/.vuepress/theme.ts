@@ -75,6 +75,15 @@ export default hopeTheme({
     },
   },
 
+
+  navbarLayout: {
+    start: ['Brand'],
+    center: ['Links'],
+    end: ['Language', 'Repo', 'Outlook', 'Search', 'NavbarPageMenu'],
+  },
+
+
+
   // 以下为演示配置，生产环境仅保留你需要的部分功能
   markdown: {
     align: true,         // 启用对齐语法（文本居中等）

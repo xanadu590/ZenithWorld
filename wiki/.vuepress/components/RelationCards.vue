@@ -33,25 +33,26 @@
 <script setup lang="ts">
 /*
   组件名称：RelationCards
-  功能综述：
-    - 渲染一组“关系卡片”（头像、名称、角色等），支持点击跳转（站内用 RouterLink，站外用 <a>）。
-    - 数据来源支持二选一：
-        1) 通过 props.items 直接传入（优先级更高）
-        2) 从当前页面 Frontmatter 的 relations 字段读取
-    - 图片地址支持自动补站点 base 前缀（withBase），保证在 GitHub Pages 等子路径部署时图片可用。
 
-  关键点与可调选项：
-    - 判断站内链接：isInner(link) 仅判断“以 / 开头”，满足即走 <RouterLink>。
-      // 如需更严格规则，可在 isInner 内扩展正则匹配。
-    - 图片地址补 base：srcUrl('/path') 会自动变成 withBase('/path')。
-      // 若传入的是相对路径或完整外链，则保持原样。
-    - 栅格列数随断点变化：在样式中用媒体查询控制列数（手机 4、≥640px 5、≥960px 6 —— 详见 CSS）。
+  功能：
+    - 渲染一组“关系卡片”（头像 + 名称 + 角色）。
+    - 支持三种状态：
+        · 站内链接：使用 <RouterLink>，走 SPA 跳转；
+        · 站外链接：使用 <a target="_blank">；
+        · 无链接：纯展示卡片。
+    - 数据来源优先级：
+        1) props.items 显式传入；
+        2) 当前页面 frontmatter.relations 字段。
+
+  细节：
+    - isInner(link)：仅判断是否以 “/” 开头，用来区分站内路由。
+    - srcUrl(avatar)：若以 “/” 开头，则自动补站点 base（适配子路径部署），
+                      其余情况原样返回（相对路径或完整外链）。
 */
 
-import { computed } from 'vue'              // // 计算属性，用于从 props/FM 组合出最终数据
-import { usePageFrontmatter, withBase } from 'vuepress/client'  // // Frontmatter 读取与 base 前缀工具
+import { computed } from 'vue'
+import { usePageFrontmatter, withBase } from 'vuepress/client'
 
-// // 卡片条目类型定义：用于 props/items 与 FM/relations 的静态类型提示
 type RelationItem = {
   name: string
   role?: string
@@ -60,54 +61,48 @@ type RelationItem = {
   note?: string
 }
 
-// // Props：可选择直接传 items（优先）
 const props = defineProps<{
-  // 可选：直接通过 props 传数据
   items?: RelationItem[]
 }>()
 
-// // 从 Frontmatter 读取（当 props 未提供时作为后备数据源）
+// frontmatter 中的备用数据源
 const fm = usePageFrontmatter<{ relations?: RelationItem[] }>()
+
+// 最终用于渲染的列表数据
 const data = computed<RelationItem[]>(() => {
-  // // 若 props.items 存在且非空，优先使用
   if (props.items?.length) return props.items
-  // // 否则尝试从 Frontmatter 读取 relations，若无则使用空数组
   return (fm.value?.relations || []) as RelationItem[]
 })
 
-// // 判断是否为站内路由（以 / 开头）—— 满足则使用 <RouterLink> 实现 SPA 内导航
+// 站内路由判定：以 “/” 开头
 const isInner = (link?: string) => !!link && link.startsWith('/')
 
-// // 图片 src 统一补 base（/ 开头时），外链/相对路径保持原样
-// // 例如：子路径部署 site.com/zenithworld/ 时，/image/a.png 会自动变成 /zenithworld/image/a.png
+// 头像地址补 base：/xxx.png → withBase('/xxx.png')
 const srcUrl = (u?: string) => (!u ? '' : u.startsWith('/') ? withBase(u) : u)
 </script>
 
 <style scoped>
 /*
   布局与外观总览：
-    - .relation-cards 使用 CSS Grid 作为外层瀑布流网格，断点控制列数。
-    - .card 为单元卡片，统一的边框/圆角/阴影/悬停反馈。
-    - .card-link 作为卡片内部的点击区域（RouterLink 或 a 或 div），继承文本色、去除下划线。
-    - .avatar 头像固定尺寸 + cover 裁剪，避免比例不一导致布局抖动。
+
+    - .relation-cards：单行横向滚动的卡片列表，超出容器宽度时可以左右滑动。
+    - .card：单个关系卡片，统一的边框 / 圆角 / 阴影 / 悬停反馈。
+    - .card-link：卡片内部的可点击区域（RouterLink / a / div），统一处理文字样式。
+    - .avatar：头像始终保持正方形并裁剪为圆形，避免变形。
 */
 
-/* 网格布局：手机 4 列，平板 5 列，桌面 6 列（可按需微调 repeat 数量） */
+/* 容器：横向滚动列表 */
 .relation-cards {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  display: flex;
   gap: 14px;
+  overflow-x: auto;               /* 超出时允许左右滑动 */
+  padding: 4px 2px 8px;
+  -webkit-overflow-scrolling: touch; /* 移动端滚动更顺滑 */
 }
 
-@media (min-width: 640px) {
-  .relation-cards { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-}
-@media (min-width: 960px) {
-  .relation-cards { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-}
-
+/* 单个卡片 */
 .card{
-  /* 颜色全部走变量；使用更柔和的“软底色”变量，找不到再回退到 --c-bg */
+  flex: 0 0 120px;                /* 固定卡片宽度，不随容器被拉伸或压缩 */
   background: var(--vp-c-bg-soft, var(--c-bg, #111));
   color: var(--c-text, #111);
   border: 1px solid var(--c-border, #2a2a2a);
@@ -117,7 +112,7 @@ const srcUrl = (u?: string) => (!u ? '' : u.startsWith('/') ? withBase(u) : u)
   transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
 }
 
-/* 暗色下再给一道稳妥兜底，避免出现白色 */
+/* 暗色主题下的兜底样式 */
 html[data-theme="dark"] .card{
   background: var(--c-bg, #111);
   color: var(--c-text, #e5e5e5);
@@ -130,24 +125,43 @@ html[data-theme="dark"] .card{
   border-color: var(--c-brand, #3eaf7c);
 }
 
-/* 暗色下调轻阴影，避免糊 */
+/* 暗色下稍微加重阴影，避免太平 */
 html[data-theme="dark"] .card:hover{
   box-shadow: 0 6px 16px rgba(0,0,0,.35);
 }
 
-.card-link { display: block; text-decoration: none; color: inherit; }
+/* 统一的点击区域样式 */
+.card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
 
+/* 头像：自适应宽度 + 正方形裁剪 + 圆形外观 */
 .avatar {
-  width: 96px;
-  height: 96px;
+  width: 100%;
+  max-width: 96px;
+  aspect-ratio: 1 / 1;
+  height: auto;
+
+  object-fit: cover;
+  object-position: center;
   border-radius: 9999px;
-  object-fit: cover;         /* [裁剪] 保持比例，超出部分裁掉 */
-  object-position: center;   /* [裁剪] 中心裁剪 */
   display: block;
   margin: 4px auto 8px;
   background: #f2f3f5;
 }
 
-.name { font-weight: 600; font-size: 14px; line-height: 1.2; }
-.role { font-size: 12px; color: #666; margin-top: 4px; }
+/* 名称与角色文案 */
+.name {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.role {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
 </style>

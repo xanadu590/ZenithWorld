@@ -361,6 +361,7 @@ watch(
   grid-template-rows: auto;
   gap: 12px 16px;
   padding: 14px;
+  line-height: var(--card-line-height, 1);
 
   /* 🟡 外框风格（亮色）*/
   border: 1px solid var(--c-border, #e5e7eb);
@@ -496,7 +497,7 @@ html[data-theme="dark"] .role-card .meta .k{
   gap: 12px; /* ← 第 1/2/3 行之间的整体垂直间距 */
 }
 .role-card.stacked .title-top{
-  margin: 2px 0 8px;                      /* ← 标题与第2行间距 */
+  margin: -2px 0 8px;                      /* ← 标题与第2行间距 */
   margin-bottom: var(--card-title-gap, -5px);
   line-height: 1.2;
   font-weight: 700;
@@ -522,11 +523,14 @@ html[data-theme="dark"] .role-card .meta .k{
   /* 第 3 行整体背景色 —— 你可以改成品牌色块 */
   background: var(--card-bottom-bg, rgba(0, 0, 0, 0.05));
   border-radius: 8px;
-  padding: var(--card-summary-gap, 8px);     /* ← 调整第 3 行内边距 */
+  padding-top:    var(--card-summary-padding-y, var(--card-summary-gap, 0px));
+  padding-bottom: var(--card-summary-padding-y, var(--card-summary-gap, 20px));
+  padding-left:   var(--card-summary-padding-x, var(--card-summary-gap, 10px));
+  padding-right:  var(--card-summary-padding-x, var(--card-summary-gap, 10px));    /* ← 调整第 3 行内边距 */
   font-size: var(--card-summary-size, 0.85rem);
   color: var(--card-summary-color, inherit);
   text-align: var(--card-summary-align, left);
-  margin-top: var(--card-section-gap, 0px); 
+  margin-top: var(--card-section-gap, -5px); 
 }
 html[data-theme="dark"] .role-card.stacked .bottom {
   background: var(--card-bottom-bg-dark, rgba(255, 255, 255, 0.08));

@@ -1,7 +1,6 @@
 // .vuepress/client.ts
 import { defineClientConfig } from 'vuepress/client'
 import { reactive, h } from 'vue'
-import AIToggle from './components/AIToggle.vue'
 import AIMedia from './components/AIMedia.vue' // ← 新增：显式引入
 import WorldTimeline from './components/WorldTimeline.vue'
 import RelationCards from './components/RelationCards.vue' 
@@ -12,8 +11,8 @@ import RandomSidebar from './components/RandomSidebar.vue'
 import LeadBlock from './components/LeadBlock.vue'
 import MapJump from './components/MapJump.vue'
 import PersonaQACard from './components/PersonaQACard.vue'
-
-
+import NavbarAIToggle from './components/NavbarAIToggle.vue'
+import NavbarPageMenu from './components/NavbarPageMenu.vue'
 
 export type AISetting = {
   show: boolean
@@ -63,8 +62,10 @@ export default defineClientConfig({
     app.component("MapJump", MapJump)
 
     app.component("PersonaQACard", PersonaQACard)
+
+    app.component("NavbarAIToggle", NavbarAIToggle)
+
+    app.component("NavbarPageMenu", NavbarPageMenu)
   },
 
-  // 右上角悬浮的总开关rootComponents: [HamburgerMenu],
-  rootComponents: [h(AIToggle)],
 })
