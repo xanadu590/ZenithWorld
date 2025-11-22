@@ -6,6 +6,11 @@
       "excerpt": "<WorldTimeline :items=\" { date: '2000年', title: '世纪末战争', detail: '五大势力首次交锋，世界秩序崩塌。\\n 123' }, { date: '2020年', title: '巅峰"
     },
     {
+      "title": "十二主神",
+      "path": "/docs/world/concepts/twelveprimedeities/",
+      "excerpt": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。"
+    },
+    {
       "title": "[2][WizardHope]",
       "path": "/docs/world/characters/superhero/2.html",
       "excerpt": "2WizardHope 基本信息 姓名："
@@ -134,6 +139,11 @@
       "title": "超级英雄",
       "path": "/docs/world/characters/superhero/",
       "excerpt": "超级英雄 超级英雄superhero是指拥有超凡能力，凭借强烈的正义感或使命感，以打击邪恶、保护民众为目标的正义人士。 警钟StrikeClock 灵动骑士EtherealKnight 天灾Scourge 赤听HearTone 月者五MAY"
+    },
+    {
+      "title": "异常事物管理局",
+      "path": "/docs/world/factions/official/AMA/",
+      "excerpt": "名称：异常事物管理局\n译名：Anomaly Management Agency\n简称：AMA\n成立日期： 历史\n异常管理局的源头可追溯至【先知】创立的早期组织——【危机管理机构】Crisis Control Organization，简称C"
     }
   ]
 }

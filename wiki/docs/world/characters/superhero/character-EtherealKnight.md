@@ -16,7 +16,7 @@ isOriginal: true
 <AIMedia src="/images/EtherealKnightEverydayWear.jpg" caption="常服"/>
 </div>
 
-![战斗状态 =200*300](/images/EtherealKnightEverydayWear.jpg)
+![宇文南城001 =180x](/images/EtherealKnightCombatSuit.jpg "战斗姿态")
 
 # 基本信息
 ---
