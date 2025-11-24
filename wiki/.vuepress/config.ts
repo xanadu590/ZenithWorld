@@ -4,6 +4,8 @@ import theme from "./theme.js";
 
 import { viteBundler } from '@vuepress/bundler-vite'
 
+import recommendedArticles from "./plugins/recommended-articles/index.js";
+
 const isProd = process.env.NODE_ENV === 'production'
 
 export default defineUserConfig({
@@ -30,5 +32,12 @@ export default defineUserConfig({
 
   // Enable it with pwa
   // shouldPrefetch: false,
+
+   plugins: [
+    recommendedArticles(),
+  ],
+
+
+
 });
 
