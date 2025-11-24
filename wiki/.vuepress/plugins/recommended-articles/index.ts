@@ -19,18 +19,32 @@ export default (options: RecommendedArticlesOptions = {}) => {
       console.log("[recommended-articles] onPrepared start");
 
       const pages = app.pages
-        .filter((page) => !page.frontmatter?.noHot && !page.frontmatter?.noRecent)
-        .map((page) => {
-          const gitData = page.data.git as any;
-          const fm = page.frontmatter as any;
+      .filter((page) => {
+        const fm = page.frontmatter as any;
+        const title = (page.title || "").trim();
 
-          return {
-            title: page.title,
-            path: page.path,
-            lastUpdated: gitData?.updatedTime ?? null,
-            hotScore: fm.hot ?? fm.popularity ?? 0,
-          };
-        });
+        // 1. 手动排除 noHot / noRecent
+        if (fm.noHot && fm.noRecent) return false;
+
+        // 2. 没有标题的页面不要
+        if (!title) return false;
+
+        // 3. 首页、404 等特殊页面不要
+         if (page.path === "/" || fm.home || page.path.includes("404")) return false;
+    
+        return true;
+      })
+      .map((page) => {
+        const gitData = page.data.git as any;
+        const fm = page.frontmatter as any;
+
+        return {
+          title: page.title,
+          path: page.path,
+          lastUpdated: gitData?.updatedTime ?? null,
+          hotScore: fm.hot ?? fm.popularity ?? 0,
+        };
+      });
 
       // 写入到 public 目录，这样 dev + build 都会被静态服务 &打包
       const outFile = path.resolve(app.dir.public(), output);

@@ -14,7 +14,7 @@
 */
 
 import { inject } from 'vue'
-import { AI_INJECT_KEY } from '../client'
+import { AI_INJECT_KEY } from '../../client'
 
 const ai = inject(AI_INJECT_KEY) as { show: boolean; setShow: (v: boolean) => void }
 

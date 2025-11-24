@@ -29,7 +29,7 @@
 */
 
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import NavbarMenuAIItem from './NavbarAIToggle.vue'
+import NavbarMenuAIItem from './navbar/NavbarAIToggle.vue'
 
 const open = ref(false)
 
