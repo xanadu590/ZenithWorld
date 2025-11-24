@@ -34,7 +34,7 @@ export default defineUserConfig({
   // shouldPrefetch: false,
 
    plugins: [
-    recommendedArticles(),
+    recommendedArticles()
   ],
 
 
