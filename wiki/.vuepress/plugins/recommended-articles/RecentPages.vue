@@ -35,7 +35,7 @@ const pages = ref<PageMeta[]>([]);
 const loading = ref(true);
 const error = ref("");
 
-const src = props.src ?? "/assets/recommended-pages.json";
+const src = props.src ?? "/data/recommended-pages.json";
 const limit = props.limit ?? 10;
 
 onMounted(async () => {
