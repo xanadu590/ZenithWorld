@@ -30,8 +30,8 @@
 */
 
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import NavbarMenuAIItem from './navbar/NavbarAIToggle.vue'
-import NavbarMenuHotPages from './navbar/NavbarMenuHotPages.vue'
+import NavbarMenuAIItem from './NavbarAIToggle.vue'
+import NavbarMenuHotPages from './NavbarMenuHotPages.vue'
 
 const open = ref(false)
 
@@ -113,10 +113,13 @@ onBeforeUnmount(() => {
   box-shadow: 0 8px 20px rgba(0,0,0,0.12);
   border: 1px solid var(--c-border, #e5e7eb);
   z-index: 9999;
+
+  /* ⭐ 关键：强制改成“竖直一列” */
+  display: flex;
+  flex-direction: column;
 }
 
-/* 统一控制所有“插件项”的样式：
-   子组件只需要 root 用 class="menu-item"，就能吃到这些样式 */
+/* 所有菜单项统一长条按钮样式 */
 .menu-dropdown :deep(.menu-item) {
   width: 100%;
   text-align: left;
@@ -126,8 +129,12 @@ onBeforeUnmount(() => {
   color: var(--c-text, #111);
   font-size: 13px;
   cursor: pointer;
+
+  /* 防止变成小圆点： */
+  display: block;
 }
 
+/* hover 效果不变 */
 .menu-dropdown :deep(.menu-item:hover) {
   background: rgba(0,0,0,0.04);
 }
