@@ -10,6 +10,7 @@
       <div v-if="open" class="menu-dropdown">
         <!-- 这里插入“插件项” -->
         <NavbarMenuAIItem />
+        <NavbarMenuHotPages />
 
         <!-- 以后在这里继续加更多插件项，例如： -->
         <!-- <NavbarMenuFontSizeItem /> -->
@@ -30,6 +31,7 @@
 
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import NavbarMenuAIItem from './navbar/NavbarAIToggle.vue'
+import NavbarMenuHotPages from './navbar/NavbarMenuHotPages.vue'
 
 const open = ref(false)
 

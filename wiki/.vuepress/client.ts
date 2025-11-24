@@ -15,6 +15,7 @@ import NavbarAIToggle from './components/navbar/NavbarAIToggle.vue'
 import NavbarPageMenu from './components/NavbarPageMenu.vue'
 import HotPages from './plugins/recommended-articles/HotPages.vue'
 import RecentPages from './plugins/recommended-articles/RecentPages.vue'
+import NavbarMenuHotPages from './components/navbar/NavbarMenuHotPages.vue'
 
 export type AISetting = {
   show: boolean
@@ -72,6 +73,8 @@ export default defineClientConfig({
     app.component("HotPages", HotPages)
 
     app.component("RecentPages", RecentPages)
+
+    app.component("NavbarMenuHotPages", NavbarMenuHotPages)
   },
 
 })
