@@ -13,6 +13,8 @@ import MapJump from './components/MapJump.vue'
 import PersonaQACard from './components/PersonaQACard.vue'
 import NavbarAIToggle from './components/NavbarAIToggle.vue'
 import NavbarPageMenu from './components/NavbarPageMenu.vue'
+import HotPages from './plugins/recommended-articles/HotPages.vue'
+import RecentPages from './plugins/recommended-articles/RecentPages.vue'
 
 export type AISetting = {
   show: boolean
@@ -66,6 +68,10 @@ export default defineClientConfig({
     app.component("NavbarAIToggle", NavbarAIToggle)
 
     app.component("NavbarPageMenu", NavbarPageMenu)
+
+    app.component("HotPages", HotPages)
+
+    app.component("RecentPages", RecentPages)
   },
 
 })
