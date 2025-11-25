@@ -133,6 +133,8 @@ export default hopeTheme({
     // },
 
     // 如果你安装了 chart.js，可以启用图表支持
+
+    
     // chartjs: true,
 
     // 如果你安装了 echarts，可以启用图表支持
