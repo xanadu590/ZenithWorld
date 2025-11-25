@@ -32,7 +32,7 @@ onMounted(() => {
 
     // @ts-ignore
     window.twikoo.init({
-      envId: 'https://twikoo.1340797339.workers.dev/api/twikoo',
+      envId: 'https://comment.zenithworld.top/api/twikoo',
       el: '#twikoo-comment',
       lang: 'zh-CN',
       // 用路径当作评论唯一 ID，跟路由绑定
