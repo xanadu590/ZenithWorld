@@ -48,8 +48,6 @@ function getVisitorId(): string {
 }
 
 function reportPageView() {
-  console.log("页面上报触发", location.pathname)
-  
   if (typeof window === 'undefined') return
 
   const visitorId = getVisitorId()
