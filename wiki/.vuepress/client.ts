@@ -78,9 +78,7 @@ export default defineClientConfig({
 
     app.component("NavbarMenuHotPages", NavbarMenuHotPages)
 
-    app.component("TwikooComment", TwikooComment
-      
-    )
+    app.component("TwikooComment", TwikooComment)
     
   },
 

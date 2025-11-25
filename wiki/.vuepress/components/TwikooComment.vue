@@ -36,7 +36,7 @@ onMounted(() => {
       el: '#twikoo-comment',
       lang: 'zh-CN',
       // 用路径当作评论唯一 ID，跟路由绑定
-      path: window.location.pathname + window.location.hash,
+      path: window.location.pathname + window.location.hash
     })
   }
 
