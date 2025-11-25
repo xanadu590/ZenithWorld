@@ -13,12 +13,32 @@
     >
       <div class="hot-modal">
         <header class="hot-modal-header">
-          <span class="hot-modal-title">🔥 热门文章</span>
-          <button class="hot-modal-close" @click="close">✕</button>
+          <span class="hot-modal-title">
+            🔥 热门文章 · {{ mode === '7' ? '近 7 天' : '历史最热' }}
+          </span>
+
+          <!-- 模式切换按钮 -->
+          <div class="hot-tabs">
+            <button
+              class="hot-tab"
+              :class="{ 'is-active': mode === '7' }"
+              @click="switchMode('7')"
+            >
+              近 7 天
+            </button>
+            <button
+              class="hot-tab"
+              :class="{ 'is-active': mode === 'all' }"
+              @click="switchMode('all')"
+            >
+              历史最热
+            </button>
+
+            <button class="hot-modal-close" @click="close">✕</button>
+          </div>
         </header>
 
         <div class="hot-modal-body">
-          <!-- 加一点加载 / 错误状态 -->
           <p v-if="loading">加载中……</p >
           <p v-else-if="error" class="hot-error">
             加载失败，请稍后重试
@@ -41,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 interface PopularItem {
   path: string
@@ -56,11 +76,20 @@ const items = ref<PopularItem[]>([])
 const loading = ref(false)
 const error = ref(false)
 
+// mode: '7' = 近 7 天, 'all' = 历史最热
+const mode = ref<'7' | 'all'>('7')
+
+// 不同模式对应的查询天数
+const currentDays = computed(() => (mode.value === '7' ? 7 : 36500)) // 36500 ~ 100 年，等于“全部历史”
+
 const fetchPopular = async () => {
   loading.value = true
   error.value = false
   try {
-    const res = await fetch(`${API_BASE}/api/popular?days=7&limit=10`)
+    const days = currentDays.value
+    const res = await fetch(
+      `${API_BASE}/api/popular?days=${days}&limit=10`
+    )
     const data = await res.json()
     if (data.ok && Array.isArray(data.items)) {
       items.value = data.items
@@ -77,12 +106,17 @@ const fetchPopular = async () => {
 
 const handleOpen = () => {
   open.value = true
-  // 每次打开都刷新一次数据（你要是觉得频繁，可以加个“只在第一次打开加载”的判断）
   fetchPopular()
 }
 
 const close = () => {
   open.value = false
+}
+
+const switchMode = (m: '7' | 'all') => {
+  if (mode.value === m) return
+  mode.value = m
+  fetchPopular()
 }
 </script>
 
@@ -123,6 +157,27 @@ const close = () => {
 .hot-modal-title {
   font-weight: 600;
   font-size: 14px;
+}
+
+/* Tab 区域 + 关闭按钮 */
+.hot-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hot-tab {
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.hot-tab.is-active {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.6);
 }
 
 .hot-modal-close {
