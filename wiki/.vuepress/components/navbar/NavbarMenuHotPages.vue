@@ -1,6 +1,6 @@
 <template>
   <!-- 下拉菜单中的一项 -->
-  <button class="menu-item" @click.stop="open = true">
+  <button class="menu-item" @click.stop="handleOpen">
     🔥 热门文章
   </button>
 
@@ -18,8 +18,22 @@
         </header>
 
         <div class="hot-modal-body">
-          <!-- 直接复用现有 HotPages 组件 -->
-          <HotPages :title="undefined" :limit="10" />
+          <!-- 加一点加载 / 错误状态 -->
+          <p v-if="loading">加载中……</p >
+          <p v-else-if="error" class="hot-error">
+            加载失败，请稍后重试
+          </p >
+
+          <ul v-else-if="items.length" class="hot-list">
+            <li v-for="item in items" :key="item.path" class="hot-item">
+              <a :href="item.path" class="hot-link">
+                <span class="hot-title">{{ item.title }}</span>
+                <span class="hot-pv">{{ item.pv }} 次访问</span>
+              </a >
+            </li>
+          </ul>
+
+          <p v-else>暂无热门文章数据</p >
         </div>
       </div>
     </div>
@@ -28,9 +42,44 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import HotPages from '../../plugins/recommended-articles/HotPages.vue'
+
+interface PopularItem {
+  path: string
+  title: string
+  pv: number
+}
+
+const API_BASE = 'https://comment.zenithworld.top'
 
 const open = ref(false)
+const items = ref<PopularItem[]>([])
+const loading = ref(false)
+const error = ref(false)
+
+const fetchPopular = async () => {
+  loading.value = true
+  error.value = false
+  try {
+    const res = await fetch(`${API_BASE}/api/popular?days=7&limit=10`)
+    const data = await res.json()
+    if (data.ok && Array.isArray(data.items)) {
+      items.value = data.items
+    } else {
+      error.value = true
+    }
+  } catch (e) {
+    console.error('加载热门文章失败', e)
+    error.value = true
+  } finally {
+    loading.value = false
+  }
+}
+
+const handleOpen = () => {
+  open.value = true
+  // 每次打开都刷新一次数据（你要是觉得频繁，可以加个“只在第一次打开加载”的判断）
+  fetchPopular()
+}
 
 const close = () => {
   open.value = false
@@ -89,6 +138,39 @@ const close = () => {
 .hot-modal-body {
   padding: 8px 14px 12px;
   overflow: auto;
+}
+
+.hot-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hot-item + .hot-item {
+  margin-top: 4px;
+}
+
+.hot-link {
+  display: flex;
+  justify-content: space-between;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.hot-title {
+  flex: 1;
+  margin-right: 0.5rem;
+}
+
+.hot-pv {
+  opacity: 0.7;
+  white-space: nowrap;
+  font-size: 0.8rem;
+}
+
+.hot-error {
+  color: #dc2626;
+  font-size: 0.85rem;
 }
 
 /* 暗色模式适配 */
