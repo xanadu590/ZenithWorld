@@ -16,6 +16,8 @@ import NavbarPageMenu from './components/navbar/NavbarPageMenu.vue'
 import HotPages from './plugins/recommended-articles/HotPages.vue'
 import RecentPages from './plugins/recommended-articles/RecentPages.vue'
 import NavbarMenuHotPages from './components/navbar/NavbarMenuHotPages.vue'
+import TwikooComment from './components/TwikooComment.vue'
+
 
 export type AISetting = {
   show: boolean
@@ -75,6 +77,11 @@ export default defineClientConfig({
     app.component("RecentPages", RecentPages)
 
     app.component("NavbarMenuHotPages", NavbarMenuHotPages)
+
+    app.component("TwikooComment", TwikooComment
+      
+    )
+    
   },
 
 })

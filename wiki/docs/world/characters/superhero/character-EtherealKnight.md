@@ -159,3 +159,5 @@ const qaBank = [
   { q: '你最讨厌什么？', a: '反复的背叛。' },
 ]
 </script>
+
+<TwikooComment />
