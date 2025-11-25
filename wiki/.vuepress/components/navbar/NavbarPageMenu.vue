@@ -7,7 +7,7 @@
       </button>
 
       <!-- 下拉菜单 -->
-      <div v-if="open" class="menu-dropdown">
+      <div v-show="open" class="menu-dropdown">
         <!-- 这里插入“插件项” -->
         <NavbarMenuAIItem />
         <NavbarMenuHotPages />
