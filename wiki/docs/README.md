@@ -31,7 +31,7 @@ highlights:
       - title: 神明代行
         icon: star
         details: 神明的从属，拥有分散的神权。
-        link: ./world/characters/
+        link: ./world/characters/superhero/1.md
 
   - header: 角色总览
     description: 这个世界是属于少数精英的世界，他们是舞台的主角。
