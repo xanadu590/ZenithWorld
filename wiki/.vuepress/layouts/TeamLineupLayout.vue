@@ -411,19 +411,19 @@ const handleClick = (ch: CharacterItem) => {
 /* 文字样式 */
 .info-name {
   margin: 0 0 0.3rem;
-  font-size: 2rem;       /* 字体大小 */
+  font-size: 1.2rem;       /* 字体大小 */
   font-weight: 700;
 }
 
 .info-role {
   margin: 0 0 0.5rem;
-  font-size: 1.5rem;
+  font-size: 0.95rem;
   opacity: 0.85;
 }
 
 .info-intro {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 0.9rem;
   line-height: 1.6;
 }
 
