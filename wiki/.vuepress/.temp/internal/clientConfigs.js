@@ -17,7 +17,7 @@ import * as clientConfig15 from 'C:/Users/super/ZenithWorld/wiki/.vuepress/.temp
 import * as clientConfig16 from 'C:/Users/super/ZenithWorld/node_modules/.pnpm/@vuepress+plugin-active-hea_d1e960503f3bc77a2b4d53a86da8f29e/node_modules/@vuepress/plugin-active-header-links/lib/client/config.js'
 import * as clientConfig17 from 'C:/Users/super/ZenithWorld/node_modules/.pnpm/@vuepress+plugin-catalog@2._d017a4b155224fdae54332c7bb88aeaf/node_modules/@vuepress/plugin-catalog/lib/client/config.js'
 import * as clientConfig18 from 'C:/Users/super/ZenithWorld/node_modules/.pnpm/@vuepress+plugin-nprogress@_be179368e011cf85764cd3ca3d9d46fe/node_modules/@vuepress/plugin-nprogress/lib/client/config.js'
-import * as clientConfig19 from 'C:/Users/super/ZenithWorld/node_modules/.pnpm/@vuepress+plugin-slimsearch_e762c15724824cd893bb95361433673c/node_modules/@vuepress/plugin-slimsearch/lib/client/config.js'
+import * as clientConfig19 from 'C:/Users/super/ZenithWorld/node_modules/.pnpm/@vuepress+plugin-meilisearc_4990bd93e65fd75833853733df05f7ef/node_modules/@vuepress/plugin-meilisearch/lib/client/config.js'
 import * as clientConfig20 from 'C:/Users/super/ZenithWorld/node_modules/.pnpm/@vuepress+plugin-redirect@2_7a9ddf17984602c9e7f6d3a76cb0de07/node_modules/@vuepress/plugin-redirect/lib/client/config.js'
 import * as clientConfig21 from 'C:/Users/super/ZenithWorld/wiki/.vuepress/.temp/theme-hope/config.js'
 import * as clientConfig22 from 'C:/Users/super/ZenithWorld/wiki/.vuepress/client.ts'
