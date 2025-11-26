@@ -12,12 +12,6 @@
     "hotScore": 0
   },
   {
-    "title": "异常事物管理局",
-    "path": "/docs/world/factions/official/AMA/",
-    "lastUpdated": 1763624638000,
-    "hotScore": 0
-  },
-  {
     "title": "[2][WizardHope]",
     "path": "/docs/world/characters/superhero/2.html",
     "lastUpdated": 1763559366000,
@@ -99,6 +93,12 @@
     "title": "巫师希望",
     "path": "/docs/world/characters/superhero/character-WizardHope.html",
     "lastUpdated": 1763559366000,
+    "hotScore": 0
+  },
+  {
+    "title": "异常事物管理局",
+    "path": "/docs/world/factions/official/AMA/",
+    "lastUpdated": 1763624638000,
     "hotScore": 0
   }
 ]
