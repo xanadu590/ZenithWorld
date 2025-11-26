@@ -9,6 +9,10 @@ characters:
     image: /images/EtherealKnightEverydayWear.jpg
     intro: 以完美理性与极限演算为核心的人工生命体，是所有决策的中枢。
     link: /characters/superhero/character-EtherealKnight.md
+    scale: 1
+    hoverscale: 1.2
+    offsetX: 0
+    offsetY: 0
 
   - name: 阿尔忒弥斯·辉夜
     role: 月神 · 月球基地与科研总负责人
