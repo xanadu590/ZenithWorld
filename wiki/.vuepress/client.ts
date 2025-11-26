@@ -17,6 +17,7 @@ import HotPages from './plugins/recommended-articles/HotPages.vue'
 import RecentPages from './plugins/recommended-articles/RecentPages.vue'
 import NavbarMenuHotPages from './components/navbar/NavbarMenuHotPages.vue'
 import TwikooComment from './components/TwikooComment.vue'
+import TeamLineupLayout from './layouts/TeamLineupLayout.vue'
 
 export type AISetting = {
   show: boolean
@@ -109,6 +110,8 @@ export default defineClientConfig({
     app.component('RecentPages', RecentPages)
     app.component('NavbarMenuHotPages', NavbarMenuHotPages)
     app.component('TwikooComment', TwikooComment)
+    app.component('TeamLineupLayout', TeamLineupLayout)
+    
 
     // ✅ 新增：每次路由切换后上报访问
     if (router) {
