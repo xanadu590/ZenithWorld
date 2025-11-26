@@ -56,6 +56,11 @@
           </transition>
         </div>
       </section>
+      <section class="team-content">
+        <div class="team-content-inner">
+          <Content />
+        </div>
+      </section>
     </main>
   </div>
 </template>
@@ -369,6 +374,14 @@ const handleClick = (ch: CharacterItem) => {
   /* 不写 transform，这样不会覆盖 imageStyle 返回的值 */
 }
 
+/* 悬停时：尽量显示整张图片，而不是继续裁剪 */
+.character-slot.slot-hovered .character-image {
+  width: auto;          /* 不再强制铺满列宽 */
+  height: 100%;         /* 以高度为基准适配 */
+  max-height: 90vh;     /* 防止超出视口，你想更高可以改成 100vh */
+  object-fit: contain;  /* 显示整张图，多余部分留空 */
+}
+
 /* 无图占位 */
 .character-image.placeholder {
   border-radius: 0;
@@ -399,31 +412,31 @@ const handleClick = (ch: CharacterItem) => {
 /* 简介出现位置：右 / 左 */
 .character-info.info-right {
   left: 100%;
-  margin-left: 1.2rem;
+  margin-left: 15rem;
 }
 
 .character-info.info-left {
   right: 100%;
-  margin-right: 1.2rem;
+  margin-right: 15rem;
   text-align: right;
 }
 
 /* 文字样式 */
 .info-name {
   margin: 0 0 0.3rem;
-  font-size: 1.2rem;       /* 字体大小 */
+  font-size: 2rem;       /* 字体大小 */
   font-weight: 700;
 }
 
 .info-role {
   margin: 0 0 0.5rem;
-  font-size: 0.95rem;
+  font-size: 1rem;
   opacity: 0.85;
 }
 
 .info-intro {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 1.5rem;
   line-height: 1.6;
 }
 
@@ -436,6 +449,29 @@ const handleClick = (ch: CharacterItem) => {
 .fade-leave-to {
   opacity: 0;
   transform: translateY(4px);
+}
+
+/* 阵容下面的正文内容区域 */
+.team-content {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 2rem 1.5rem 3rem;
+  display: flex;
+  justify-content: center;
+}
+
+.team-content-inner{
+  width: 100%;
+  max-width: 1080px;
+}
+
+/* 让正文区域里默认的 Markdown 宽度不要太宽（可选） */
+.team-content :deep(.theme-default-content),
+.team-content :deep(.theme-hope-content),
+.team-content :deep(.page),
+.team-content :deep(.content__default) {
+  max-width: 1080px;
+  margin: 0 auto;
 }
 
 /* ================== 移动端 ================== */
