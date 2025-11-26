@@ -1,31 +1,59 @@
 ---
-sidebar: false
+layout: TeamLineupLayout
+teamName: 巅峰议会
+teamSubtitle: 世界实际的幕后掌控者 · 巅峰宇宙的最高决策机构
+
+characters:
+  - name: 【OIN】
+    role: 人工生命体 · 巅峰议会首领
+    image: /images/EtherealKnightEverydayWear.jpg
+    intro: 以完美理性与极限演算为核心的人工生命体，是所有决策的中枢。
+    link: /characters/superhero/character-EtherealKnight.md
+
+  - name: 阿尔忒弥斯·辉夜
+    role: 月神 · 月球基地与科研总负责人
+    image: /images/EtherealKnightEverydayWear.jpg
+    intro: 新时代诞生的月与智慧之神，持有对月面文明与科技体系的最高权限。
+    link: /characters/artemis-kaguya.html
+
+  - name: 【阎罗】李阎
+    role: 地球最强者 · 刺客组织首领
+    image: /images/EtherealKnightEverydayWear.jpg
+    intro: 代表世界力量暗面的男人，只在世界线最关键的缝隙里出手。
+    link: /characters/li-yan.html
+
+  - name: 莎莉嘉
+    role: 世界智慧暗面 · 恶人协会首脑
+    image: /images/EtherealKnightEverydayWear.jpg
+    intro: 被誉为“世界最聪明的人”，擅长在一切制度缝隙中构造异常解。
+    link: /characters/sarija.html
+
+  - name: 麻理亚
+    role: 宗教合一的象征
+    image: /images/EtherealKnightEverydayWear.jpg
+    intro: 她的存在本身就是所有信仰系统的交叉点，连神明也需向她让路。
+    link: /characters/mariya.html
+
+  - name: 风尚华
+    role: 经济掌控者
+    image: /images/EtherealKnightEverydayWear.jpg
+    intro: 几乎掌控全世界资本流向的人，只需动一动手指就能改变一个国家的命运。
+    link: /characters/feng-shanghua.html
+
+  - name: 白幸
+    role: 局外人 · 幸运儿
+    image: /images/EtherealKnightEverydayWear.jpg
+    intro: 无论站在哪里，世界线都会向她偏折——这也是她被邀请入席的唯一理由。
+    link: /characters/bai-xing.html
 ---
 
-# 超级英雄
->[超级英雄][superhero]是指拥有超凡能力，凭借强烈的正义感或使命感，以打击邪恶、保护民众为目标的正义人士。
-- [警钟][StrikeClock]
-- [灵动骑士][EtherealKnight]
-- [天灾][Scourge]
-- [赤听][HearTone]
-- [月者五][M-A-Y]
-- [幻绘][Illustra]
-- [巫师希望][WizardHope]
+这里可以写一点团体的文字介绍。  
+比如巅峰议会的成立历史、议会目标、对世界格局的影响等等。
 
-
-
-
-
-
-[superhero]: /docs/world/characters/superhero/#超级英雄
-[EtherealKnight]: /docs/world/characters/superhero/character-EtherealKnight.md
-[Scourge]: /docs/world/characters/superhero/character-Scourge.md
-[HearTone]:/docs/world/characters/superhero/character-HearTone.md
-[M-A-Y]:/docs/world/characters/superhero/character-M-A-Y.md
-[StrikeClock]:/docs/world/characters/superhero/character-StrikeClock.md
-[WizardHope]:/docs/world/characters/superhero/character-WizardHope.md
-[Illustra]:/docs/world/characters/superhero/character-Illustra.md
-
+下面也可以继续正常写 Markdown 内容：
+- 组织结构
+- 议会会议制度
+- 与各团体的关系
 
 
 
