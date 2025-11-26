@@ -1,0 +1,27 @@
+name: Scrape MeiliSearch index
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Run Meili docs-scraper
+        env:
+          HOST_URL: ${{ secrets.MEILISEARCH_HOST_URL }}
+          API_KEY: ${{ secrets.MEILISEARCH_MASTER_KEY }}
+          CONFIG_FILE_PATH: ${{ github.workspace }}/wiki/.vuepress/meili-scraper.json
+        run: |
+          docker run -t --rm \
+            -e MEILISEARCH_HOST_URL=$HOST_URL \
+            -e MEILISEARCH_API_KEY=$API_KEY \
+            -v $CONFIG_FILE_PATH:/docs-scraper/config.json \
+            getmeili/docs-scraper:latest \
+            pipenv run ./docs_scraper config.json
