@@ -112,9 +112,7 @@ export default defineClientConfig({
     app.component('NavbarMenuHotPages', NavbarMenuHotPages)
     app.component('TwikooComment', TwikooComment)
 
-    layouts: {
-      TeamLineupLayout
-    }
+    
     
 
     // ✅ 新增：每次路由切换后上报访问
@@ -124,5 +122,9 @@ export default defineClientConfig({
       })
     }
   },
+
+  layouts: {
+      TeamLineupLayout,
+    },
 
 })
