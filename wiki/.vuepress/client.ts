@@ -1,5 +1,5 @@
 // .vuepress/client.ts
-import { defineClientConfig } from 'vuepress/client'
+import { defineClientConfig, useLayouts } from 'vuepress/client'
 import { reactive } from 'vue'
 import AIMedia from './components/AIMedia.vue'
 import WorldTimeline from './components/WorldTimeline.vue'
@@ -17,6 +17,8 @@ import HotPages from './plugins/recommended-articles/HotPages.vue'
 import RecentPages from './plugins/recommended-articles/RecentPages.vue'
 import NavbarMenuHotPages from './components/navbar/NavbarMenuHotPages.vue'
 import TwikooComment from './components/TwikooComment.vue'
+import TeamLineupLayout from './layouts/TeamLineupLayout.vue'
+
 
 export type AISetting = {
   show: boolean
@@ -109,6 +111,10 @@ export default defineClientConfig({
     app.component('RecentPages', RecentPages)
     app.component('NavbarMenuHotPages', NavbarMenuHotPages)
     app.component('TwikooComment', TwikooComment)
+
+    layouts: {
+      TeamLineupLayout
+    }
     
 
     // ✅ 新增：每次路由切换后上报访问
