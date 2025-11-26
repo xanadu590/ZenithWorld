@@ -1,14 +1,8 @@
 <!-- docs/.vuepress/layouts/TeamLineupLayout.vue -->
 <template>
   <div class="team-layout">
-    <!-- 顶部标题区域（可选，有就显示） -->
-    <header class="team-header" v-if="teamName || teamSubtitle">
-      <h1 class="team-title" v-if="teamName">{{ teamName }}</h1>
-      <p class="team-subtitle" v-if="teamSubtitle">{{ teamSubtitle }}</p >
-    </header>
-
-    <!-- 角色横排阵容 -->
     <main class="team-main">
+      <!-- 只有角色横排阵容 -->
       <section class="team-lineup" v-if="characters && characters.length">
         <div
           v-for="(ch, index) in characters"
@@ -19,10 +13,10 @@
           @mouseleave="hoveredIndex = null"
           @click="handleClick(ch)"
         >
-          <!-- 倾斜的槽位背景 -->
+          <!-- 背景竖条 -->
           <div class="slot-bg"></div>
 
-          <!-- 立绘容器（稍微回正，不被 skew 拉变形） -->
+          <!-- 立绘 -->
           <div
             class="character-figure"
             :class="{ 'is-hovered': hoveredIndex === index }"
@@ -39,7 +33,7 @@
             </div>
           </div>
 
-          <!-- 简介卡片：根据左右位置决定出现在左/右 -->
+          <!-- 简介卡片 -->
           <transition name="fade">
             <aside
               v-if="hoveredIndex === index"
@@ -47,23 +41,12 @@
               :class="infoPositionClasses(index)"
               @click.stop
             >
-              <h2 class="info-name">
-                {{ ch.name }}
-              </h2>
-              <p class="info-role" v-if="ch.role">
-                {{ ch.role }}
-              </p >
-              <p class="info-intro" v-if="ch.intro">
-                {{ ch.intro }}
-              </p >
+              <h2 class="info-name">{{ ch.name }}</h2>
+              <p class="info-role" v-if="ch.role">{{ ch.role }}</p >
+              <p class="info-intro" v-if="ch.intro">{{ ch.intro }}</p >
             </aside>
           </transition>
         </div>
-      </section>
-
-      <!-- 可选：下方继续渲染 Markdown 正文内容（如果你希望这个页面下还有文字说明） -->
-      <section class="team-content">
-        <Content />
       </section>
     </main>
   </div>
@@ -83,8 +66,7 @@ interface CharacterItem {
 }
 
 interface TeamFrontmatter {
-  [key: string]: unknown;
-
+  [key: string]: unknown
   teamName?: string
   teamSubtitle?: string
   characters?: CharacterItem[]
@@ -97,12 +79,6 @@ const teamName = computed(() => frontmatter.value.teamName || '')
 const teamSubtitle = computed(() => frontmatter.value.teamSubtitle || '')
 const characters = computed(() => frontmatter.value.characters || [])
 
-/**
- * 根据索引判断属于左、中、右区域：
- * - 左边区域：前 1/3
- * - 右边区域：后 1/3
- * - 中间区域：中间 1/3
- */
 const regionOfIndex = (index: number) => {
   const total = characters.value.length || 1
   const leftThreshold = Math.floor(total / 3)
@@ -125,164 +101,154 @@ const slotClasses = (index: number) => {
 
 const infoPositionClasses = (index: number) => {
   const region = regionOfIndex(index)
-  // 中间也统一向右
-  if (region === 'right') {
-    return 'info-left'
-  }
+  if (region === 'right') return 'info-left'
   return 'info-right'
 }
 
 const handleClick = (ch: CharacterItem) => {
-  if (ch.link) {
-    // 使用浏览器跳转，让 VuePress 处理路由
-    window.location.href = ch.link
-  }
+  if (ch.link) window.location.href = ch.link
 }
 </script>
 
 <style scoped>
-/* 整体布局 */
+/* 整体布局：上下左右都贴边 */
 .team-layout {
   min-height: 100vh;
-  padding: 3rem 1.5rem 2rem;
+  padding: 0;
+  margin: 0;
   box-sizing: border-box;
   background: radial-gradient(circle at top, rgba(255, 255, 255, 0.06), transparent 60%),
     linear-gradient(135deg, #0b0c10, #161925);
   color: #f5f5f5;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
 }
 
-/* 顶部标题区域 */
-.team-header {
-  text-align: center;
-  margin-bottom: 0.5rem;
-}
-
-.team-title {
-  font-size: 2.2rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin: 0;
-}
-
-.team-subtitle {
-  margin-top: 0.5rem;
-  opacity: 0.8;
-}
-
-/* 主区域 */
 .team-main {
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
+  flex: 1;
 }
 
-/* 阵容区域 */
+/* 阵容：横向铺满屏幕，列之间无间隙 */
 .team-lineup {
+  width: 100%;
+  height: 100vh;              /* 整个阵容区域占满可视高度 */
+  padding: 0;
+  box-sizing: border-box;
   display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 0.25rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  justify-content: stretch;
+  align-items: stretch;
+  gap: 0;                     /* 列与列之间无间隙 */
+  margin: 0;
   position: relative;
 }
 
-/* 每个角色槽位：带轻微倾斜的竖条感 */
+/* 每个角色槽位：宽度自适应，满高 */
 .character-slot {
   position: relative;
-  flex: 1;
-  min-width: 80px;
-  max-width: 200px;
-  height: 420px;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
   cursor: pointer;
-  /* 让整体有一点倾斜感 */
-  transform: skewX(-6deg);
   transition: transform 0.25s ease, filter 0.25s ease;
+  overflow: hidden;           /* 默认裁剪立绘超出部分 */
+  z-index: 0;                 /* 默认层级 */
 }
 
-/* hover 高亮 */
+/* hover：轻微上浮 & 展开（允许溢出） */
 .character-slot.slot-hovered {
-  filter: brightness(1.15);
-  transform: skewX(-6deg) translateY(-8px);
+  transform: translateY(-8px);
+  filter: brightness(1.08);
+  overflow: visible;          /* 悬停时放大可以溢出格子 */
+  z-index: 100;               /* 整列抬到最上层 */
 }
 
-/* 背景竖条，营造“列”的感觉但不死板 */
+/* 背景竖条：无圆角 */
 .slot-bg {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.10),
     rgba(255, 255, 255, 0.02)
   );
-  border-radius: 18px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+  border-radius: 0;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(6px);
+  z-index: 1;                 /* 槽位内第一层 */
 }
 
-/* 立绘容器，反向 skew 回正图像 */
+/* 立绘容器：占满整个格子 */
 .character-figure {
   position: absolute;
-  inset: 12px 8px;
+  inset: 0;
   display: flex;
-  align-items: flex-end;
+  align-items: center;        /* 如果想脚踩地，可以改 flex-end */
   justify-content: center;
-  transform: skewX(6deg);
   transition: transform 0.25s ease, filter 0.25s ease;
-  z-index: 1;
+  z-index: 2;                 /* 在背景上面 */
 }
 
+/* 悬停时：增加阴影 */
 .character-figure.is-hovered {
-  transform: skewX(6deg) scale(1.1) translateY(-12px);
-  filter: drop-shadow(0 12px 26px rgba(0, 0, 0, 0.8));
+  filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.95));
 }
 
-/* 立绘图片 */
+/* 立绘图片：默认 cover 铺满格子，多余裁剪 */
 .character-image {
-  max-height: 100%;
-  max-width: 100%;
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;          /* 默认：填满竖条，超出裁剪 */
   pointer-events: none;
+  transition: transform 0.25s ease, width 0.25s ease, height 0.25s ease;
 }
 
+/* 悬停时：展示整张图（contain），略微放大弹出 */
+.character-figure.is-hovered .character-image {
+  width: auto;
+  height: auto;
+  max-height: 90vh;           /* 确保整张图在屏幕内完整显示 */
+  max-width: 110vw;           /* 允许横向稍微溢出 */
+  object-fit: contain;        /* 展示整张图片 */
+  transform: scale(1.05);     /* 稍微放大，产生“弹出”感觉 */
+}
+
+/* 无图占位：无圆角 */
 .character-image.placeholder {
-  border-radius: 999px;
+  border-radius: 0;
   border: 1px dashed rgba(255, 255, 255, 0.3);
   padding: 1rem;
   font-size: 0.9rem;
   opacity: 0.7;
 }
 
-/* 简介卡片 */
+/* 简介卡片：无圆角，左右浮出 */
 .character-info {
   position: absolute;
-  bottom: 40%;
-  z-index: 3;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;                 /* 在本列背景 & 图片之上 */
   max-width: 260px;
   padding: 0.9rem 1rem;
   background: rgba(15, 16, 25, 0.96);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.7);
 }
 
-/* 出现在右侧 */
+/* 右侧 */
 .character-info.info-right {
   left: 100%;
-  margin-left: 0.75rem;
+  margin-left: 1rem;
 }
 
-/* 出现在左侧 */
+/* 左侧 */
 .character-info.info-left {
   right: 100%;
-  margin-right: 0.75rem;
+  margin-right: 1rem;
   text-align: right;
 }
 
-/* 简介中的文字样式 */
+/* 简介文字 */
 .info-name {
   margin: 0 0 0.2rem;
   font-size: 1.1rem;
@@ -301,7 +267,7 @@ const handleClick = (ch: CharacterItem) => {
   opacity: 0.9;
 }
 
-/* 渐隐动画 */
+/* 出现/消失动画 */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.18s ease, transform 0.18s ease;
@@ -312,57 +278,62 @@ const handleClick = (ch: CharacterItem) => {
   transform: translateY(4px);
 }
 
-/* 下方 Markdown 内容区域 */
-.team-content {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 1.25rem 1.5rem 0;
-  background: rgba(5, 6, 12, 0.75);
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-}
-
-/* 移动端适配：改为纵向排列 + 不倾斜 */
+/* 移动端：改成竖排，不再占满一整屏高度 */
 @media (max-width: 768px) {
-  .team-layout {
-    padding: 1.5rem 1rem 2rem;
-  }
-
   .team-lineup {
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    height: auto;
   }
 
   .character-slot {
-    width: 80%;
-    max-width: 320px;
+    width: 85%;
+    max-width: 360px;
     height: 380px;
-    transform: none;
   }
 
   .character-slot.slot-hovered {
     transform: translateY(-4px);
   }
 
-  .character-figure {
-    transform: none;
-  }
-
-  .character-figure.is-hovered {
-    transform: scale(1.06) translateY(-10px);
+  .character-figure.is-hovered .character-image {
+    max-height: 100%;
+    max-width: 100%;
+    transform: scale(1.02);
   }
 
   .character-info {
     position: static;
-    margin-top: 0.5rem;
+    transform: none;
+    margin-top: 0.75rem;
     max-width: none;
   }
+
+  /* 简介卡片：更宽，更像信息面板 */
+  .character-info {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+
+    width: 400px;                   /* 原本是 max-width:260 → 改为 400px */
+    padding: 1.2rem 1.5rem;         /* 更宽后 padding 也跟着优化 */
+
+    background: rgba(15, 16, 25, 0.96);
+    border-radius: 0;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.75);
+
+    color: #f0f0f0;
+    line-height: 1.6;
+    font-size: 1rem;
+  }
+  
 
   .character-info.info-left,
   .character-info.info-right {
     text-align: left;
-    margin: 0.5rem 0 0;
+    margin: 0.75rem 0 0;
   }
 }
 </style>
