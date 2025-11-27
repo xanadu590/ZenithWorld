@@ -38,7 +38,7 @@ export type RandomItem = {
  */
 const MEILI_HOST =
   (import.meta as any).env?.VITE_MEILI_HOST ||
-  'https://47.99.85.126:7700'
+  'http://47.99.85.126:7700'
 
 const MEILI_SEARCH_KEY =
   (import.meta as any).env?.VITE_MEILI_SEARCH_KEY ||
