@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+  # 定时任务：每天凌晨 02:00（北京时间）
+  schedule:
+    - cron: "0 18 * * *"
+
 jobs:
   scrape:
     runs-on: ubuntu-latest
