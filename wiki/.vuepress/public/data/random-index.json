@@ -6,11 +6,6 @@
       "excerpt": "<WorldTimeline :items=\" { date: '2000年', title: '世纪末战争', detail: '五大势力首次交锋，世界秩序崩塌。\\n 123' }, { date: '2020年', title: '巅峰"
     },
     {
-      "title": "十二主神",
-      "path": "/docs/world/concepts/twelveprimedeities/",
-      "excerpt": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。"
-    },
-    {
       "title": "[2][WizardHope]",
       "path": "/docs/world/characters/superhero/2.html",
       "excerpt": "2WizardHope 基本信息 姓名："
@@ -134,6 +129,11 @@
       "title": "巫师希望",
       "path": "/docs/world/characters/superhero/character-WizardHope.html",
       "excerpt": "“生活也许很艰难，但是有家人和朋友在一起，我就有勇气面对。”"
+    },
+    {
+      "title": "十二主神",
+      "path": "/docs/world/concepts/twelveprimedeities/",
+      "excerpt": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。"
     },
     {
       "title": "异常事物管理局",

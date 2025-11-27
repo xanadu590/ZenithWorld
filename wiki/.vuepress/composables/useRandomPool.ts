@@ -1,19 +1,24 @@
 // wiki/.vuepress/composables/useRandomPool.ts
 import { ref } from 'vue'
 import { withBase } from '@vuepress/client'
-import { MeiliSearch } from 'meilisearch'
 
 /*
-  升级版：随机文章池 useRandomPool（优先使用 MeiliSearch）
-  -----------------------------------------------------------------
-  行为顺序：
-    1. 优先：从 Meili 索引拉一批文档，当作“随机池”；
-    2. 若 Meili 失败：退回旧逻辑，从 /data/random-index.json 加载；
-    3. 若 JSON 也失败：再兜底扫描当前页面 <a href> 生成候选。
-  其它保持不变：
-    - normalize / resolveLink 的各种 base / demo-/v* 处理逻辑原样保留。
+  模块：随机文章池 useRandomPool
+  功能：
+    - 统一加载站点生成的随机索引 JSON（/data/random-index.json），或在失败时从当前文档扫描可用链接作为兜底。
+    - 解决多种部署前缀（VuePress base、/demo-*、/v*、手动前缀等）导致的链接失效问题。
+    - 暴露：pool（池数据）、loaded（是否加载完成）、load()（加载池）、sample(n)（抽样 n 条）、
+            resolveLink(path)（把站内路径转换为最终可跳转 URL）。
+  实现要点：
+    - 通过 makeVersionedUrl 为拉取 JSON 的请求统一追加版本参数 v，以规避浏览器/边缘缓存。
+    - tryFetch() 支持多候选 URL 依次尝试，并按开发/生产切换 cache 策略。
+    - normalize()/normalizeBase() 统一“剥离/补齐 base”，保证池内的 href 可比较与去重。
+    - resolveLink() 优先走 VuePress 的 withBase()，否则根据运行时路径自动推断 demo-/v* 前缀。
+  调试参数：
+    - DEBUG：true 时输出详细日志，并强制请求使用 no-store；上线建议设为 false。
 */
 
+ /** 调试开关（排查用；上线可设为 false） */
 const DEBUG = true
 const TAG = '[RandomPool]'
 
@@ -25,82 +30,17 @@ export type RandomItem = {
   variant?: 'summary' | 'quote' | 'excerpt'
 }
 
-/* ================= MeiliSearch 配置 ================ */
-
-/**
- * ✅ 这里改成你自己的配置：
- *  - MEILI_HOST: 你的 Meili 地址（http/https 开头，推荐挂域名）
- *  - MEILI_SEARCH_KEY: 前端用 search_key（不能用 master key）
- *  - MEILI_INDEX: docs-scraper 建的索引名
- *
- * 建议以后用环境变量：
- *  VITE_MEILI_HOST / VITE_MEILI_SEARCH_KEY / VITE_MEILI_INDEX
- */
-const MEILI_HOST =
-  (import.meta as any).env?.VITE_MEILI_HOST ||
-  'http://47.99.85.126:7700'
-
-const MEILI_SEARCH_KEY =
-  (import.meta as any).env?.VITE_MEILI_SEARCH_KEY ||
-  '2873699d178c266076a0e57bbb60fc1aa1757a661d320a96be8eb09b26e15907'
-
-const MEILI_INDEX =
-  (import.meta as any).env?.VITE_MEILI_INDEX ||
-  'wiki' // 改成你真实的 index 名
-
-// 创建全局 Meili 客户端和索引实例（多个页面复用）
-const meiliClient = new MeiliSearch({
-  host: MEILI_HOST,
-  apiKey: MEILI_SEARCH_KEY,
-})
-
-const meiliIndex = meiliClient.index(MEILI_INDEX)
-
-/*
-  函数：normalizeMeiliHits
-  作用：
-    - 将 Meili 返回的 hits 转成 RandomItem[]
-    - 自动从 url/path/href 字段拿链接，从 title/summary/excerpt 拿标题和摘要
-*/
-function normalizeMeiliHits(hits: any[]): RandomItem[] {
-  const out: RandomItem[] = []
-
-  for (const hit of hits) {
-    const rawHref =
-      hit.url ||
-      hit.path ||
-      hit.href ||
-      ''
-
-    const href = normalize(String(rawHref || ''))
-    if (!href || !/\.html$/i.test(href) || isTopPage(href) || href.startsWith('http')) {
-      DEBUG && console.debug(TAG, '[meili] skip hit:', { rawHref, href })
-      continue
-    }
-
-    const title = String(hit.title ?? '').trim()
-    const summary = String(hit.summary ?? '').trim()
-    const excerpt = String(hit.excerpt ?? '').trim()
-    const text = summary || excerpt || ''
-
-    out.push({
-      href,
-      title,
-      excerpt: text,
-      variant: text ? 'excerpt' : undefined,
-    })
-  }
-
-  DEBUG && console.info(TAG, '[meili] normalize hits ->', out.length)
-  return out
-}
-
-/* ================= 旧逻辑：random-index.json + 扫描兜底 ================ */
-
 /*
   函数：makeVersionedUrl
   作用：
     - 为给定 URL 统一追加 ?v=xxx 查询参数，减少缓存导致的“旧数据”问题。
+  规则：
+    - 若是本地/调试环境（localhost/127.0.0.1/*.local 或 DEBUG 为 true），v 取 Date.now()，确保每次请求都绕过缓存。
+    - 否则优先从页面 <meta name="build-rev" | name="build-time"> 读取构建版本/时间，固定 v 值，便于 CDN 缓存。
+  参数：
+    - raw: string — 原始 URL（相对或绝对）
+  返回：
+    - string — 带 v 参数的 URL（保持原始路径 + 查询串，不包含 origin）
 */
 function makeVersionedUrl(raw: string): string {
   const host = location.hostname
@@ -116,17 +56,26 @@ function makeVersionedUrl(raw: string): string {
   const ver = (DEBUG || isLocal) ? String(Date.now()) : buildVersion
 
   try {
+    // 尝试用 URL 统一处理（可接受相对路径，base 为 location.origin）
     const u = new URL(raw, location.origin)
     u.searchParams.set('v', ver)
-    return u.pathname + u.search
+    return u.pathname + u.search       // 返回 path + query（不带 origin），方便与 withBase 组合
   } catch {
+    // 兜底：字符串拼接
     const sep = raw.includes('?') ? '&' : '?'
     return `${raw}${sep}v=${ver}`
   }
 }
 
-/* ================= 主体：useRandomPool ================ */
-
+/*
+  组合式函数：useRandomPool
+  返回：
+    - pool: Ref<RandomItem[]>     // 随机池数据
+    - loaded: Ref<boolean>        // 是否加载完成
+    - load(): Promise<void>       // 加载（或重新加载）随机池
+    - sample(n:number): RandomItem[]      // 从池中随机抽 n 条（同 href 只取 1 条）
+    - resolveLink(p:string): string       // 把站内路径转换为最终可跳转的绝对地址（含 base 推断）
+*/
 export function useRandomPool() {
   const pool = ref<RandomItem[]>([])
   const loaded = ref(false)
@@ -135,6 +84,11 @@ export function useRandomPool() {
     工具：tryFetch
     作用：
       - 依次尝试一组候选 URL，返回首个成功解析为 JSON 的结果。
+      - 根据当前环境选择合适的缓存策略（开发: no-store；生产: force-cache）。
+    参数：
+      - candidates: string[] — 候选 URL 列表（会按顺序尝试）
+    返回：
+      - Promise<T | null> — 成功返回 JSON 对象，否则 null
   */
   const tryFetch = async <T = any>(candidates: string[]): Promise<T | null> => {
     const host = location.hostname
@@ -165,77 +119,59 @@ export function useRandomPool() {
 
   /*
     方法：load
-    ------------------------------------------------------------------
-    优先顺序：
-      1) 先尝试用 Meili 拉一个“全站随机池”；
-      2) 若 Meili 失败或命中数量为 0，再退回 random-index.json；
-      3) JSON 也失败，则扫描当前文档链接兜底。
+    作用：
+      - 尝试从多种路径加载 random-index.json（都附带版本参数）。
+      - 成功则解析为池；失败则扫描当前文档中的 a[href] 作为兜底。
+      - 加载完成后会过滤掉首页与当前页，避免“推荐自身/首页”。
   */
   const load = async () => {
     loaded.value = false
     pool.value = []
 
-    // 1) 优先尝试从 Meili 拉 500 条
-    try {
-      DEBUG && console.info(TAG, '[meili] search start')
-      const { hits } = await meiliIndex.search('', {
-        limit: 500,
-        // 如果你的索引里有 docType / lang / tags 字段，可以加 filter:
-        // filter: ['docType = "page"'],
-      } as any)
+    // A) 组织候选 URL，并统一加 ?v= 版本参数
+    const baseUrl = makeVersionedUrl(withBase('data/random-index.json'))
 
-      const meiliItems = normalizeMeiliHits(hits)
-      if (meiliItems.length > 0) {
-        pool.value = meiliItems
-        DEBUG && console.info(TAG, '[meili] used as pool, size =', pool.value.length)
-      } else {
-        DEBUG && console.warn(TAG, '[meili] search returns 0 hits, fallback to JSON')
-      }
-    } catch (e) {
-      DEBUG && console.warn(TAG, '[meili] search failed, fallback to JSON:', e)
-    }
-
-    // 2) 如果 Meili 没拿到有效数据，再走原来的 JSON 逻辑
-    if (!pool.value.length) {
-      const baseUrl = makeVersionedUrl(withBase('data/random-index.json'))
-
-      const stripped = (() => {
-        try {
-          const u = new URL(baseUrl, location.origin)
-          const seg = u.pathname.match(/^\/([^/]+)\/(.*)$/)
-          if (seg) {
-            const first = seg[1]
-            if (/^(demo-[\w.-]+|v[\w.-]+)$/i.test(first)) {
-              return makeVersionedUrl(`/${seg[2]}`)
-            }
+    // 去掉运行时 base 的简易版本（匹配 /demo-* 或 /v* 这类前缀，回退到根）
+    const stripped = (() => {
+      try {
+        const u = new URL(baseUrl, location.origin)
+        const seg = u.pathname.match(/^\/([^/]+)\/(.*)$/)
+        if (seg) {
+          const first = seg[1]
+          if (/^(demo-[\w.-]+|v[\w.-]+)$/i.test(first)) {
+            return makeVersionedUrl(`/${seg[2]}`)
           }
-        } catch {}
-        return null
-      })()
+        }
+      } catch {}
+      return null
+    })()
 
-      const candidates = Array.from(
-        new Set([
-          baseUrl,
-          makeVersionedUrl('/data/random-index.json'),
-          stripped ?? undefined,
-        ].filter(Boolean) as string[])
-      )
+    // 候选列表：withBase 版本 / 根路径版本 / 自动剥前缀版本（去重）
+    const candidates = Array.from(
+      new Set([
+        baseUrl,
+        makeVersionedUrl('/data/random-index.json'),
+        stripped ?? undefined,
+      ].filter(Boolean) as string[])
+    )
 
-      const json = await tryFetch<any>(candidates)
+    // B) 先尝试从 JSON 读全站索引
+    const json = await tryFetch<any>(candidates)
 
-      if (json) {
-        pool.value = normalizeIndex(json)
-        DEBUG && console.info(TAG, 'normalizeIndex ->', pool.value.length)
-      } else {
-        // 3) JSON 也失败：兜底扫描页面链接
-        console.warn(`${TAG} all fetch candidates failed, fallback to document scan.`)
-        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))
-        pool.value = collectFromDocument()
-        DEBUG && console.info(TAG, 'collectFromDocument ->', pool.value.length)
-      }
+    if (json) {
+      // 不在这里按 href 去重：允许同页面的“summary/quote”并存
+      pool.value = normalizeIndex(json)
+      DEBUG && console.info(TAG, 'normalizeIndex ->', pool.value.length)
+    } else {
+      // C) 全部失败：兜底扫描页面链接（只保留站内 .html）
+      console.warn(`${TAG} all fetch candidates failed, fallback to document scan.`)
+      // 双 RAF 等待 DOM 稳定（一些路由/渲染情况下更保险）
+      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))
+      pool.value = collectFromDocument()
+      DEBUG && console.info(TAG, 'collectFromDocument ->', pool.value.length)
     }
 
-    // 4) 清洗：排除首页/当前页，避免“自我推荐”
+    // D) 清洗：排除首页/当前页，避免“自我推荐”
     const beforeFilter = pool.value.length
     const cur = normalize(location.pathname)
     pool.value = pool.value.filter(i => {
@@ -251,6 +187,11 @@ export function useRandomPool() {
     方法：sample
     作用：
       - 从池中随机抽取 n 条项目。
+      - 去重策略：同一 normalize(href) 只取 1 条（避免相同页面的多种“版本”重复展示）。
+    参数：
+      - n: number — 期望抽样数量
+    返回：
+      - RandomItem[] — 实际抽到的条目（长度 ≤ n）
   */
   const sample = (n: number): RandomItem[] => {
     const seen = new Set<string>()
@@ -272,7 +213,13 @@ export function useRandomPool() {
   /*
     方法：resolveLink
     作用：
-      - 把“站内 path”转换为“最终可跳转 URL”。
+      - 把“站内 path”（如 /foo/bar.html 或 foo/bar.html）转换为“最终可跳转 URL”。
+      - 优先使用 VuePress 的 base（withBase('/')）；若不可用，再根据运行时路径自动识别 /demo-* 或 /v* 前缀。
+      - 最后兜底：不加任何前缀，直接返回标准化的 path。
+    参数：
+      - p: string — 目标页面的站内路径
+    返回：
+      - string — 最终可跳转 URL（带或不带前缀）
   */
   const resolveLink = (p: string) => {
     const path = ensureLeadingSlash(p)
@@ -299,8 +246,22 @@ export function useRandomPool() {
   return { pool, loaded, load, sample, resolveLink }
 }
 
-/* ================= 工具函数（原样保留） ================ */
+/* ================= 工具函数 ================ */
 
+/*
+  函数：normalizeIndex
+  作用：
+    - 解析 random-index.json，生成 RandomItem[]。
+    - 支持两种来源结构：
+      1) { pages: [...] }（推荐）
+      2) 直接数组 [...]
+  规则：
+    - 仅保留站内 .html 且非顶层页的条目。
+    - 一个条目可产出多条 RandomItem：
+        * summary → variant: 'summary'
+        * quote   → variant: 'quote'
+        * 只有 excerpt 或都没有 → variant: 'excerpt'
+*/
 function normalizeIndex(json: any): RandomItem[] {
   if (!json) return []
 
@@ -339,6 +300,13 @@ function normalizeIndex(json: any): RandomItem[] {
   return out
 }
 
+/*
+  函数：collectFromDocument
+  作用：
+    - 当 JSON 加载失败时，从当前文档中收集所有 a[href]，筛出“本站 .html”，并去除顶层页。
+  返回：
+    - RandomItem[]（初始均为 variant: 'excerpt'）
+*/
 function collectFromDocument(): RandomItem[] {
   const anchors = Array.from(document.querySelectorAll<HTMLAnchorElement>('a'))
   const items = anchors
@@ -352,11 +320,23 @@ function collectFromDocument(): RandomItem[] {
   return uniqueByHref(items)
 }
 
+/*
+  函数：isTopPage
+  作用：
+    - 判断是否“顶层页”（/、/index.html、/README.html），这些页不参与推荐。
+*/
 function isTopPage(p: string): boolean {
   const x = normalize(p)
   return x === '/' || /\/index\.html$/i.test(x) || /\/README\.html$/i.test(x)
 }
 
+/*
+  函数：uniqueByHref
+  作用：
+    - 对 RandomItem[] 按 normalize(href) 做一次“每个 href 只留一条”的去重。
+  使用场景：
+    - 仅在 fallback 的文档收集路径中使用（JSON 模式允许同页多变体并存）。
+*/
 function uniqueByHref(list: RandomItem[]): RandomItem[] {
   const m = new Map<string, RandomItem>()
   list.forEach(i => {
@@ -366,10 +346,25 @@ function uniqueByHref(list: RandomItem[]): RandomItem[] {
   return [...m.values()]
 }
 
+/*
+  函数：ensureLeadingSlash
+  作用：
+    - 确保路径以 / 开头，便于与 base 拼接。
+*/
 function ensureLeadingSlash(p: string) {
   return p.startsWith('/') ? p : `/${p}`
 }
 
+/*
+  函数：normalize
+  作用：
+    - 将任意 href（绝对/相对/含 origin）标准化为“站内路径”（以 / 开头、不含 base 前缀）。
+  步骤：
+    1) 用 new URL 取 pathname（失败则保留原值）。
+    2) ensureLeadingSlash 统一补前导 /。
+    3) 计算所有“可能的 base 前缀”（运行时 withBase('/')、自动识别的 /demo-* 或 /v*、手动维护的 /ZenithWorld/）。
+    4) 从最长匹配开始剥离一个已知 base，得到纯站内路径。
+*/
 function normalize(href: string): string {
   let path = href
   try {
@@ -377,8 +372,10 @@ function normalize(href: string): string {
   } catch {}
   path = ensureLeadingSlash(path)
 
+  // 运行时的 VuePress base（可能为 '/' 或 '/xxx/'）
   const runtimeBase = normalizeBase(withBase('/').replace(location.origin, ''))
 
+  // 自动识别的 demo-/v* 前缀
   const autoBases: string[] = []
   const seg = location.pathname.match(/^\/([^/]+)\//)
   if (seg) {
@@ -388,8 +385,10 @@ function normalize(href: string): string {
     }
   }
 
+  // 手工维护的其它可能前缀（可按需增减）
   const manualBases = ['/ZenithWorld/']
 
+  // 归一化、去空、按长度倒序（保证最长优先匹配）
   const knownBases = [runtimeBase, ...autoBases, ...manualBases]
     .filter(Boolean)
     .map(normalizeBase)
@@ -406,6 +405,11 @@ function normalize(href: string): string {
   return path
 }
 
+/*
+  函数：normalizeBase
+  作用：
+    - 规范化 base：保证前后都带斜杠（如 'foo' -> '/foo/'，'/' -> '/'）
+*/
 function normalizeBase(b: string): string {
   if (!b) return '/'
   let x = b
