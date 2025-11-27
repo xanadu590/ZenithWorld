@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+  # 定时任务：每天凌晨 02:00（北京时间）
+  schedule:
+    - cron: "0 18 * * *"
+
 jobs:
   scrape:
     runs-on: ubuntu-latest
@@ -24,4 +28,4 @@ jobs:
             -e MEILISEARCH_API_KEY=$API_KEY \
             -v $CONFIG_FILE_PATH:/docs-scraper/config.json \
             getmeili/docs-scraper:latest \
-            docs_scraper config.json
+            pipenv run ./docs_scraper config.json
