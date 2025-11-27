@@ -46,7 +46,7 @@ const MEILI_SEARCH_KEY =
 
 const MEILI_INDEX =
   (import.meta as any).env?.VITE_MEILI_INDEX ||
-  'docs' // 改成你真实的 index 名
+  'characters' // 改成你真实的 index 名
 
 // 创建全局 Meili 客户端和索引实例（多个页面复用）
 const meiliClient = new MeiliSearch({
