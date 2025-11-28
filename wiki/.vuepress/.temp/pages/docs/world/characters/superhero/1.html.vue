@@ -7,6 +7,7 @@
     { id: 3, title: '官方站点',   to: 'https://example.com',   x: 72, y: 68, w: 12, h: 10 }
   ]"
   :showLabel="true"
-/></div></template>
+/>
+</div></template>
 
 

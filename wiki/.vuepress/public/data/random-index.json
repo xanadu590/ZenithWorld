@@ -6,9 +6,9 @@
       "excerpt": "<WorldTimeline :items=\" { date: '2000年', title: '世纪末战争', detail: '五大势力首次交锋，世界秩序崩塌。\\n 123' }, { date: '2020年', title: '巅峰"
     },
     {
-      "title": "[2][WizardHope]",
+      "title": "超级英雄一览",
       "path": "/docs/world/characters/superhero/2.html",
-      "excerpt": "2WizardHope 基本信息 姓名："
+      "excerpt": "超级英雄一览 这个页面的唯一作用：给搜索爬虫提供所有角色的真实链接。 灵动骑士 天灾 HearTone M·A·Y ……把你所有角色都列上来"
     },
     {
       "title": "[3][WizardHope]",
