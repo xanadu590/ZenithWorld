@@ -1,5 +1,6 @@
 ---
 layout: TeamLineupLayout
+title: 超级英雄
 teamName: 巅峰议会
 nosearch: true
 teamSubtitle: 世界实际的幕后掌控者 · 巅峰宇宙的最高决策机构
