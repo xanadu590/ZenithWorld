@@ -1,5 +1,4 @@
-<template><div><h1 id="灵动骑士" tabindex="-1"><a class="header-anchor" href="#灵动骑士"><span>灵动骑士</span></a></h1>
-<div class="ai-row">
+<template><div><div class="ai-row">
 <AIMedia src="/images/EtherealKnightCombatSuit.jpg" caption="战斗状态"/>
 <AIMedia src="/images/EtherealKnightEverydayWear.jpg" caption="常服"/>
 </div>
