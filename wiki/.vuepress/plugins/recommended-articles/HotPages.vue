@@ -34,7 +34,7 @@
 
 import { ref, onMounted, computed } from "vue";
 // 这是挂在构建期生成的临时模块，路径不要带 .js 后缀
-import { nosearchPaths } from "@temp/nosearch/nosearchPaths";
+import { nosearchPaths } from "@temp/nosearch/nosearchPaths.js";
 
 const API_BASE = "https://comment.zenithworld.top";
 

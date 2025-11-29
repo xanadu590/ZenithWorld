@@ -1,5 +1,6 @@
 ---
 home: true
+nosearch: true
 icon: user
 title: 角色介绍
 bgImageStyle:

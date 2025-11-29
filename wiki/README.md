@@ -1,5 +1,6 @@
 ---
 home: true
+nosearch: true
 icon: house
 title: 巅峰世界
 heroImage: /images/LOGO-light.jpg
