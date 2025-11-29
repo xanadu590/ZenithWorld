@@ -1,7 +1,7 @@
 ---
 title: 赤听
 sidebar: false
-categroy:
+category:
 - 人类
 - 英雄
 - 魔法少女

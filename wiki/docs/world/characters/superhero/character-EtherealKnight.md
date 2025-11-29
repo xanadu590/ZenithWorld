@@ -1,7 +1,7 @@
 ---
 title: 灵动骑士
 sidebar: false
-categroy:
+category:
 - 人类
 - 英雄
 - 异能者

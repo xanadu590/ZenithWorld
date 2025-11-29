@@ -1,7 +1,7 @@
 ---
 title: 巫师希望
 sidebar: false
-categroy:
+category:
 - 人类
 - 英雄
 - 魔法师

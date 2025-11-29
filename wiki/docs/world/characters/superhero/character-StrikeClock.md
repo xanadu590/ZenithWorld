@@ -1,7 +1,7 @@
 ---
 title: 警钟
 sidebar: false
-categroy:
+category:
 - 人类
 - 英雄
 - 黑科技使用者

@@ -1,7 +1,7 @@
 ---
 title: 月五
 sidebar: false
-categroy:
+category:
 - 人类
 - 英雄
 - 异能者
