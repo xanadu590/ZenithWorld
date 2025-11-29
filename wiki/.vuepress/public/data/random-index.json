@@ -1,6 +1,11 @@
 {
   "pages": [
     {
+      "title": "高级搜索",
+      "path": "/docs/advanced-search.html",
+      "excerpt": "这里是巅峰世界百科的 高级搜索。你可以根据「人物 / 城市 / 组织 / 概念」等分类来筛选结果。 <MeiliFilterSearch /"
+    },
+    {
       "title": "世界大事年表",
       "path": "/docs/timeline.html",
       "excerpt": "<WorldTimeline :items=\" { date: '2000年', title: '世纪末战争', detail: '五大势力首次交锋，世界秩序崩塌。\\n 123' }, { date: '2020年', title: '巅峰"
