@@ -1,19 +1,20 @@
 <!-- .vuepress/plugins/recommended-articles/HotPages.vue -->
 <template>
   <div class="hot-pages">
-    <!-- 上方标题：如 “🔥 热门文章” -->
+    <!-- 模块标题（可选） -->
     <h2 v-if="title">{{ title }}</h2>
 
     <!-- 加载 / 错误状态 -->
     <div v-if="loading">加载热门文章中…</div>
     <div v-else-if="error" class="error">加载失败，请稍后重试</div>
 
-    <!-- 真正的热门列表 -->
+    <!-- 热门文章列表 -->
     <ul v-else>
       <li v-for="page in hotList" :key="page.path" class="hot-item">
         <RouterLink :to="page.path" class="hot-link">
-          <!-- 标题显示用 formatTitle，优先用 VuePress 的页面标题 -->
+          <!-- ⭐ 显示用标题：经过“标题映射 + 清洗” -->
           <span class="hot-title">{{ formatTitle(page) }}</span>
+          <!-- ⭐ 真实访问量（pv） -->
           <span class="hot-pv">🔥 {{ page.hotScore }} 次访问</span>
         </RouterLink>
       </li>
@@ -22,74 +23,91 @@
 </template>
 
 <script setup lang="ts">
-/*
-  HotPages 组件：使用 Twikoo 的 /api/popular 真实访问量，展示热门文章列表。
-
-  ⭐ 核心设计：
-  1. PV & 排名 来源：Twikoo 后端 /api/popular
-  2. 标题 来源：VuePress 页面数据（frontmatter.title / page.title）
-     - 这样可以避免 Twikoo 里历史遗留的“巅峰世界”旧标题
-  3. 支持排除逻辑：
-     - 手动黑名单 excludePaths
-     - 所有 frontmatter 写了 nosearch: true 的页面（由 nosearch 插件生成）
-
-  props:
-    - title?: string  → 模块标题，如 “🔥 热门文章”
-    - limit?: number  → 显示条数（默认 10）
-    - days?: number   → 统计多少天内的访问量（默认 7）
-*/
+/**
+ * HotPages 组件
+ * =============
+ * 目标：用 Twikoo 统计到的“真实访问量（pv）”展示热门文章列表，
+ *       但标题要和 RecentPages 一样，用 VuePress 自己的页面标题。
+ *
+ * 一、数据来源
+ * -----------
+ * 1) 热度数据（pv）：Twikoo 后端
+ *    GET https://comment.zenithworld.top/api/popular?days=7&limit=10
+ *
+ *    items: { title, path, pv }
+ *    - title：当时记录的 document.title（很多是「巅峰世界」或空）
+ *    - path：页面路径（关键字段）
+ *    - pv：真实访问量
+ *
+ * 2) 标题映射：构建期生成的 recommended-pages.json
+ *    GET /data/recommended-pages.json
+ *
+ *    items: { title, path, hotScore, lastUpdated }
+ *    - 这里的 title 是 VuePress 页面真正的标题（和 RecentPages 用的一样）
+ *
+ * 我们的做法是：
+ *   - 用 Twikoo 的 path + pv 作为热门基础数据
+ *   - 再用 /data/recommended-pages.json 把 path → title 映射出来
+ *   - 最终标题优先用映射的 title，只有找不到时才兜底用 Twikoo 的 title 或路径片段
+ *
+ * 二、自动排除
+ * -----------
+ * 通过 isExcluded() 统一控制：
+ *   1) excludePaths：手动黑名单
+ *   2) nosearchPaths：所有 frontmatter 写了 nosearch: true 的页面
+ */
 
 import { ref, onMounted, computed } from "vue";
-// 运行时由 VuePress 注入的临时文件，编辑器找不到所以用 ts-ignore
-// 里面是所有 frontmatter.nosearch === true 的页面路径
-// 例如：["/docs/xxx.html", "/docs/world/characters/..."]
+// 运行时由 VuePress 注入，编辑器可能找不到，忽略类型检查即可
 // @ts-ignore
 import { nosearchPaths } from "@temp/nosearch/nosearchPaths.js";
-// VuePress 提供的所有页面数据访问接口
-// 用它来根据 path 取到当前站点的真实标题
-// @ts-ignore
-import { usePagesData } from "@vuepress/client";
 
 const API_BASE = "https://comment.zenithworld.top";
 
-/** 内部使用的页面结构 */
+/** 热门页面的内部结构（基于 Twikoo） */
 interface PageMeta {
-  title: string;      // 最终展示用标题（经过修正）
-  rawTitle: string;   // Twikoo 返回的原始 title（只用于调试）
-  path: string;       // 页面路径，如 "/docs/world/xxx.html"
-  hotScore: number;   // 热度 = pv
+  title: string;   // Twikoo 记录的原始标题（可能没用）
+  path: string;    // 页面路径（匹配用关键）
+  hotScore: number; // 真实访问量 pv
 }
 
-/** Twikoo /api/popular 原始返回结构 */
+/** Twikoo /api/popular 返回的结构 */
 interface PopularItem {
   title: string;
   path: string;
   pv: number;
 }
 
-/** 组件 props 定义 */
+/** 构建期 JSON 里的结构（只取我们要的字段） */
+interface TitleItem {
+  title: string;
+  path: string;
+}
+
+/** 组件 props */
 const props = defineProps<{
   title?: string;
   limit?: number;
   days?: number;
 }>();
 
-/** 状态：数据 / 加载 / 错误 */
+/** 状态：热门页面列表 / 标题映射 / 加载 / 错误 */
 const pages = ref<PageMeta[]>([]);
+const titleMap = ref<Record<string, string>>({}); // ⭐ path → 标题 映射
 const loading = ref(true);
 const error = ref(false);
 
-/** 配置：条数 & 天数 */
+/** 展示条数、统计天数 */
 const limit = computed(() => props.limit ?? 10);
 const days = computed(() => props.days ?? 7);
 
-/** ① 手动排除的路径（黑名单） */
+/** 手动排除路径（黑名单） */
 const excludePaths = [
-  // 例如想永远不展示高级搜索页，可以这样写：
   // "/docs/advanced-search.html",
+  // "/docs/tmp/test.html",
 ];
 
-/** 统一规范 path：去掉 index.html / .html 和末尾 /，便于比较 */
+/** 工具：规范 path（去掉 index.html、.html 和末尾 /） */
 function normalizePath(path: string): string {
   if (!path) return "/";
   path = path.replace(/index\.html$/, "");
@@ -98,91 +116,59 @@ function normalizePath(path: string): string {
   return path || "/";
 }
 
-/** 判断一个路径是否需要被排除（黑名单 + nosearch） */
+/** 判断某个 path 是否应该被排除（黑名单 + nosearch） */
 function isExcluded(rawPath: string): boolean {
   const norm = normalizePath(rawPath);
 
-  // a. 手动黑名单
   const inStatic = excludePaths.some(
     (ex) => normalizePath(ex) === norm
   );
 
-  // b. frontmatter.nosearch === true 的页面
   const inNosearch = (nosearchPaths as string[]).some(
     (p) => normalizePath(p) === norm
   );
 
-  // 调试时可以打开这行看看具体命中情况
-  console.log("[HotPages] check path", { raw: rawPath, norm, inStatic, inNosearch });
-
   return inStatic || inNosearch;
 }
 
-/** ========= ② 用 VuePress 的页面数据修正标题 ========= */
+/** 读取 /data/recommended-pages.json，构建 path → title 映射表 */
+async function loadTitleMap() {
+  try {
+    const res = await fetch("/data/recommended-pages.json");
+    if (!res.ok) return;
 
-const pagesData = usePagesData();
+    const list = (await res.json()) as TitleItem[];
 
-/** 根据 Twikoo 的 path 找到对应的 VuePress 页面 key */
-function resolvePageDataKey(path: string): string | null {
-  // 优先使用完整路径
-  if (pagesData[path]) return path;
-
-  // 如果带 hash（#xxx），尝试去掉 hash 部分再查一次
-  const base = path.split("#")[0];
-  if (pagesData[base]) return base;
-
-  // 再尝试补一个 .html
-  if (!base.endsWith(".html") && pagesData[`${base}.html`])
-    return `${base}.html`;
-
-  return null;
-}
-
-/** 根据 VuePress 页面数据覆盖错误 title */
-async function patchTitlesWithPageData() {
-  const tasks = pages.value.map(async (p) => {
-    const key = resolvePageDataKey(p.path);
-    if (!key) return;
-
-    try {
-      const loader = pagesData[key];
-      const data = await loader(); // { title, frontmatter, ... }
-      const fm: any = data.frontmatter || {};
-
-      // 标题优先级：frontmatter.title > data.title > Twikoo 原始标题
-      const realTitle: string =
-        (fm.title as string) ||
-        (data.title as string) ||
-        p.rawTitle ||
-        p.title;
-
-      if (realTitle && realTitle !== p.title) {
-        p.title = realTitle;
+    const map: Record<string, string> = {};
+    for (const item of list) {
+      const key = normalizePath(item.path);
+      if (item.title) {
+        map[key] = item.title;
       }
-    } catch (e) {
-      console.warn("[HotPages] load pageData failed", p.path, e);
     }
-  });
-
-  await Promise.all(tasks);
+    titleMap.value = map;
+  } catch {
+    // 失败就算了，只是标题会退回到“slug 兜底”的逻辑
+  }
 }
 
-/** ========= ③ 拉取热门访问数据 + 过滤 + 修正标题 ========= */
-
+/** 核心：组件挂载后，同时拉热门数据和标题映射 */
 onMounted(async () => {
   loading.value = true;
   error.value = false;
 
   try {
-    const url = `${API_BASE}/api/popular?days=${days.value}&limit=${
+    const popularUrl = `${API_BASE}/api/popular?days=${days.value}&limit=${
       limit.value * 2
     }`;
-    console.log("[HotPages] fetch url =", url);
 
-    const res = await fetch(url);
-    const data = await res.json();
+    // 并行请求：热门数据 + 标题映射
+    const [popularRes] = await Promise.all([
+      fetch(popularUrl),
+      loadTitleMap(),
+    ]);
 
-    console.log("[HotPages] raw api data =", data);
+    const data = await popularRes.json();
 
     if (!data.ok || !Array.isArray(data.items)) {
       error.value = true;
@@ -191,20 +177,13 @@ onMounted(async () => {
 
     const items = data.items as PopularItem[];
 
-    // 1. 先把 Twikoo 数据转成内部格式，并按 isExcluded 过滤
     pages.value = items
       .map((it) => ({
-        title: it.title || "",
-        rawTitle: it.title || "",
+        title: it.title,
         path: it.path,
         hotScore: it.pv,
       }))
       .filter((p) => !isExcluded(p.path));
-
-    // 2. 再用 VuePress 的页面数据覆盖掉错误标题
-    await patchTitlesWithPageData();
-
-    console.log("[HotPages] pages after patch =", pages.value);
   } catch (e) {
     console.error("加载热门文章失败", e);
     error.value = true;
@@ -213,24 +192,52 @@ onMounted(async () => {
   }
 });
 
-/** ========= ④ 排序 + 截断（最终展示列表） ========= */
-
+/** 计算属性：按访问量排序 + 截断到 limit */
 const hotList = computed(() => {
-  const list = [...pages.value]
+  return [...pages.value]
     .sort((a, b) => b.hotScore - a.hotScore)
     .slice(0, limit.value);
-
-  console.log("[HotPages] final hotList =", list);
-  return list;
 });
 
-/** ========= ⑤ 标题展示函数 =========
- * 此时 page.title 已经是“修正后的标题”，这里再兜底一次：
- * - 正常情况：显示修正后的 title
- * - 实在拿不到：最后用 path 顶着
+/**
+ * 标题显示逻辑：
+ *
+ * 1. 优先从 titleMap（/data/recommended-pages.json）中查真正的页面标题。
+ *    -> 这样就能和 RecentPages 完全一致。
+ *
+ * 2. 如果映射里没有，再看 Twikoo 记录的 title：
+ *    - 去掉尾部的「| 巅峰世界」
+ *    - 如果为「巅峰世界」或空，就认为没用
+ *
+ * 3. 最后兜底：用路径最后一段（解码后）作为标题。
  */
 function formatTitle(page: PageMeta): string {
-  return (page.title || "").trim() || page.path;
+  const normPath = normalizePath(page.path);
+
+  // ① 先用构建期标题映射（和 RecentPages 一致）
+  const mapped = titleMap.value[normPath];
+  if (mapped && mapped.trim()) return mapped.trim();
+
+  // ② 再尝试使用 Twikoo 记录的标题做清洗
+  let t = (page.title || "").trim();
+
+  // 去掉站点后缀「| 巅峰世界」
+  t = t.replace(/\s*\|\s*巅峰世界\s*$/u, "").trim();
+
+  // 如果 title 合理，就直接用
+  if (t && !/^巅峰世界$/u.test(t)) {
+    return t;
+  }
+
+  // ③ 最后兜底：用路径最后一段
+  const segs = normPath.split("/").filter(Boolean);
+  let last = segs[segs.length - 1] || "";
+  try {
+    last = decodeURIComponent(last);
+  } catch {
+    // ignore
+  }
+  return last || normPath;
 }
 </script>
 
