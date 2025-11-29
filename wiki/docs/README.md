@@ -33,6 +33,17 @@ highlights:
         details: 神明的从属，拥有分散的神权。
         link: /docs/worldmap.md
 
+      - title: 世界地图
+        icon: star
+        details: 神明的从属，拥有分散的神权。
+        link: /docs/worldmap.md
+
+      - title: 热门文章
+        icon: star
+        details: 神明的从属，拥有分散的神权。
+        link: /docs/hotpages.md
+
+
   - header: 角色总览
     description: 这个世界是属于少数精英的世界，他们是舞台的主角。
     image: /image/LOGO-character.png
@@ -44,7 +55,6 @@ highlights:
     image: /image/LOGO-influence.png
     bgImage: https://theme-hope-assets.vuejs.press/bg/9-light.svg
     bgImageDark: https://theme-hope-assets.vuejs.press/bg/9-dark.svg
-    link: /docs/worldmap.md
 
   - header: 力量体系
     description: 就像创世神打翻了自己的调色盘，这个世界的力量体系多样而诡谲。
