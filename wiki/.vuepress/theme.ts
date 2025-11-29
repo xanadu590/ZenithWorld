@@ -172,7 +172,7 @@ export default hopeTheme({
 
     meilisearch: {
       host: "http://47.99.85.126:7700",
-      apiKey: "2873699d178c266076a0e57bbb60fc1aa1757a661d320a96be8eb09b26e15907",
+      apiKey: "77530e145cb0aad96892ce647ec783fe835f24233e8dbcb653ac175b041e31cf",
       indexUid: "wiki",
     },
 
