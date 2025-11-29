@@ -26,11 +26,6 @@
       "excerpt": "<MapJump src=\"/images/worldmap.jpg\" ratio=\"16/9\" :regions=\" { id: 1, title: '中域群体', to: '/docs/world/characters/superher"
     },
     {
-      "title": "十二主神",
-      "path": "/docs/world/concepts/twelveprimedeities/",
-      "excerpt": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。"
-    },
-    {
       "title": "灵动骑士",
       "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
       "excerpt": "<div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombatSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\"/images/EtherealKni"
@@ -119,6 +114,16 @@
       "title": "巫师希望",
       "path": "/docs/world/characters/superhero/character-WizardHope.html",
       "excerpt": "“生活也许很艰难，但是有家人和朋友在一起，我就有勇气面对。”"
+    },
+    {
+      "title": "超级英雄",
+      "path": "/docs/world/characters/superhero/",
+      "excerpt": "这里可以写一点团体的文字介绍。 比如巅峰议会的成立历史、议会目标、对世界格局的影响等等。 下面也可以继续正常写 Markdown 内容： 组织结构 议会会议制度 与各团体的关系 灵动骑士 天灾 HearTone M·A·Y ……把你所有角色"
+    },
+    {
+      "title": "十二主神",
+      "path": "/docs/world/concepts/twelveprimedeities/",
+      "excerpt": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。"
     },
     {
       "title": "异常事物管理局",
