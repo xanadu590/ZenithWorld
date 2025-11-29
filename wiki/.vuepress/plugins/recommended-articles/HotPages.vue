@@ -25,15 +25,15 @@
     GET https://comment.zenithworld.top/api/popular?days=7&limit=10
 
   ✅ 已接入：
-    - hotScore = pv（真实访问量）
+    - hotScore = pv (真实访问量)
     - 支持 props: title / limit / days
     - 自动排除：
         1) 代码里的 excludePaths（手动写死）
-        2) 所有 frontmatter 写了 nosearch: true 的页面
+        2) 所有 frontmatter 写 nosearch: true 的页面
 */
 
 import { ref, onMounted, computed } from "vue";
-// 👇 这行是插件在构建期生成的“排除路径列表”
+// 这是挂在构建期生成的临时模块，路径不要带 .js 后缀
 import { nosearchPaths } from "@temp/nosearch/nosearchPaths";
 
 const API_BASE = "https://comment.zenithworld.top";
@@ -63,13 +63,13 @@ const error = ref(false);
 const limit = computed(() => props.limit ?? 10);
 const days = computed(() => props.days ?? 7);
 
-/** ① 手动排除表（需要的话可以在这里继续加） */
+/** === 手动排除的路径（简单黑名单）=== */
 const excludePaths = [
   // "/docs/advanced-search.html",
   // "/docs/tmp/test.html",
 ];
 
-/** 统一规范一下 path（去掉 index.html / .html 和末尾的 /） */
+/** 统一规范 path：去 index.html / .html 和末尾 / */
 function normalizePath(path: string): string {
   if (!path) return "/";
   path = path.replace(/index\.html$/, "");
@@ -78,22 +78,7 @@ function normalizePath(path: string): string {
   return path || "/";
 }
 
-/** ② 综合判断：是否需要排除 */
-function isExcluded(path: string): boolean {
-  const norm = normalizePath(path);
-
-  // a. 手动写在 excludePaths 里的
-  const inStatic = excludePaths.some((ex) => normalizePath(ex) === norm);
-
-  // b. frontmatter 里写了 nosearch: true 的
-  const inNosearch = (nosearchPaths as string[]).some(
-    (p) => normalizePath(p) === norm
-  );
-
-  return inStatic || inNosearch;
-}
-
-/** 核心：拉取热门访问数据 */
+/** 核心：拉取热门访问数据 + 过滤 nosearch */
 onMounted(async () => {
   loading.value = true;
   error.value = false;
@@ -101,7 +86,7 @@ onMounted(async () => {
   try {
     const res = await fetch(
       `${API_BASE}/api/popular?days=${days.value}&limit=${limit.value * 2}`
-      // *2：预留一些被过滤掉的名额
+      // *2：多拉一些，防止过滤掉之后数量不够
     );
     const data = await res.json();
 
@@ -113,13 +98,22 @@ onMounted(async () => {
     const items = data.items as PopularItem[];
 
     pages.value = items
+      // API 数据 → 内部结构
       .map((it) => ({
         title: it.title,
         path: it.path,
         hotScore: it.pv,
       }))
-      // 👇 在这里统一过滤掉不该显示的页面
-      .filter((p) => !isExcluded(p.path));
+      // 1）过滤手动 excludePaths
+      .filter((p) => {
+        const norm = normalizePath(p.path);
+        return !excludePaths.some((ex) => normalizePath(ex) === norm);
+      })
+      // 2）过滤 frontmatter: nosearch: true 的页面
+      .filter((p) => {
+        const norm = normalizePath(p.path);
+        return !nosearchPaths.includes(norm);
+      });
   } catch (e) {
     console.error("加载热门文章失败", e);
     error.value = true;
@@ -135,7 +129,7 @@ const hotList = computed(() => {
     .slice(0, limit.value);
 });
 
-/** 标题清洗：目前用最简单策略，直接显示文章标题 */
+/** 标题显示：现在直接用后端给的 title，如果为空就用 path 兜底 */
 function formatTitle(page: PageMeta): string {
   return (page.title || "").trim() || page.path;
 }
