@@ -20,20 +20,10 @@
 <script setup lang="ts">
 /*
   HotPages 组件：使用 Twikoo 的 /api/popular 真实访问量，展示热门文章列表
-
-  ✅ 数据来源：
-    GET https://comment.zenithworld.top/api/popular?days=7&limit=10
-
-  ✅ 已接入：
-    - hotScore = pv (真实访问量)
-    - 支持 props: title / limit / days
-    - 自动排除：
-        1) 代码里的 excludePaths（手动写死）
-        2) 所有 frontmatter 写 nosearch: true 的页面
 */
 
 import { ref, onMounted, computed } from "vue";
-// @ts-ignore
+// @ts-ignore  运行时由 VuePress 注入，编辑器报红无视即可
 import { nosearchPaths } from "@temp/nosearch/nosearchPaths.js";
 
 const API_BASE = "https://comment.zenithworld.top";
@@ -78,17 +68,44 @@ function normalizePath(path: string): string {
   return path || "/";
 }
 
+/** 调试用：检查某个 path 是否被排除，并打印详细信息 */
+function isExcluded(rawPath: string): boolean {
+  const norm = normalizePath(rawPath);
+
+  const inStatic = excludePaths.some(
+    (ex) => normalizePath(ex) === norm
+  );
+
+  const inNosearch = (nosearchPaths as string[]).some(
+    (p) => normalizePath(p) === norm
+  );
+
+  // ⭐ 调试日志：在浏览器控制台里看这行
+  console.log("[HotPages] check path", {
+    raw: rawPath,
+    norm,
+    inStatic,
+    inNosearch,
+  });
+
+  return inStatic || inNosearch;
+}
+
 /** 核心：拉取热门访问数据 + 过滤 nosearch */
 onMounted(async () => {
   loading.value = true;
   error.value = false;
 
   try {
-    const res = await fetch(
-      `${API_BASE}/api/popular?days=${days.value}&limit=${limit.value * 2}`
-      // *2：多拉一些，防止过滤掉之后数量不够
-    );
+    const url = `${API_BASE}/api/popular?days=${days.value}&limit=${
+      limit.value * 2
+    }`;
+    console.log("[HotPages] fetch url =", url);
+
+    const res = await fetch(url);
     const data = await res.json();
+
+    console.log("[HotPages] raw api data =", data);
 
     if (!data.ok || !Array.isArray(data.items)) {
       error.value = true;
@@ -104,16 +121,10 @@ onMounted(async () => {
         path: it.path,
         hotScore: it.pv,
       }))
-      // 1）过滤手动 excludePaths
-      .filter((p) => {
-        const norm = normalizePath(p.path);
-        return !excludePaths.some((ex) => normalizePath(ex) === norm);
-      })
-      // 2）过滤 frontmatter: nosearch: true 的页面
-      .filter((p) => {
-        const norm = normalizePath(p.path);
-        return !nosearchPaths.includes(norm);
-      });
+      // 统一用 isExcluded 来过滤
+      .filter((p) => !isExcluded(p.path));
+
+    console.log("[HotPages] pages after filter =", pages.value);
   } catch (e) {
     console.error("加载热门文章失败", e);
     error.value = true;
@@ -124,12 +135,15 @@ onMounted(async () => {
 
 /** 排序 + 截断 */
 const hotList = computed(() => {
-  return [...pages.value]
+  const list = [...pages.value]
     .sort((a, b) => b.hotScore - a.hotScore)
     .slice(0, limit.value);
+
+  console.log("[HotPages] final hotList =", list);
+  return list;
 });
 
-/** 标题显示：现在直接用后端给的 title，如果为空就用 path 兜底 */
+/** 标题显示：直接用后端给的 title，如果为空就用 path 兜底 */
 function formatTitle(page: PageMeta): string {
   return (page.title || "").trim() || page.path;
 }
