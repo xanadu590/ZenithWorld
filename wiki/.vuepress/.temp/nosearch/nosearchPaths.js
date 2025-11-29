@@ -1,5 +1,8 @@
 export const nosearchPaths = [
+  "/",
   "/docs/advanced-search.html",
   "/docs/hotpages.html",
-  "/docs/"
+  "/docs/",
+  "/docs/world/characters/",
+  "/docs/world/characters/superhero/"
 ];
