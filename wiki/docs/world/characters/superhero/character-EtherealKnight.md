@@ -11,6 +11,8 @@ tag:
 isOriginal: true
 ---
 
+# 灵动骑士
+
 <div class="ai-row">
 <AIMedia src="/images/EtherealKnightCombatSuit.jpg" caption="战斗状态"/>
 <AIMedia src="/images/EtherealKnightEverydayWear.jpg" caption="常服"/>

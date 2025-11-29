@@ -2,6 +2,7 @@
 home: true
 icon: house
 title: 巅峰世界
+nosearch: true
 heroImage: /images/LOGO-light.jpg
 heroImageDark: /images/LOGO-dark.jpg
 bgImageStyle:

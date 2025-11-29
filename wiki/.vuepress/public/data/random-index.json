@@ -6,6 +6,11 @@
       "excerpt": "这里是巅峰世界百科的 高级搜索。你可以根据「人物 / 城市 / 组织 / 概念」等分类来筛选结果。 <MeiliFilterSearch /"
     },
     {
+      "title": "🔥 热门文章",
+      "path": "/docs/hotpages.html",
+      "excerpt": "🔥 热门文章 <HotPages title=\"热门文章\" :limit=\"20\" / 🕓 最近更新 <RecentPages title=\"最近更新\" :limit=\"20\" /"
+    },
+    {
       "title": "世界大事年表",
       "path": "/docs/timeline.html",
       "excerpt": "<WorldTimeline :items=\" { date: '2000年', title: '世纪末战争', detail: '五大势力首次交锋，世界秩序崩塌。\\n 123' }, { date: '2020年', title: '巅峰"
@@ -14,11 +19,6 @@
       "title": "世界地图",
       "path": "/docs/worldmap.html",
       "excerpt": "<MapJump src=\"/images/worldmap.jpg\" ratio=\"16/9\" :regions=\" { id: 1, title: '中域群体', to: '/docs/world/characters/superher"
-    },
-    {
-      "title": "十二主神",
-      "path": "/docs/world/concepts/twelveprimedeities/",
-      "excerpt": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。"
     },
     {
       "title": "灵动骑士",
@@ -109,6 +109,11 @@
       "title": "巫师希望",
       "path": "/docs/world/characters/superhero/character-WizardHope.html",
       "excerpt": "“生活也许很艰难，但是有家人和朋友在一起，我就有勇气面对。”"
+    },
+    {
+      "title": "十二主神",
+      "path": "/docs/world/concepts/twelveprimedeities/",
+      "excerpt": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。"
     },
     {
       "title": "异常事物管理局",

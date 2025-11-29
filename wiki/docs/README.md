@@ -1,6 +1,7 @@
 ---
 home: true
 title: 世界观总览
+nosearch: true
 icon: laptop-code
 heroText: 世界观总览
 tagline: ZenithWorld,我正在创造的原创世界观百科

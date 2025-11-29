@@ -1,37 +1,28 @@
-<!-- recommended-articles/HotPages.vue -->
+<!-- .vuepress/plugins/recommended-articles/HotPages.vue -->
 
 <template>
   <div class="hot-pages">
-    <!--
-      props.title (可选)：组件上方显示的标题
-      例：<HotPages title="🔥 热门文章" />
-
-      如果没有传 title，就不显示这行 h2。
-    -->
+    <!-- 上方可选标题，比如“🔥 热门文章” -->
     <h2 v-if="title">{{ title }}</h2>
 
-    <!-- 加载状态 / 错误状态提示 -->
-    <div v-if="loading">Loading hot pages…</div>
-    <div v-else-if="error" class="error">{{ error }}</div>
+    <!-- 加载 / 错误状态 -->
+    <div v-if="loading">加载热门文章中…</div>
+    <div v-else-if="error" class="error">加载失败，请稍后重试</div>
 
-    <!-- 数据正常时展示“热门文章列表” -->
+    <!-- 正常数据：热门文章列表 -->
     <ul v-else>
       <li v-for="page in hotList" :key="page.path" class="hot-item">
         <!--
-          RouterLink:
-          - 点击后跳转到对应词条页面
-          - 左边显示处理过的标题
-          - 右边显示“热度值”（hotScore）
+          RouterLink：
+          - 左边显示清洗后的标题
+          - 右边显示真实访问量（hotScore = pv）
         -->
         <RouterLink :to="page.path" class="hot-link">
           <span class="hot-title">{{ formatTitle(page) }}</span>
-          <span class="hot-pv">
-            🔥 {{ page.hotScore ?? 0 }} 热度
-          </span>
+          <span class="hot-pv">🔥 {{ page.hotScore }} 次访问</span>
         </RouterLink>
 
-        <!-- 
-        下面这一小行是“最后更新时间”，可选 
+        <!-- 如果以后想加“最后更新时间”，可以在这里恢复
         <span v-if="page.lastUpdated" class="date">
           {{ formatDate(page.lastUpdated) }}
         </span>
@@ -45,95 +36,76 @@
 /*
   HotPages 组件：在侧边栏 / 页面中展示“热门文章列表”。
 
-  ✅ 数据来源：
-    - 默认从 /data/recommended-pages.json 读取一个数组
-      数组元素结构 PageMeta：
+  ✅ 数据来源（真实访问量）：
+    - 调用 Twikoo 后端：
+        https://comment.zenithworld.top/api/popular?days=7&limit=10
+
+      返回数据 PopularItem：
         {
-          title: string        // 原始标题（可能是“巅峰世界 | 巅峰世界”）
-          path: string         // 页面路径，如 "/docs/world/xxx.html"
-          hotScore: number     // 热度值（可以是访问量、综合评分等）
-          lastUpdated: number  // 最后更新时间的时间戳（毫秒），可选
+          title: string   // 文章标题
+          path: string    // 页面路径，如 "/docs/world/xxx.html"
+          pv: number      // 真实访问量（page view）
         }
 
-    - 这个 JSON 一般由你的脚本生成（比如结合真实 PV、更新时间计算一个 hotScore）
+    - 我们把 pv 映射为 PageMeta.hotScore，用来排序和显示。
 
-  ✅ 组件用途：
-    - 在任意页面中插入一个“热门词条”小模块
-    - 按 hotScore 从高到低排序，hotScore 相同时按 lastUpdated 从新到旧
-    - 标题会做一层“清洗和映射”，避免出现难看的路径/站点名
+  ✅ 过滤规则：
+    - 会自动跳过 frontmatter 中设置了 `nosearch: true` 的页面
+      （例如你不想让首页 / 一些测试页出现在热门列表里）
 
   ✅ 可配置 props：
     - title?: string   → 组件上方标题，如 "🔥 热门文章"
     - limit?: number   → 显示条数，默认 10
-    - src?: string     → 数据 JSON 的路径，默认 "/data/recommended-pages.json"
- */
+    - days?: number    → 统计近几天的访问量：
+                          7      = 近 7 天
+                          30     = 近 30 天
+                          36500  = 历史总访问（约 100 年）
+
+  ✅ 在 Markdown 中使用（例）：
+    ```vue
+    <HotPages title="🔥 热门文章" :limit="8" :days="30" />
+    ```
+*/
 
 import { ref, onMounted, computed } from "vue";
+import { usePages } from "vuepress/client";
+
+const API_BASE = "https://comment.zenithworld.top";
 
 interface PageMeta {
   title: string;
   path: string;
-  hotScore: number;
+  hotScore: number;        // 这里直接用 pv
   lastUpdated: number | null;
 }
 
-const props = defineProps<{ title?: string; limit?: number; src?: string }>();
-
-// 原始数据（从 JSON 读取）
-const pages = ref<PageMeta[]>([]);
-
-// 加载状态
-const loading = ref(true);
-const error = ref("");
-
-// JSON 文件地址与条数限制
-const src = props.src ?? "/data/recommended-pages.json";
-const limit = props.limit ?? 10;
-
-// 组件挂载后，从指定 src 拉取数据
-onMounted(async () => {
-  try {
-    const res = await fetch(src);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    pages.value = await res.json();
-  } catch (e: any) {
-    error.value = e.message;
-  } finally {
-    loading.value = false;
-  }
-});
-
-// 计算属性：按照 hotScore / lastUpdated 排序后，截取前 limit 条
-const hotList = computed(() => {
-  return [...pages.value]
-    .sort(
-      (a, b) =>
-        (b.hotScore ?? 0) - (a.hotScore ?? 0) || // 先按热度值降序
-        (b.lastUpdated ?? 0) - (a.lastUpdated ?? 0) // 热度相同再按更新时间
-    )
-    .slice(0, limit);
-});
-
-// 时间戳格式化为 YYYY-MM-DD
-function formatDate(ts: number | null) {
-  if (!ts) return "";
-  const d = new Date(ts);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
-    2,
-    "0"
-  )}-${String(d.getDate()).padStart(2, "0")}`;
+interface PopularItem {
+  title: string;
+  path: string;
+  pv: number;
 }
 
-/** ===== 标题清洗：模仿热门弹窗组件，统一显示效果 ===== */
+const props = defineProps<{
+  title?: string;
+  limit?: number;
+  days?: number;
+}>();
 
-// 某些特殊路径的“强制中文名映射”
-const pathTitleOverrides: Record<string, string> = {
-  "/": "首页",
-  "/docs/": "首页",
-  "/docs/advanced-search.html": "高级搜索",
-  "/docs/world/characters/superhero/": "角色列表",
-  // 以后有新的特殊页面，可以在这里继续加
-};
+// 所有页面元数据（用于读取 frontmatter.nosearch）
+const pagesData = usePages();
+
+// 原始热门数据（从 Twikoo /api/popular 读取）
+const pages = ref<PageMeta[]>([]);
+
+// 状态
+const loading = ref(true);
+const error = ref(false);
+
+// 限制条数 & 天数
+const limit = computed(() => props.limit ?? 10);
+const days = computed(() => props.days ?? 7);
+
+/** ========= 路径工具 & nosearch 检测 ========= **/
 
 // 清洗路径：去掉 index.html / .html 和结尾的 /
 function normalizePath(path: string): string {
@@ -143,6 +115,79 @@ function normalizePath(path: string): string {
   if (path.length > 1 && path.endsWith("/")) path = path.slice(0, -1);
   return path || "/";
 }
+
+// 判断某个路径对应的页面是否标记了 nosearch: true
+function isNoSearch(path: string): boolean {
+  const norm = normalizePath(path);
+  const page = pagesData.value.find((p) => normalizePath(p.path) === norm);
+  const fm = (page as any)?.frontmatter as any;
+  return fm?.nosearch === true;
+}
+
+/** ========= 挂载时从 Twikoo 拉取数据 ========= **/
+
+onMounted(async () => {
+  loading.value = true;
+  error.value = false;
+
+  try {
+    const res = await fetch(
+      `${API_BASE}/api/popular?days=${days.value}&limit=${limit.value}`
+    );
+    const data = await res.json();
+
+    if (!data.ok || !Array.isArray(data.items)) {
+      error.value = true;
+      return;
+    }
+
+    const items = data.items as PopularItem[];
+
+    // 映射为内部 PageMeta 结构，并过滤掉 nosearch 页面
+    pages.value = items
+      .filter((it) => !isNoSearch(it.path))
+      .map((it) => ({
+        title: it.title,
+        path: it.path,
+        hotScore: it.pv, // 🔥 真实访问量
+        lastUpdated: null,
+      }));
+  } catch (e) {
+    console.error("加载热门文章失败", e);
+    error.value = true;
+  } finally {
+    loading.value = false;
+  }
+});
+
+/** ========= 排序：按 hotScore（pv）降序 ========= **/
+
+const hotList = computed(() => {
+  return [...pages.value]
+    .sort((a, b) => b.hotScore - a.hotScore)
+    .slice(0, limit.value);
+});
+
+// 预留：如果以后 Twikoo 返回时间戳，可以用它格式化
+function formatDate(ts: number | null) {
+  if (!ts) return "";
+  const d = new Date(ts);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+/** ========= 标题清洗：模仿你原来的逻辑，统一显示效果 ========= **/
+
+// 某些特殊路径的“强制中文名映射”
+const pathTitleOverrides: Record<string, string> = {
+  "/": "首页",
+  "/docs/": "首页",
+  "/docs/advanced-search.html": "高级搜索",
+  "/docs/world/characters/superhero/": "角色列表",
+  // 以后有新的特殊页面，可以在这里继续加
+};
 
 // 核心：把原始 title/path 转成更好看的中文标题
 function formatTitle(page: PageMeta): string {
@@ -211,9 +256,14 @@ function formatTitle(page: PageMeta): string {
   font-size: 0.8rem;
 }
 
-/* 第二行：日期（如果有） */
+/* 第二行：日期（如果以后恢复） */
 .date {
   opacity: 0.6;
   font-size: 0.75em;
+}
+
+.error {
+  color: #dc2626;
+  font-size: 0.85rem;
 }
 </style>
