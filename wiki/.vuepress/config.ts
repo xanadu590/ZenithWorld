@@ -6,6 +6,8 @@ import { viteBundler } from '@vuepress/bundler-vite'
 
 import recommendedArticles from "./plugins/recommended-articles/index.js";
 
+import nosearchPlugin from "./plugins/nosearch/index.js";
+
 const isProd = process.env.NODE_ENV === 'production'
 
 export default defineUserConfig({
@@ -34,7 +36,9 @@ export default defineUserConfig({
   // shouldPrefetch: false,
 
    plugins: [
-    recommendedArticles()
+    recommendedArticles(),
+    nosearchPlugin()
+
   ],
 
 

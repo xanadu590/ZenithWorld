@@ -2,13 +2,13 @@
   {
     "title": "高级搜索",
     "path": "/docs/advanced-search.html",
-    "lastUpdated": 1764341183000,
+    "lastUpdated": 1764405068000,
     "hotScore": 0
   },
   {
     "title": "🔥 热门文章",
     "path": "/docs/hotpages.html",
-    "lastUpdated": 1764398930000,
+    "lastUpdated": 1764405068000,
     "hotScore": 0
   },
   {
@@ -24,9 +24,15 @@
     "hotScore": 0
   },
   {
+    "title": "十二主神",
+    "path": "/docs/world/concepts/twelveprimedeities/",
+    "lastUpdated": 1763641434000,
+    "hotScore": 0
+  },
+  {
     "title": "灵动骑士",
     "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
-    "lastUpdated": 1764043216000,
+    "lastUpdated": 1764405068000,
     "hotScore": 0
   },
   {
@@ -63,12 +69,6 @@
     "title": "巫师希望",
     "path": "/docs/world/characters/superhero/character-WizardHope.html",
     "lastUpdated": 1763559366000,
-    "hotScore": 0
-  },
-  {
-    "title": "十二主神",
-    "path": "/docs/world/concepts/twelveprimedeities/",
-    "lastUpdated": 1763641434000,
     "hotScore": 0
   },
   {
