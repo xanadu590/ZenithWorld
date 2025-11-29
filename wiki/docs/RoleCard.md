@@ -79,3 +79,6 @@
 - [天灾](/docs/world/characters/superhero/character-Scourge.html)
 - [HearTone](/docs/world/characters/superhero/character-HearTone.html)
 - [M·A·Y](/docs/world/characters/superhero/character-M-A-Y.html)
+- [character-Illustra](/docs/world/characters/superhero/character-Illustra.html)
+- [character-StrikeClock](/docs/world/characters/superhero/character-StrikeClock.html)
+- [character-WizardHope](/docs/world/characters/superhero/character-WizardHope.html)

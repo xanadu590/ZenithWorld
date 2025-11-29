@@ -1,4 +1,5 @@
 ---
+title: 世界地图
 sidebar: false
 ---
 
@@ -12,9 +13,3 @@ sidebar: false
   ]"
   :showLabel="true"
 />
-
-- [灵动骑士](/docs/world/characters/superhero/character-EtherealKnight.html)
-- [天灾](/docs/world/characters/superhero/character-Scourge.html)
-- [HearTone](/docs/world/characters/superhero/character-HearTone.html)
-- [M·A·Y](/docs/world/characters/superhero/character-M-A-Y.html)
-- ……把你所有角色都列上来

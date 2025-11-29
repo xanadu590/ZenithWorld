@@ -64,6 +64,11 @@ characters:
 - 组织结构
 - 议会会议制度
 - 与各团体的关系
+- [灵动骑士](/docs/world/characters/superhero/character-EtherealKnight.html)
+- [天灾](/docs/world/characters/superhero/character-Scourge.html)
+- [HearTone](/docs/world/characters/superhero/character-HearTone.html)
+- [M·A·Y](/docs/world/characters/superhero/character-M-A-Y.html)
+- ……把你所有角色都列上来
 
 
 
