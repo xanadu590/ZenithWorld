@@ -34,7 +34,7 @@
 
 import { ref, onMounted, computed } from "vue";
 // 👇 这行是插件在构建期生成的“排除路径列表”
-import { nosearchPaths } from "@temp/nosearch/nosearchPaths";
+import { nosearchPaths } from "@temp/nosearch/nosearchPaths.js";
 
 const API_BASE = "https://comment.zenithworld.top";
 
