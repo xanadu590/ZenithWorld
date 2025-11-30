@@ -29,7 +29,9 @@
     <!-- 状态提示 -->
     <div class="mfs-status" v-if="loading">正在搜索……</div>
     <div class="mfs-status" v-else-if="error">出错了：{{ error }}</div>
-    <div class="mfs-status" v-else-if="!results.length && searchedOnce">没有搜索结果</div>
+    <div class="mfs-status" v-else-if="!results.length && searchedOnce">
+      没有搜索结果
+    </div>
 
     <!-- 搜索结果 -->
     <ul class="mfs-results" v-if="results.length">
@@ -44,15 +46,21 @@
             <span v-if="inferType(hit)" class="mfs-tag">
               [{{ typeLabelMap[inferType(hit)!] || inferType(hit) }}]
             </span>
-            {{ hit.title || hit.hierarchy_lvl1 || hit.hierarchy_lvl0 || '(无标题)' }}
+            {{ hit.title || hit.hierarchy_lvl1 || hit.hierarchy_lvl0 || "(无标题)" }}
           </div>
+
           <div class="mfs-result-meta">
             <span v-if="hit.region">区域：{{ hit.region }}</span>
-            <span v-if="hit.tags?.length"> · 标签：{{ hit.tags.join(' / ') }}</span>
+            <span v-if="hit.tags?.length">
+              · 标签：{{ hit.tags.join(" / ") }}
+            </span>
           </div>
+
+          <!-- ⭐ 摘要：优先用 random-index 的 excerpt，组件内部已经填到 hit.summary 里 -->
           <div class="mfs-result-summary">
-            {{ hit.summary || hit.text || '（暂无摘要）' }}
+            {{ hit.summary || hit.text || "（暂无摘要）" }}
           </div>
+
           <div class="mfs-result-url">{{ hit.url }}</div>
         </a >
       </li>
@@ -61,107 +69,219 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from "vue";
+
+/* =========================================================
+ * 一、MeiliSearch 基本配置（保持你原来的）
+ * ======================================================= */
 
 // ！！！这里替换成你自己的配置 ！！！
-const host = 'http://47.99.85.126:7700'   // 以后你有 https 域名再改
-const indexUid = 'wiki'
+const host = "http://47.99.85.126:7700"; // 以后你有 https 域名再改
+const indexUid = "wiki";
 const apiKey =
-  '77530e145cb0aad96892ce647ec783fe835f24233e8dbcb653ac175b041e31cf' // 千万不要填 Master Key
+  "77530e145cb0aad96892ce647ec783fe835f24233e8dbcb653ac175b041e31cf"; // 千万不要填 Master Key
 
-const keyword = ref('')
-const activeType = ref<string | null>(null)
-const results = ref<any[]>([])
-const loading = ref(false)
-const error = ref<string | null>(null)
-const searchedOnce = ref(false)
+const keyword = ref("");
+const activeType = ref<string | null>(null);
+const results = ref<any[]>([]);
+const loading = ref(false);
+const error = ref<string | null>(null);
+const searchedOnce = ref(false);
 
-// 分类按钮：对应六大目录
+/* =========================================================
+ * 二、分类按钮配置（与你原来完全一致）
+ * ======================================================= */
+
 const typeOptions: { value: string | null; label: string }[] = [
-  { value: null,        label: '全部' },
-  { value: 'character', label: '人物' },
-  { value: 'concept',   label: '概念' },
-  { value: 'faction',   label: '势力' },
-  { value: 'geography', label: '地理' },
-  { value: 'history',   label: '历史' },
-  { value: 'power',     label: '力量体系' },
-]
+  { value: null, label: "全部" },
+  { value: "character", label: "人物" },
+  { value: "concept", label: "概念" },
+  { value: "faction", label: "势力" },
+  { value: "geography", label: "地理" },
+  { value: "history", label: "历史" },
+  { value: "power", label: "力量体系" },
+];
 
 // type -> 中文显示名
 const typeLabelMap: Record<string, string> = {
-  character: '人物',
-  concept: '概念',
-  faction: '势力',
-  geography: '地理',
-  history: '历史',
-  power: '力量体系',
+  character: "人物",
+  concept: "概念",
+  faction: "势力",
+  geography: "地理",
+  history: "历史",
+  power: "力量体系",
+};
+
+/* =========================================================
+ * 三、random-index 简介数据：接入 /data/random-index.json
+ *    作用：给搜索结果补充更好看的“简介”
+ * ======================================================= */
+
+interface RandomIndexItem {
+  title: string;
+  path: string;
+  excerpt: string;
 }
+
+// 整个 random-index 的数据（来自脚本 gen-random-index.mjs）
+const randomIndex = ref<RandomIndexItem[]>([]);
+const randomIndexLoaded = ref(false);
+
+/**
+ * 统一规范路径格式：
+ * - 去掉域名（http://localhost:8080、https://zenithworld.top）
+ * - 去掉问号参数 (?q=xxx)
+ * - 保留 hash（#主标题），因为你的随机/热门里用到
+ * - 去掉末尾的 / （根路径 / 除外）
+ */
+function normalizePath(raw: string | undefined | null): string {
+  if (!raw) return "/";
+
+  let p = raw.trim();
+
+  // 1）去掉协议和域名
+  p = p.replace(/^https?:\/\/[^/]+/, "");
+
+  // 2）去掉 query，只保留 hash
+  const hashIndex = p.indexOf("#");
+  const queryIndex = p.indexOf("?");
+  if (queryIndex !== -1 && (hashIndex === -1 || queryIndex < hashIndex)) {
+    p = p.slice(0, queryIndex) + (hashIndex !== -1 ? p.slice(hashIndex) : "");
+  }
+
+  // 3）去掉末尾 /
+  if (p.length > 1 && p.endsWith("/")) p = p.slice(0, -1);
+
+  return p || "/";
+}
+
+/**
+ * 加载 /data/random-index.json
+ * - 只加载一次，多次调用会直接 return
+ * - 成功时把 data.pages 存入 randomIndex
+ */
+async function loadRandomIndex() {
+  if (randomIndexLoaded.value) return;
+
+  try {
+    const res = await fetch("/data/random-index.json");
+    const data = await res.json();
+    randomIndex.value = Array.isArray(data.pages) ? data.pages : [];
+    console.log("[Search] random-index loaded:", randomIndex.value.length);
+  } catch (e) {
+    console.error("[Search] load random-index failed:", e);
+  } finally {
+    randomIndexLoaded.value = true;
+  }
+}
+
+/**
+ * 给 Meili 的 hit 补充 summary 字段：
+ * - 优先用 random-index 中匹配 path 的 excerpt
+ * - 若找不到，就保持原来的 hit.summary / hit.text
+ */
+function attachSummary<T extends { url?: string; path?: string; summary?: string; text?: string }>(
+  hit: T
+) {
+  const hitPathNorm = normalizePath(hit.url || hit.path);
+
+  const match = randomIndex.value.find(
+    (it) => normalizePath(it.path) === hitPathNorm
+  );
+
+  const summaryFromIndex = match?.excerpt?.trim() || "";
+  const fallback = (hit.summary ?? "").trim() || (hit.text ?? "").trim();
+
+  return {
+    ...hit,
+    summary: summaryFromIndex || fallback,
+  };
+}
+
+/* =========================================================
+ * 四、类型推断 & 分类按钮逻辑
+ * ======================================================= */
 
 // 根据文档的字段 / url 推断类型
 function inferType(hit: any): string | null {
   // 如果以后你把 frontmatter 里的 type 抓进索引，这一句会优先使用真正的 type
-  if (hit.type) return hit.type as string
+  if (hit.type) return hit.type as string;
 
-  const url: string = hit.url || ''
+  const url: string = hit.url || "";
 
   // 根据 url 路径推断
-  if (url.includes('/world/characters/')) return 'character'
-  if (url.includes('/world/concepts/'))   return 'concept'
-  if (url.includes('/world/factions/'))   return 'faction'
-  if (url.includes('/world/geography/'))  return 'geography'
-  if (url.includes('/world/history/'))    return 'history'
-  if (url.includes('/world/power/'))      return 'power'
+  if (url.includes("/world/characters/")) return "character";
+  if (url.includes("/world/concepts/")) return "concept";
+  if (url.includes("/world/factions/")) return "faction";
+  if (url.includes("/world/geography/")) return "geography";
+  if (url.includes("/world/history/")) return "history";
+  if (url.includes("/world/power/")) return "power";
 
-  return null
+  return null;
 }
 
 function setType(val: string | null) {
   // 再点一下同一个按钮可以“取消筛选”
-  activeType.value = val === activeType.value ? null : val
-  search()
+  activeType.value = val === activeType.value ? null : val;
+  search();
 }
 
+/* =========================================================
+ * 五、搜索主流程：对接 Meili + 补充简介
+ * ======================================================= */
+
 async function search() {
-  searchedOnce.value = true
-  loading.value = true
-  error.value = null
+  searchedOnce.value = true;
+  loading.value = true;
+  error.value = null;
 
   try {
+    // 确保 random-index 已经加载（失败也没关系，只是少了一层简介来源）
+    await loadRandomIndex();
+
     const body: any = {
       q: keyword.value,
-      // 不再在后端 filter，只是多要一点结果，前端自己筛
+      // 不在后端 filter，只是多要一点结果，前端自己筛
       limit: 50,
-    }
+    };
 
     const res = await fetch(`${host}/indexes/${indexUid}/search`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify(body),
-    })
+    });
 
     if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`)
+      throw new Error(`HTTP ${res.status}`);
     }
 
-    const data = await res.json()
-    let hits: any[] = data.hits || []
+    const data = await res.json();
+    let hits: any[] = data.hits || [];
 
-    // 前端按类型筛选：通过 inferType 判断
+    // 按类型筛选：通过 inferType 判断
     if (activeType.value) {
-      hits = hits.filter((hit) => inferType(hit) === activeType.value)
+      hits = hits.filter((hit) => inferType(hit) === activeType.value);
     }
 
-    results.value = hits
+    // ⭐ 给每条结果补 summary（random-index 的 excerpt 优先）
+    results.value = hits.map((hit) => attachSummary(hit));
   } catch (e: any) {
-    console.error(e)
-    error.value = e.message || String(e)
+    console.error(e);
+    error.value = e.message || String(e);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
+
+/* 可选：组件挂载时先悄悄预加载 random-index，首搜会快一点 */
+onMounted(() => {
+  loadRandomIndex().catch(() => {
+    // 失败就算了，真正搜索时还会再尝试一次
+  });
+});
 </script>
 
 <style scoped>
