@@ -2,7 +2,7 @@
   "hash": "c2d85b91",
   "configHash": "3db848bf",
   "lockfileHash": "65b664a1",
-  "browserHash": "67f30504",
+  "browserHash": "b3dbe2cd",
   "optimized": {
     "@vue/devtools-api": {
       "src": "../../../../node_modules/.pnpm/@vue+devtools-api@7.7.7/node_modules/@vue/devtools-api/dist/index.js",
@@ -19,13 +19,19 @@
     "vue": {
       "src": "../../../../node_modules/.pnpm/vue@3.5.22/node_modules/vue/dist/vue.runtime.esm-bundler.js",
       "file": "vue.js",
-      "fileHash": "13518e3b",
+      "fileHash": "48e0cce4",
       "needsInterop": false
     },
     "vue-router": {
       "src": "../../../../node_modules/.pnpm/vue-router@4.5.1_vue@3.5.22/node_modules/vue-router/dist/vue-router.esm-bundler.js",
       "file": "vue-router.js",
-      "fileHash": "7d98465a",
+      "fileHash": "d7c8ab68",
+      "needsInterop": false
+    },
+    "vis-network/standalone": {
+      "src": "../../../../node_modules/.pnpm/vis-network@10.0.2_@egjs+ha_f290cb2dd351be2176f93d75a60a3958/node_modules/vis-network/standalone/esm/vis-network.mjs",
+      "file": "vis-network_standalone.js",
+      "fileHash": "49417da5",
       "needsInterop": false
     }
   },

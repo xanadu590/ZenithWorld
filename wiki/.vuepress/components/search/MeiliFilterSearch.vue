@@ -72,10 +72,9 @@
 import { ref, onMounted } from "vue";
 
 /* =========================================================
- * 一、MeiliSearch 基本配置（保持你原来的）
+ * 一、MeiliSearch 基本配置
  * ======================================================= */
 
-// ！！！这里替换成你自己的配置 ！！！
 const host = "http://47.99.85.126:7700"; // 以后你有 https 域名再改
 const indexUid = "wiki";
 const apiKey =
@@ -89,7 +88,7 @@ const error = ref<string | null>(null);
 const searchedOnce = ref(false);
 
 /* =========================================================
- * 二、分类按钮配置（与你原来完全一致）
+ * 二、分类按钮配置
  * ======================================================= */
 
 const typeOptions: { value: string | null; label: string }[] = [
@@ -102,7 +101,6 @@ const typeOptions: { value: string | null; label: string }[] = [
   { value: "power", label: "力量体系" },
 ];
 
-// type -> 中文显示名
 const typeLabelMap: Record<string, string> = {
   character: "人物",
   concept: "概念",
@@ -114,7 +112,6 @@ const typeLabelMap: Record<string, string> = {
 
 /* =========================================================
  * 三、random-index 简介数据：接入 /data/random-index.json
- *    作用：给搜索结果补充更好看的“简介”
  * ======================================================= */
 
 interface RandomIndexItem {
@@ -123,16 +120,21 @@ interface RandomIndexItem {
   excerpt: string;
 }
 
-// 整个 random-index 的数据（来自脚本 gen-random-index.mjs）
 const randomIndex = ref<RandomIndexItem[]>([]);
 const randomIndexLoaded = ref(false);
 
 /**
  * 统一规范路径格式：
- * - 去掉域名（http://localhost:8080、https://zenithworld.top）
- * - 去掉问号参数 (?q=xxx)
- * - 保留 hash（#主标题），因为你的随机/热门里用到
- * - 去掉末尾的 / （根路径 / 除外）
+ *  - 去掉协议和域名
+ *  - 去掉 query (?...) 和 hash (#...)
+ *  - 去掉末尾的 / （根路径 / 除外）
+ *
+ * 目的：
+ *   让这些地址视为同一页：
+ *   - /docs/foo/bar.html
+ *   - https://zenithworld.top/docs/foo/bar.html
+ *   - /docs/foo/bar.html#背景故事
+ *   - /docs/foo/bar.html?q=xx#标题
  */
 function normalizePath(raw: string | undefined | null): string {
   if (!raw) return "/";
@@ -142,11 +144,21 @@ function normalizePath(raw: string | undefined | null): string {
   // 1）去掉协议和域名
   p = p.replace(/^https?:\/\/[^/]+/, "");
 
-  // 2）去掉 query，只保留 hash
+  // 2）找到 ? 和 # 的最早出现位置，截断后面的
   const hashIndex = p.indexOf("#");
   const queryIndex = p.indexOf("?");
-  if (queryIndex !== -1 && (hashIndex === -1 || queryIndex < hashIndex)) {
-    p = p.slice(0, queryIndex) + (hashIndex !== -1 ? p.slice(hashIndex) : "");
+  let cutIndex = -1;
+
+  if (hashIndex !== -1 && queryIndex !== -1) {
+    cutIndex = Math.min(hashIndex, queryIndex);
+  } else if (hashIndex !== -1) {
+    cutIndex = hashIndex;
+  } else if (queryIndex !== -1) {
+    cutIndex = queryIndex;
+  }
+
+  if (cutIndex !== -1) {
+    p = p.slice(0, cutIndex);
   }
 
   // 3）去掉末尾 /
@@ -158,7 +170,6 @@ function normalizePath(raw: string | undefined | null): string {
 /**
  * 加载 /data/random-index.json
  * - 只加载一次，多次调用会直接 return
- * - 成功时把 data.pages 存入 randomIndex
  */
 async function loadRandomIndex() {
   if (randomIndexLoaded.value) return;
@@ -167,7 +178,11 @@ async function loadRandomIndex() {
     const res = await fetch("/data/random-index.json");
     const data = await res.json();
     randomIndex.value = Array.isArray(data.pages) ? data.pages : [];
-    console.log("[Search] random-index loaded:", randomIndex.value.length);
+    console.log(
+      "[Search] random-index loaded:",
+      randomIndex.value.length,
+      "items"
+    );
   } catch (e) {
     console.error("[Search] load random-index failed:", e);
   } finally {
@@ -177,12 +192,13 @@ async function loadRandomIndex() {
 
 /**
  * 给 Meili 的 hit 补充 summary 字段：
- * - 优先用 random-index 中匹配 path 的 excerpt
- * - 若找不到，就保持原来的 hit.summary / hit.text
+ *  - 优先：random-index 中匹配 path 的 excerpt
+ *  - 其次：hit.summary（如果 Meili 自己已经有）
+ *  - 最后：hit.text（高亮片段）
  */
-function attachSummary<T extends { url?: string; path?: string; summary?: string; text?: string }>(
-  hit: T
-) {
+function attachSummary<
+  T extends { url?: string; path?: string; summary?: string; text?: string }
+>(hit: T) {
   const hitPathNorm = normalizePath(hit.url || hit.path);
 
   const match = randomIndex.value.find(
@@ -191,10 +207,20 @@ function attachSummary<T extends { url?: string; path?: string; summary?: string
 
   const summaryFromIndex = match?.excerpt?.trim() || "";
   const fallback = (hit.summary ?? "").trim() || (hit.text ?? "").trim();
+  const finalSummary = summaryFromIndex || fallback;
+
+  // 调试日志：可以在控制台看到每条命中的情况
+  console.log("[Search] attachSummary", {
+    url: hit.url,
+    norm: hitPathNorm,
+    hasIndex: !!summaryFromIndex,
+    summaryFromIndex,
+    fallback,
+  });
 
   return {
     ...hit,
-    summary: summaryFromIndex || fallback,
+    summary: finalSummary,
   };
 }
 
@@ -202,14 +228,11 @@ function attachSummary<T extends { url?: string; path?: string; summary?: string
  * 四、类型推断 & 分类按钮逻辑
  * ======================================================= */
 
-// 根据文档的字段 / url 推断类型
 function inferType(hit: any): string | null {
-  // 如果以后你把 frontmatter 里的 type 抓进索引，这一句会优先使用真正的 type
   if (hit.type) return hit.type as string;
 
   const url: string = hit.url || "";
 
-  // 根据 url 路径推断
   if (url.includes("/world/characters/")) return "character";
   if (url.includes("/world/concepts/")) return "concept";
   if (url.includes("/world/factions/")) return "faction";
@@ -241,8 +264,7 @@ async function search() {
 
     const body: any = {
       q: keyword.value,
-      // 不在后端 filter，只是多要一点结果，前端自己筛
-      limit: 50,
+      limit: 50, // 不在后端 filter，多拿一点结果，前端自己筛
     };
 
     const res = await fetch(`${host}/indexes/${indexUid}/search`, {
@@ -261,7 +283,7 @@ async function search() {
     const data = await res.json();
     let hits: any[] = data.hits || [];
 
-    // 按类型筛选：通过 inferType 判断
+    // 前端按类型筛选
     if (activeType.value) {
       hits = hits.filter((hit) => inferType(hit) === activeType.value);
     }
@@ -276,15 +298,14 @@ async function search() {
   }
 }
 
-/* 可选：组件挂载时先悄悄预加载 random-index，首搜会快一点 */
+/* 组件挂载时预加载 random-index，让第一次搜索更顺滑 */
 onMounted(() => {
-  loadRandomIndex().catch(() => {
-    // 失败就算了，真正搜索时还会再尝试一次
-  });
+  loadRandomIndex().catch(() => {});
 });
 </script>
 
 <style scoped>
+/* 下面是你原来的样式，没动 */
 .meili-filter-search {
   max-width: 860px;
   margin: 1.5rem auto;
