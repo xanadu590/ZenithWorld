@@ -70,6 +70,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+// 用来拿到所有 frontmatter:nosearch 的页面路径
+// 这个文件是你之前为了 HotPages 生成的同一个 @temp 模块
+// @ts-ignore
+import { nosearchPaths } from "@temp/nosearch/nosearchPaths.js";
 
 /* =========================================================
  * 一、MeiliSearch 基本配置
@@ -168,6 +172,17 @@ function normalizePath(raw: string | undefined | null): string {
 }
 
 /**
+ * 判断某个 url 是否在 nosearch 列表里
+ * - 用 normalizePath 把两边格式统一再比
+ */
+function isNosearchUrl(url: string | undefined | null): boolean {
+  const norm = normalizePath(url || "/");
+  return (nosearchPaths as string[]).some(
+    (p) => normalizePath(p) === norm
+  );
+}
+
+/**
  * 加载 /data/random-index.json
  * - 只加载一次，多次调用会直接 return
  */
@@ -250,7 +265,7 @@ function setType(val: string | null) {
 }
 
 /* =========================================================
- * 五、搜索主流程：对接 Meili + 去重 + 补充简介
+ * 五、搜索主流程：对接 Meili + nosearch 过滤 + 去重 + 补充简介
  * ======================================================= */
 
 async function search() {
@@ -288,7 +303,10 @@ async function search() {
       hits = hits.filter((hit) => inferType(hit) === activeType.value);
     }
 
-    // 2）按“页面”去重：去掉同一文档的 #基本信息 / #背景故事 / #xxx
+    // 2）过滤掉被标记 nosearch 的页面
+    hits = hits.filter((hit) => !isNosearchUrl(hit.url || hit.path));
+
+    // 3）按“页面”去重：去掉同一文档的 #基本信息 / #背景故事 / #xxx
     const seenPages = new Set<string>();
     hits = hits.filter((hit) => {
       const rawUrl: string = hit.url || "";
@@ -298,7 +316,7 @@ async function search() {
       return true;
     });
 
-    // 3）给每条结果补 summary（random-index 的 excerpt 优先）
+    // 4）给每条结果补 summary（random-index 的 excerpt 优先）
     results.value = hits.map((hit) => attachSummary(hit));
   } catch (e: any) {
     console.error(e);
