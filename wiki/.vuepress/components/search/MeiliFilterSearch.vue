@@ -56,7 +56,7 @@
             </span>
           </div>
 
-          <!-- ⭐ 摘要：优先用 random-index 的 excerpt，组件内部已经填到 hit.summary 里 -->
+          <!-- 摘要：优先用 random-index 的 excerpt，attachSummary 已经填到 hit.summary 里 -->
           <div class="mfs-result-summary">
             {{ hit.summary || hit.text || "（暂无摘要）" }}
           </div>
@@ -144,7 +144,7 @@ function normalizePath(raw: string | undefined | null): string {
   // 1）去掉协议和域名
   p = p.replace(/^https?:\/\/[^/]+/, "");
 
-  // 2）找到 ? 和 # 的最早出现位置，截断后面的
+  // 2）截掉 ? 和 #
   const hashIndex = p.indexOf("#");
   const queryIndex = p.indexOf("?");
   let cutIndex = -1;
@@ -250,7 +250,7 @@ function setType(val: string | null) {
 }
 
 /* =========================================================
- * 五、搜索主流程：对接 Meili + 补充简介
+ * 五、搜索主流程：对接 Meili + 去重 + 补充简介
  * ======================================================= */
 
 async function search() {
@@ -283,12 +283,22 @@ async function search() {
     const data = await res.json();
     let hits: any[] = data.hits || [];
 
-    // 前端按类型筛选
+    // 1）前端按类型筛选
     if (activeType.value) {
       hits = hits.filter((hit) => inferType(hit) === activeType.value);
     }
 
-    // ⭐ 给每条结果补 summary（random-index 的 excerpt 优先）
+    // 2）按“页面”去重：去掉同一文档的 #基本信息 / #背景故事 / #xxx
+    const seenPages = new Set<string>();
+    hits = hits.filter((hit) => {
+      const rawUrl: string = hit.url || "";
+      const baseUrl = rawUrl.split("#")[0]; // 去掉 hash，只看页面本身
+      if (seenPages.has(baseUrl)) return false;
+      seenPages.add(baseUrl);
+      return true;
+    });
+
+    // 3）给每条结果补 summary（random-index 的 excerpt 优先）
     results.value = hits.map((hit) => attachSummary(hit));
   } catch (e: any) {
     console.error(e);
@@ -305,7 +315,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 下面是你原来的样式，没动 */
 .meili-filter-search {
   max-width: 860px;
   margin: 1.5rem auto;
