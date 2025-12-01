@@ -171,7 +171,7 @@ export default hopeTheme({
     },
 
     meilisearch: {
-      host: "http://47.99.85.126:7700",
+      host: "https://search.zenithworld.top",
       apiKey: "77530e145cb0aad96892ce647ec783fe835f24233e8dbcb653ac175b041e31cf",
       indexUid: "wiki",
     },

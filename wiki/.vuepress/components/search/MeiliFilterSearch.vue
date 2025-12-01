@@ -79,7 +79,7 @@ import { nosearchPaths } from "@temp/nosearch/nosearchPaths.js";
  * 一、MeiliSearch 基本配置
  * ======================================================= */
 
-const host = "http://47.99.85.126:7700"; // 以后你有 https 域名再改
+const host = "https://search.zenithworld.top"; // 以后你有 https 域名再改
 const indexUid = "wiki";
 const apiKey =
   "77530e145cb0aad96892ce647ec783fe835f24233e8dbcb653ac175b041e31cf"; // 千万不要填 Master Key
