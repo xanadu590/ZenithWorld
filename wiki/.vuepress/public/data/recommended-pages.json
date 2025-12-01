@@ -12,9 +12,9 @@
     "hotScore": 0
   },
   {
-    "title": "🔥 热门文章",
+    "title": "推荐文章",
     "path": "/docs/hotpages.html",
-    "lastUpdated": 1764405068000,
+    "lastUpdated": 1764578256000,
     "hotScore": 0
   },
   {
@@ -36,21 +36,9 @@
     "hotScore": 0
   },
   {
-    "title": "异常构造",
-    "path": "/docs/world/concepts/isomer/",
-    "lastUpdated": 1764576698000,
-    "hotScore": 0
-  },
-  {
-    "title": "十二主神",
-    "path": "/docs/world/concepts/twelveprimedeities/",
-    "lastUpdated": 1763641434000,
-    "hotScore": 0
-  },
-  {
     "title": "灵动骑士",
     "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
-    "lastUpdated": 1764474893000,
+    "lastUpdated": 1764578256000,
     "hotScore": 0
   },
   {
@@ -93,6 +81,18 @@
     "title": "超级英雄",
     "path": "/docs/world/characters/superhero/",
     "lastUpdated": 1764419366000,
+    "hotScore": 0
+  },
+  {
+    "title": "异常构造",
+    "path": "/docs/world/concepts/isomer/",
+    "lastUpdated": 1764576698000,
+    "hotScore": 0
+  },
+  {
+    "title": "十二主神",
+    "path": "/docs/world/concepts/twelveprimedeities/",
+    "lastUpdated": 1763641434000,
     "hotScore": 0
   },
   {

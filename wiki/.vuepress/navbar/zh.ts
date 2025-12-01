@@ -4,14 +4,12 @@ export const zhNavbar = navbar([
   "/",
 
   {
-    text: '推荐文章',
-    icon: 'fire',
+    text: '🔥推荐文章',
     link: '/docs/hotpages.html',
   },
 
   {
-    text: '高级搜索',
-    icon: 'search',
+    text: '🔍高级搜索',
     link: '/docs/advanced-search.html',
   },
 
