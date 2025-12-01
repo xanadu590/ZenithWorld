@@ -272,7 +272,7 @@ function formatTitle(page: PageMeta): string {
 .hot-pages ul {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding-left: 1.25em;
 }
 
 .hot-item {
@@ -286,7 +286,7 @@ function formatTitle(page: PageMeta): string {
   display: flex;
   justify-content: space-between;
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .hot-title {

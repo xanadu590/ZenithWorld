@@ -6,6 +6,11 @@
       "excerpt": "这里是巅峰世界百科的 高级搜索。你可以根据「人物 / 城市 / 组织 / 概念」等分类来筛选结果。 <MeiliFilterSearch /"
     },
     {
+      "title": "人物关系图谱",
+      "path": "/docs/characterline.html",
+      "excerpt": "人物关系图谱 <ClientOnly <RelationGraph :height=\"420\" :nodes=\" { id: 'ek', label: '灵动骑士', url: '/docs/world/characters/superhe"
+    },
+    {
       "title": "🔥 热门文章",
       "path": "/docs/hotpages.html",
       "excerpt": "🔥 热门文章 <HotPages title=\"热门文章\" :limit=\"20\" / 🕓 最近更新 <RecentPages title=\"最近更新\" :limit=\"20\" /"
@@ -24,6 +29,11 @@
       "title": "世界地图",
       "path": "/docs/worldmap.html",
       "excerpt": "<MapJump src=\"/images/worldmap.jpg\" ratio=\"16/9\" :regions=\" { id: 1, title: '中域群体', to: '/docs/world/characters/superher"
+    },
+    {
+      "title": "十二主神",
+      "path": "/docs/world/concepts/twelveprimedeities/",
+      "excerpt": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。"
     },
     {
       "title": "灵动骑士",
@@ -119,11 +129,6 @@
       "title": "超级英雄",
       "path": "/docs/world/characters/superhero/",
       "excerpt": "这里可以写一点团体的文字介绍。 比如巅峰议会的成立历史、议会目标、对世界格局的影响等等。 下面也可以继续正常写 Markdown 内容： 组织结构 议会会议制度 与各团体的关系 灵动骑士 天灾 HearTone M·A·Y ……把你所有角色"
-    },
-    {
-      "title": "十二主神",
-      "path": "/docs/world/concepts/twelveprimedeities/",
-      "excerpt": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。"
     },
     {
       "title": "异常事物管理局",

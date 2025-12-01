@@ -1,4 +1,4 @@
-<!-- recommended-articles/RecentPages.vue -->
+<!-- .vuepress/plugins/recommended-articles/RecentPages.vue -->
 <template>
   <div class="recent-pages">
     <h2 v-if="title">{{ title }}</h2>
@@ -22,6 +22,10 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
 
+// 运行时由 VuePress 注入，编辑器可能找不到，忽略类型检查即可
+// @ts-ignore
+import { nosearchPaths } from "@temp/nosearch/nosearchPaths.js";
+
 interface PageMeta {
   title: string;
   path: string;
@@ -38,6 +42,30 @@ const error = ref("");
 const src = props.src ?? "/data/recommended-pages.json";
 const limit = props.limit ?? 10;
 
+/** 工具：规范 path（去掉 hash、index.html、.html 和末尾 /） */
+function normalizePath(path: string): string {
+  if (!path) return "/";
+
+  // 去掉锚点 #xxx
+  path = path.split("#")[0];
+
+  path = path.replace(/index\.html$/, "");
+  path = path.replace(/\.html$/, "");
+  if (path.length > 1 && path.endsWith("/")) path = path.slice(0, -1);
+  return path || "/";
+}
+
+/** 判断某个 path 是否应该被排除（nosearch） */
+function isExcluded(rawPath: string): boolean {
+  const norm = normalizePath(rawPath);
+
+  const inNosearch = (nosearchPaths as string[]).some(
+    (p) => normalizePath(p) === norm
+  );
+
+  return inNosearch;
+}
+
 onMounted(async () => {
   try {
     const res = await fetch(src);
@@ -52,7 +80,7 @@ onMounted(async () => {
 
 const recentList = computed(() => {
   return [...pages.value]
-    .filter((p) => p.lastUpdated)
+    .filter((p) => p.lastUpdated && !isExcluded(p.path))
     .sort((a, b) => (b.lastUpdated ?? 0) - (a.lastUpdated ?? 0))
     .slice(0, limit);
 });

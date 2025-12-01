@@ -6,6 +6,12 @@
     "hotScore": 0
   },
   {
+    "title": "人物关系图谱",
+    "path": "/docs/characterline.html",
+    "lastUpdated": 1764576698000,
+    "hotScore": 0
+  },
+  {
     "title": "🔥 热门文章",
     "path": "/docs/hotpages.html",
     "lastUpdated": 1764405068000,
@@ -27,6 +33,18 @@
     "title": "世界地图",
     "path": "/docs/worldmap.html",
     "lastUpdated": 1764395458000,
+    "hotScore": 0
+  },
+  {
+    "title": "异常构造",
+    "path": "/docs/world/concepts/isomer/",
+    "lastUpdated": 1764576698000,
+    "hotScore": 0
+  },
+  {
+    "title": "十二主神",
+    "path": "/docs/world/concepts/twelveprimedeities/",
+    "lastUpdated": 1763641434000,
     "hotScore": 0
   },
   {
@@ -75,12 +93,6 @@
     "title": "超级英雄",
     "path": "/docs/world/characters/superhero/",
     "lastUpdated": 1764419366000,
-    "hotScore": 0
-  },
-  {
-    "title": "十二主神",
-    "path": "/docs/world/concepts/twelveprimedeities/",
-    "lastUpdated": 1763641434000,
     "hotScore": 0
   },
   {

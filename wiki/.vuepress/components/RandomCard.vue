@@ -268,4 +268,16 @@ onMounted(init)
   border-radius: 8px;
   cursor: pointer;
 }
+
+/* ⭐ 手机端隐藏 RandomCard（宽度小于 768px） */
+@media (max-width: 768px) {
+  .random-card {
+    display: none !important;
+  }
+  .random-card.empty {
+    display: none !important;
+  }
+}
+
+
 </style>
