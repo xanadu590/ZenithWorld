@@ -50,11 +50,12 @@
  *   - 再用 /data/recommended-pages.json 把 path → title 映射出来
  *   - 最终标题优先用映射的 title，只有找不到时才兜底用 Twikoo 的 title 或路径片段
  *
- * 二、自动排除
- * -----------
- * 通过 isExcluded() 统一控制：
+ * 二、自动排除与合并
+ * -----------------
+ * 通过 isExcluded() + normalizePath() 控制：
  *   1) excludePaths：手动黑名单
  *   2) nosearchPaths：所有 frontmatter 写了 nosearch: true 的页面
+ *   3) 去掉 #hash（子标题），并将同一页面的 pv 自动合并
  */
 
 import { ref, onMounted, computed } from "vue";
@@ -66,9 +67,9 @@ const API_BASE = "https://comment.zenithworld.top";
 
 /** 热门页面的内部结构（基于 Twikoo） */
 interface PageMeta {
-  title: string;   // Twikoo 记录的原始标题（可能没用）
-  path: string;    // 页面路径（匹配用关键）
-  hotScore: number; // 真实访问量 pv
+  title: string;    // Twikoo 记录的原始标题（可能没用）
+  path: string;     // 归一化后的页面路径（不含 hash）
+  hotScore: number; // 合并后的真实访问量 pv
 }
 
 /** Twikoo /api/popular 返回的结构 */
@@ -107,10 +108,13 @@ const excludePaths = [
   // "/docs/tmp/test.html",
 ];
 
-/** 工具：规范 path（去掉 index.html、.html 和末尾 /） */
+/** 工具：规范 path（去掉 hash、index.html、.html 和末尾 /） */
 function normalizePath(path: string): string {
   if (!path) return "/";
+
+  // ⭐ 去掉所有锚点，如 #main-title、#xxx
   path = path.split("#")[0];
+
   path = path.replace(/index\.html$/, "");
   path = path.replace(/\.html$/, "");
   if (path.length > 1 && path.endsWith("/")) path = path.slice(0, -1);
@@ -153,7 +157,7 @@ async function loadTitleMap() {
   }
 }
 
-/** 核心：组件挂载后，同时拉热门数据和标题映射 */
+/** 核心：组件挂载后，同时拉热门数据和标题映射，并合并同页面 pv */
 onMounted(async () => {
   loading.value = true;
   error.value = false;
@@ -178,13 +182,35 @@ onMounted(async () => {
 
     const items = data.items as PopularItem[];
 
-    pages.value = items
-      .map((it) => ({
-        title: it.title,
-        path: it.path,
-        hotScore: it.pv,
-      }))
-      .filter((p) => !isExcluded(p.path));
+    // ⭐ 先用一个 map 按「归一化路径」合并 pv
+    const mergedMap: Record<string, PageMeta> = {};
+
+    for (const it of items) {
+      const rawPath = it.path || "/";
+      if (isExcluded(rawPath)) continue;
+
+      const norm = normalizePath(rawPath);
+      const pv = it.pv ?? 0;
+      const title = it.title || "";
+
+      if (!mergedMap[norm]) {
+        mergedMap[norm] = {
+          title,
+          path: norm,     // 这里直接用归一化后的路径做 RouterLink
+          hotScore: pv,
+        };
+      } else {
+        // 同一页面多条记录 → 累加访问量
+        mergedMap[norm].hotScore += pv;
+
+        // 如果这条的标题更长/更有信息量，就替换掉旧标题
+        if (title && title.length > mergedMap[norm].title.length) {
+          mergedMap[norm].title = title;
+        }
+      }
+    }
+
+    pages.value = Object.values(mergedMap);
   } catch (e) {
     console.error("加载热门文章失败", e);
     error.value = true;
