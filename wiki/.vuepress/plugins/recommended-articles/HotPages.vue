@@ -110,6 +110,7 @@ const excludePaths = [
 /** 工具：规范 path（去掉 index.html、.html 和末尾 /） */
 function normalizePath(path: string): string {
   if (!path) return "/";
+  path = path.split("#")[0];
   path = path.replace(/index\.html$/, "");
   path = path.replace(/\.html$/, "");
   if (path.length > 1 && path.endsWith("/")) path = path.slice(0, -1);
