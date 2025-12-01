@@ -79,7 +79,7 @@ export default hopeTheme({
   navbarLayout: {
     start: ['Brand'],
     center: ['Links'],
-    end: ['Language', 'Repo', 'Outlook', 'Search', 'NavbarPageMenu'],
+    end: ['Search','Language', 'Repo', 'Outlook',  'NavbarPageMenu'],
   },
 
 
