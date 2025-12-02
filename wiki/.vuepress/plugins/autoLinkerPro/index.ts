@@ -33,13 +33,7 @@ export interface AutoLinkerProOptions {
 /** 全站标题索引缓存：onInitialized 时构建，渲染时使用 */
 let globalTitleIndex: AutoLinkEntry[] | null = null;
 
-/** 工具：转义正则特殊字符（如果你要用正则，可以用它；这版我们用 split，不用正则） */
-const escapeRegExp = (str: string): string =>
-  str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-/**
- * 构建全站标题索引（基于所有页面 frontmatter）
- */
+/** 构建全站标题索引（基于所有页面 frontmatter） */
 const buildTitleIndex = (
   app: App,
   options: Required<AutoLinkerProOptions>
@@ -89,9 +83,6 @@ const buildTitleIndex = (
   return index;
 };
 
-/**
- * 插件主函数
- */
 export const autoLinkerProPlugin = (
   options: AutoLinkerProOptions = {}
 ): Plugin => {
@@ -109,7 +100,6 @@ export const autoLinkerProPlugin = (
 
     /**
      * 1. 应用初始化完成后，构建一次全站标题索引
-     * （此时 app.pages 已经就绪）
      */
     onInitialized(app) {
       globalTitleIndex = buildTitleIndex(app, resolved);
@@ -125,7 +115,11 @@ export const autoLinkerProPlugin = (
      * 2. 扩展 Markdown：注册一个 core 规则，在每个页面渲染时把词替换成 <a>
      */
     extendsMarkdown(md) {
-      md.core.ruler.after("inline", "auto-linker-pro", (state) => {
+      if (resolved.debug) {
+        console.log("[autoLinkerPro] extendsMarkdown registered");
+      }
+
+      md.core.ruler.push("auto-linker-pro", (state) => {
         if (!globalTitleIndex || globalTitleIndex.length === 0) return;
 
         const env: any = state.env || {};
