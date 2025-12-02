@@ -39,7 +39,7 @@ export interface AutoLinkerProOptions {
 }
 
 /** 全局索引缓存（自动 + 手写） */
-let globalIndex: AutoLinkEntry[] | null = null;
+let globalIndex: AutoLinkEntry[] = [];
 
 /** 工具：转义正则特殊字符 */
 const escapeRegExp = (str: string): string =>
@@ -56,7 +56,6 @@ const buildGlobalIndex = (
 ): AutoLinkEntry[] => {
   const { minLength, blacklist, whitelist, debug } = options;
 
-  // 用 Map 去重，key 用 term
   const indexMap = new Map<string, AutoLinkEntry>();
 
   const addEntry = (term: string, path: string) => {
@@ -81,12 +80,13 @@ const buildGlobalIndex = (
     }
   }
 
-  // 2. 再扫描所有页面标题 / 别名
+  // 2. 扫描所有页面标题 / 别名
   for (const page of app.pages) {
     const fm: any = page.frontmatter || {};
     const autoLink = fm.autoLink ?? true;
     if (!autoLink) continue;
 
+    // 标题优先级：autoLinkTitle > title > page.title
     const baseTitle: string | undefined =
       fm.autoLinkTitle || fm.title || page.title;
 
@@ -165,7 +165,6 @@ const protectSensitiveAreas = (raw: string) => {
  */
 const processPageContent = (
   page: Page,
-  app: App,
   options: Required<Omit<AutoLinkerProOptions, "entries">> & {
     entries?: AutoLinkEntry[];
   }
@@ -175,11 +174,7 @@ const processPageContent = (
   if (!autoLink) return;
 
   if (!page.content) return;
-
-  // 如果还没构建索引，这里构建一次
-  if (!globalIndex) {
-    globalIndex = buildGlobalIndex(app, options);
-  }
+  if (!globalIndex.length) return;
 
   const ignoreList: string[] = Array.isArray(fm.autoLinkIgnore)
     ? fm.autoLinkIgnore
@@ -209,7 +204,7 @@ const processPageContent = (
     return count >= maxLinksPerTerm;
   };
 
-  for (const entry of globalIndex!) {
+  for (const entry of globalIndex) {
     const term = entry.term;
 
     // 跳过本页面自己的标题（避免自我链接）
@@ -236,7 +231,8 @@ const processPageContent = (
       totalLinksInserted++;
 
       const link = entry.path;
-      return `[${match}](${link})`; // 交给 Markdown 渲染成 RouterLink
+      // 直接替换成 Markdown 链接，交给 VuePress 去渲染成 RouteLink
+      return `[${match}](${link})`;
     });
   }
 
@@ -271,17 +267,22 @@ export const autoLinkerProPlugin = (
   return {
     name: "vuepress-plugin-auto-linker-pro-page",
 
-    // 每次 dev / build 启动时清空索引缓存
-    onInitialized() {
-      globalIndex = null;
+    /**
+     * 这一步有 app，可以安全地用 app.pages
+     * 在这里一次性扫描所有页面标题，构建 globalIndex
+     */
+    onInitialized(app) {
+      globalIndex = buildGlobalIndex(app, resolved);
       if (resolved.debug) {
-        console.log("[autoLinkerPro] initialized, reset global index");
+        console.log("[autoLinkerPro] onInitialized, index size =", globalIndex.length);
       }
     },
 
-    // 对每个 page，在生成阶段直接改 Markdown 内容
-    extendsPage(page, app) {
-      processPageContent(page, app, resolved);
+    /**
+     * 每个页面创建时，用 globalIndex 修改它的 Markdown 内容
+     */
+    extendsPage(page) {
+      processPageContent(page, resolved);
     },
   };
 };
