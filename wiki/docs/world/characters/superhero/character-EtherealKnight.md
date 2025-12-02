@@ -2,6 +2,14 @@
 title: 灵动骑士
 sidebar: false
 breadcrumb: false
+autoLink: true          # 是否自动内链，默认就是 true
+autoLinkTitle: 巅峰议会组织   # 用这个作为匹配关键字，代替 title
+autoLinkAliases:        # 别名，多个词都自动指向本页
+  - 巅峰议会（Peak Council）
+  - 巅峰组织
+autoLinkIgnore:         # 在本页中不要把这些词自动变成链接（即便它们是别的页面标题）
+  - 月神
+  - 异常构造
 category:
 - 人类
 - 英雄
@@ -10,7 +18,7 @@ tag:
 - 灵动骑士
 - 世界英雄
 isOriginal: true
-summary: 123456789.
+summary: 意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！
 ---
 
 <div class="ai-row">
