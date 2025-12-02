@@ -25,7 +25,7 @@ export interface AutoLinkerProOptions {
   /** 调试用：开启后会在控制台输出索引信息 */
   debug?: boolean;
 
-  /** 这些组件的标签内部内容不参与自动内链（<Tag>...</Tag> / <Tag />） */
+  /** 这些组件标签内部的文字不参与自动内链（<Tag>...</Tag> / <Tag />） */
   ignoreComponentNames?: string[];
 }
 
@@ -36,7 +36,7 @@ let globalTitleIndex: AutoLinkEntry[] | null = null;
 const escapeRegExp = (str: string): string =>
   str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-/** 构建全站标题索引（仅执行一次），基于所有页面 frontmatter */
+/** 构建全站标题索引（基于所有页面 frontmatter） */
 const buildTitleIndex = (
   app: App,
   options: Required<AutoLinkerProOptions>
@@ -50,7 +50,7 @@ const buildTitleIndex = (
     const autoLink = fm.autoLink ?? true;
     if (!autoLink) continue;
 
-    // 标题优先级：frontmatter.autoLinkTitle > frontmatter.title > page.title
+    // 标题优先级：autoLinkTitle > title > page.title
     const baseTitle: string | undefined =
       fm.autoLinkTitle || fm.title || page.title;
 
@@ -86,22 +86,22 @@ const buildTitleIndex = (
 };
 
 /**
- * HTML 级别保护区占位：
- * - <pre>...</pre>
- * - <code>...</code>
- * - <a>...</a >
- * - < img ...>
+ * Markdown 级别保护区占位：
+ * - ```code block```
+ * - `inline code`
+ * - [link](...)
+ * - ![img](...)
  * - <!-- 注释 -->
- * - 指定组件标签 <Tag>...</Tag> / <Tag />
+ * - 指定组件块 <Tag>...</Tag> / <Tag />
  */
-const protectSensitiveAreasHtml = (
-  rawHtml: string,
+const protectSensitiveAreas = (
+  raw: string,
   ignoreComponentNames: string[]
 ) => {
   const placeholders: string[] = [];
   const contents: string[] = [];
 
-  let text = rawHtml;
+  let text = raw;
 
   const pushPlaceholder = (match: string): string => {
     const id = `__AUTO_LINK_PRO_PLACEHOLDER_${placeholders.length}__`;
@@ -111,16 +111,16 @@ const protectSensitiveAreasHtml = (
   };
 
   const patterns: RegExp[] = [
-    // <pre> ... </pre>
-    /<pre[\s\S]*?<\/pre>/gi,
-    // <code> ... </code>
-    /<code[\s\S]*?<\/code>/gi,
-    // <a ...> ... </a >
-    /<a[\s\S]*?<\/a>/gi,
-    // < img ...>
-    /<img[^>]*?>/gi,
+    // fenced code block ``` ... ```
+    /```[\s\S]*?```/g,
     // HTML 注释
     /<!--[\s\S]*?-->/g,
+    // markdown image ![alt](url)
+    /!\[[^\]]*?\]\([^\)]*?\)/g,
+    // markdown link [text](url)
+    /\[[^\]]+?\]\([^\)]*?\)/g,
+    // inline code `code`
+    /`[^`]*`/g,
   ];
 
   // 忽略的 Vue 组件块
@@ -128,11 +128,11 @@ const protectSensitiveAreasHtml = (
     if (!name) continue;
 
     // 自闭合 <Tag ... />
-    patterns.push(new RegExp(`<${name}[^>]*?\/>`, "gi"));
+    patterns.push(new RegExp(`<${name}[^>]*?\/>`, "g"));
 
     // 成对标签 <Tag ...> ... </Tag>
     patterns.push(
-      new RegExp(`<${name}[^>]*?>[\\s\\S]*?<\\/${name}>`, "gi")
+      new RegExp(`<${name}[^>]*?>[\\s\\S]*?<\\/${name}>`, "g")
     );
   }
 
@@ -152,19 +152,7 @@ const protectSensitiveAreasHtml = (
 };
 
 /**
- * 判断某个匹配位置是否在 HTML 标签内部（<...> 里）
- * 逻辑：看 match 起点左侧最近的 '<' 和 '>' 谁更近
- * - 最近的是 '<' → 说明在标签内部 → 跳过
- * - 最近的是 '>' → 说明在纯文本区域 → 可替换
- */
-const isInsideTag = (fullText: string, offset: number): boolean => {
-  const lastLt = fullText.lastIndexOf("<", offset);
-  const lastGt = fullText.lastIndexOf(">", offset);
-  return lastLt > lastGt;
-};
-
-/**
- * 核心：对单个页面执行自动内链替换（针对 HTML：page.contentRendered）
+ * 核心：对单个页面执行自动内链替换（直接改 Markdown：page.content）
  */
 const processPageContent = (
   page: Page,
@@ -174,18 +162,16 @@ const processPageContent = (
   const autoLink = fm.autoLink ?? true;
   if (!autoLink) return;
 
-  // 优先用渲染后的 HTML，如果没有则退回原始 Markdown
-  let html: string =
-    (page as any).contentRendered || (page as any).content || "";
-
-  if (!html || !globalTitleIndex || globalTitleIndex.length === 0) return;
+  if (!page.content) return;
+  if (!globalTitleIndex || globalTitleIndex.length === 0) return;
 
   const ignoreList: string[] = Array.isArray(fm.autoLinkIgnore)
     ? fm.autoLinkIgnore
     : [];
 
-  const { text: protectedText, restore } = protectSensitiveAreasHtml(
-    html,
+  // 保护不该动的区域
+  const { text: protectedText, restore } = protectSensitiveAreas(
+    page.content,
     options.ignoreComponentNames
   );
 
@@ -242,8 +228,9 @@ const processPageContent = (
           return match;
         }
 
-        // 在 HTML 标签内部（< ... >）就不替换，防止破坏属性
-        if (isInsideTag(fullText, offset)) {
+        // 简单防一手：如果在 markdown 链接语法里已经被 [] 包裹过，尽量不动
+        const before = offset > 0 ? fullText[offset - 1] : "";
+        if (before === "[" || before === "!") {
           return match;
         }
 
@@ -252,16 +239,14 @@ const processPageContent = (
 
         const link = entry.path;
 
-        // 这里直接用 <a>，相对路径照样可用
-        return `<a href=" ">${match}</a >`;
+        // 用 markdown 链接语法，之后由 VuePress 正常渲染为 <a>
+        return `[${match}](${link})`;
       }
     );
   }
 
-  const finalHtml = restore(working);
-
-  // 写回 page：优先写 contentRendered
-  (page as any).contentRendered = finalHtml;
+  const finalContent = restore(working);
+  (page as any).content = finalContent;
 };
 
 /**
@@ -283,21 +268,18 @@ export const autoLinkerProPlugin = (
   return {
     name: "vuepress-plugin-auto-linker-pro",
 
-    onInitialized() {
-      globalTitleIndex = null;
-    },
-
-    // 所有页面和 HTML 渲染准备好之后再统一处理
-    async onPrepared(app) {
+    onInitialized(app) {
+      // 1. 先构建全局索引（此时 app.pages 已经就绪）
       globalTitleIndex = buildTitleIndex(app, resolved);
 
+      // 2. 再遍历所有页面，直接修改 page.content（Markdown 原文）
       for (const page of app.pages) {
         processPageContent(page, resolved);
       }
 
       if (resolved.debug) {
         console.log(
-          "[autoLinkerPro] auto linking done, pages:",
+          "[autoLinkerPro] auto linking done in onInitialized, pages:",
           app.pages.length
         );
       }

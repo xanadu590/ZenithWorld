@@ -9,6 +9,7 @@
 <li><RouteLink to="/docs/world/characters/superhero/character-Scourge.html">天灾</RouteLink></li>
 <li><RouteLink to="/docs/world/characters/superhero/character-HearTone.html">HearTone</RouteLink></li>
 <li><RouteLink to="/docs/world/characters/superhero/character-M-A-Y.html">M·A·Y</RouteLink></li>
+<li><RouteLink to="/docs/world/characters/superhero/test-b.html">测试页面</RouteLink></li>
 <li>……把你所有角色都列上来</li>
 </ul>
 </div></template>

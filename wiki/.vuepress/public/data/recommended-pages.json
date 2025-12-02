@@ -36,12 +36,6 @@
     "hotScore": 0
   },
   {
-    "title": "异常构造",
-    "path": "/docs/world/concepts/isomer/",
-    "lastUpdated": 1764576698000,
-    "hotScore": 0
-  },
-  {
     "title": "灵动骑士",
     "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
     "lastUpdated": 1764636029000,
@@ -86,7 +80,25 @@
   {
     "title": "超级英雄",
     "path": "/docs/world/characters/superhero/",
-    "lastUpdated": 1764419366000,
+    "lastUpdated": 1764636538000,
+    "hotScore": 0
+  },
+  {
+    "title": "测试目标A",
+    "path": "/docs/world/characters/superhero/test-a.html",
+    "lastUpdated": 1764636538000,
+    "hotScore": 0
+  },
+  {
+    "title": "测试 B",
+    "path": "/docs/world/characters/superhero/test-b.html",
+    "lastUpdated": 1764636538000,
+    "hotScore": 0
+  },
+  {
+    "title": "异常构造",
+    "path": "/docs/world/concepts/isomer/",
+    "lastUpdated": 1764576698000,
     "hotScore": 0
   },
   {

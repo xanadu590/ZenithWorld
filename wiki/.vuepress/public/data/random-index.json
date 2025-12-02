@@ -123,7 +123,17 @@
     {
       "title": "超级英雄",
       "path": "/docs/world/characters/superhero/",
-      "excerpt": "这里可以写一点团体的文字介绍。 比如巅峰议会的成立历史、议会目标、对世界格局的影响等等。 下面也可以继续正常写 Markdown 内容： 组织结构 议会会议制度 与各团体的关系 灵动骑士 天灾 HearTone M·A·Y ……把你所有角色"
+      "excerpt": "这里可以写一点团体的文字介绍。 比如巅峰议会的成立历史、议会目标、对世界格局的影响等等。 下面也可以继续正常写 Markdown 内容： 组织结构 议会会议制度 与各团体的关系 灵动骑士 天灾 HearTone M·A·Y 测试页面 ……把"
+    },
+    {
+      "title": "测试目标A",
+      "path": "/docs/world/characters/superhero/test-a.html",
+      "excerpt": "这是测试目标 A 的页面。"
+    },
+    {
+      "title": "测试 B",
+      "path": "/docs/world/characters/superhero/test-b.html",
+      "excerpt": "我在这里随便写一句：测试目标A 会不会被自动加链接。"
     },
     {
       "title": "十二主神",
