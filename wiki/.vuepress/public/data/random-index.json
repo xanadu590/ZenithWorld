@@ -31,16 +31,6 @@
       "excerpt": "<MapJump src=\"/images/worldmap.jpg\" ratio=\"16/9\" :regions=\" { id: 1, title: '中域群体', to: '/docs/world/characters/superher"
     },
     {
-      "title": "十二主神",
-      "path": "/docs/world/concepts/twelveprimedeities/",
-      "excerpt": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。"
-    },
-    {
-      "title": "异常事物管理局",
-      "path": "/docs/world/factions/official/AMA/",
-      "excerpt": "名称：异常事物管理局\n译名：Anomaly Management Agency\n简称：AMA\n成立日期： 历史\n异常管理局的源头可追溯至【先知】创立的早期组织——【危机管理机构】Crisis Control Organization，简称C"
-    },
-    {
       "title": "灵动骑士",
       "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
       "excerpt": "意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！"
@@ -144,6 +134,16 @@
       "title": "测试 B",
       "path": "/docs/world/characters/superhero/test-b.html",
       "excerpt": "我在这里随便写一句：测试目标A会不会被自动加链接。"
+    },
+    {
+      "title": "十二主神",
+      "path": "/docs/world/concepts/twelveprimedeities/",
+      "excerpt": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。"
+    },
+    {
+      "title": "异常事物管理局",
+      "path": "/docs/world/factions/official/AMA/",
+      "excerpt": "名称：异常事物管理局\n译名：Anomaly Management Agency\n简称：AMA\n成立日期： 历史\n异常管理局的源头可追溯至【先知】创立的早期组织——【危机管理机构】Crisis Control Organization，简称C"
     }
   ]
 }
