@@ -39,7 +39,6 @@ export default defineUserConfig({
 
   plugins: [
     recommendedArticles(),
-    nosearchPlugin(),
     autoLinkerProPlugin({
       debug: true,   // 先开着方便看 log
       entries: [

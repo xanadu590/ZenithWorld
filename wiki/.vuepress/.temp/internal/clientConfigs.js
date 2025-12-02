@@ -20,8 +20,7 @@ import * as clientConfig18 from 'C:/Users/super/ZenithWorld/node_modules/.pnpm/@
 import * as clientConfig19 from 'C:/Users/super/ZenithWorld/node_modules/.pnpm/@vuepress+plugin-meilisearc_4990bd93e65fd75833853733df05f7ef/node_modules/@vuepress/plugin-meilisearch/lib/client/config.js'
 import * as clientConfig20 from 'C:/Users/super/ZenithWorld/node_modules/.pnpm/@vuepress+plugin-redirect@2_7a9ddf17984602c9e7f6d3a76cb0de07/node_modules/@vuepress/plugin-redirect/lib/client/config.js'
 import * as clientConfig21 from 'C:/Users/super/ZenithWorld/wiki/.vuepress/.temp/theme-hope/config.js'
-import * as clientConfig22 from 'C:/Users/super/ZenithWorld/wiki/.vuepress/plugins/nosearch/client.ts'
-import * as clientConfig23 from 'C:/Users/super/ZenithWorld/wiki/.vuepress/client.ts'
+import * as clientConfig22 from 'C:/Users/super/ZenithWorld/wiki/.vuepress/client.ts'
 
 export const clientConfigs = [
   clientConfig0,
@@ -47,5 +46,4 @@ export const clientConfigs = [
   clientConfig20,
   clientConfig21,
   clientConfig22,
-  clientConfig23,
 ].map((m) => m.default).filter(Boolean)
