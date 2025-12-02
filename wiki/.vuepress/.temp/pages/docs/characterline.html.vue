@@ -3,7 +3,7 @@
   <RelationGraph
     :height="420"
     :nodes="[ 
-      { id: 'ek', label: '灵动骑士', url: '/docs/world/characters/superhero/character-EtherealKnight.html', image: '/images/EtherealKnightCombatSuit.jpg' },
+      { id: 'ek', label: '<RouterLink to="/docs/world/characters/superhero/character-EtherealKnight.html" class="auto-link auto-link--first">灵动骑士</RouterLink>', url: '/docs/world/characters/superhero/character-EtherealKnight.html', image: '/images/EtherealKnightCombatSuit.jpg' },
       { id: 'sx', label: '舒雪' },
       { id: 'hn', label: '韩桉宁' }
     ]"

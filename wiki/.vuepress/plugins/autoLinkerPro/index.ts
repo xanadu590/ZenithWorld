@@ -31,12 +31,8 @@ export interface AutoLinkerProOptions {
   indexOutput?: string;
 }
 
-/** 全局索引，在 onInitialized 里填充，在 extendsMarkdown 里使用 */
-let globalIndex: AutoLinkEntry[] = [];
-
 /**
- * 生成链接替换函数：
- * 给一段纯文本 text，把其中的 term 替换成 <RouteLink> 或 <a> 片段
+ * 把一段纯文本里的 term 替换成 <RouterLink>，并控制次数
  */
 function createLinkifier(
   maxLinksPerPage: number,
@@ -79,11 +75,11 @@ function createLinkifier(
         ? "auto-link auto-link--first"
         : "auto-link";
 
-      // 这里直接生成 HTML 片段，交给 Vue 直接渲染
+      // 这里直接生成 Vue 模板里的 <RouterLink>，交给前端渲染
       const link =
-        `<RouteLink to="${to}" class="${classes}">` +
+        `<RouterLink to="${to}" class="${classes}">` +
         term +
-        `</RouteLink>`;
+        `</RouterLink>`;
 
       result += link + parts[i];
 
@@ -97,7 +93,7 @@ function createLinkifier(
 }
 
 /**
- * 插件主函数
+ * 插件主函数：在 onPrepared 阶段，直接修改 .temp/pages/*.html.vue 里的 <template>
  */
 export const autoLinkerProPlugin = (
   options: AutoLinkerProOptions = {}
@@ -112,15 +108,16 @@ export const autoLinkerProPlugin = (
   const linkify = createLinkifier(maxLinksPerPage, maxLinksPerTerm);
 
   return {
-    name: "vuepress-plugin-auto-linker-pro",
+    name: "vuepress-plugin-auto-linker-pro-sfc",
 
     /**
-     * 1. 在 onInitialized 阶段，已经有了 app.pages
-     *    - 扫描所有页面标题 & 别名，构建全局索引 globalIndex
-     *    - 写一份 JSON 到 public 目录（方便调试或前端使用）
+     * onPrepared 时：
+     * 1. 用 app.pages 构建“词条索引”
+     * 2. 写一份 JSON 到 public 目录
+     * 3. 逐个读取 .temp/pages/*.html.vue 文件，替换 <template> 里的文本
      */
-    async onInitialized(app) {
-      const idx: AutoLinkEntry[] = [];
+    async onPrepared(app) {
+      const index: AutoLinkEntry[] = [];
 
       const addTerm = (
         term: string,
@@ -132,19 +129,19 @@ export const autoLinkerProPlugin = (
         if (t.length < minLength) return;
         if (blacklist.has(t)) return;
 
-        idx.push({
+        index.push({
           term: t,
           path: pagePath,
           filePathRelative,
         });
       };
 
+      // 1. 扫描所有页面标题 + 别名
       for (const page of app.pages) {
         const fm: any = page.frontmatter || {};
         const pagePath = page.path;
         if (!pagePath) continue;
 
-        // 优先用 autoLinkTitle，否则用 page.title
         const title =
           (fm.autoLinkTitle ?? page.title ?? "").toString().trim();
         const aliases: string[] = Array.isArray(fm.autoLinkAliases)
@@ -160,155 +157,112 @@ export const autoLinkerProPlugin = (
         }
       }
 
-      // 按词长从长到短排序（避免“异常构造”被“异常”截胡）
-      idx.sort((a, b) => b.term.length - a.term.length);
-      globalIndex = idx;
+      // 词长从长到短排序（先匹配“异常构造”再匹配“异常”）
+      index.sort((a, b) => b.term.length - a.term.length);
 
       if (debug) {
-        console.log("[autoLinkerPro] built index:", globalIndex);
+        console.log("[autoLinkerPro] built index:", index);
       }
 
-      // 写 JSON 索引到 public 目录
+      // 2. 写 JSON 索引到 public 目录
       const outFile = vpPath.resolve(app.dir.public(), indexOutput);
       await fs.promises.mkdir(vpPath.dirname(outFile), { recursive: true });
       await fs.promises.writeFile(
         outFile,
-        JSON.stringify(globalIndex, null, 2),
+        JSON.stringify(index, null, 2),
         "utf-8"
       );
 
       if (debug) {
         console.log("[autoLinkerPro] index json written:", outFile);
       }
-    },
 
-    /**
-     * 2. 在 extendsMarkdown 阶段，挂 markdown-it 的 core rule
-     *    - 这里真正对 token 做替换，把文本变成 <RouteLink>
-     */
-    extendsMarkdown(md) {
-      if (debug) {
-        console.log("[autoLinkerPro] extendsMarkdown registered");
-      }
-
-      // 规则名字改成一个绝对不会撞车的
-      md.core.ruler.push("zenith-auto-linker-pro", (state) => {
-        if (!globalIndex.length) return;
-
-        const env: any = state.env || {};
-        const fm: any = env.frontmatter || {};
-        const rel: string = env.filePathRelative || "(unknown)";
-        const pagePath: string = env.path || "";
-
-        if (debug) {
-          console.log(
-            "[autoLinkerPro] core rule run for",
-            rel,
-            "path:",
-            pagePath
-          );
-        }
-
-        // 页内开关：autoLink: false 可以关闭本页自动内链
+      // 3. 修改 .temp/pages/*.html.vue
+      for (const page of app.pages) {
+        const fm: any = page.frontmatter || {};
         const autoLink = fm.autoLink;
-        if (autoLink === false) {
-          if (debug) {
-            console.log("[autoLinkerPro] autoLink=false, skip", rel);
-          }
-          return;
-        }
+        if (autoLink === false) continue; // 本页关闭自动内链
 
-        // 本页忽略的词
         const ignoreList: string[] = Array.isArray(fm.autoLinkIgnore)
           ? fm.autoLinkIgnore
           : [];
         const ignoreSet = new Set(ignoreList);
 
-        let totalLinksInserted = 0;
+        const compRel = page.componentFilePathRelative;
+        if (!compRel) continue;
+
+        const compPath = vpPath.resolve(app.dir.temp(), compRel);
+
+        // 读 .html.vue 文件
+        let sfc: string;
+        try {
+          sfc = await fs.promises.readFile(compPath, "utf-8");
+        } catch {
+          continue;
+        }
+
+        // 提取 <template> 部分
+        const templateMatch = sfc.match(/<template>([\s\S]*?)<\/template>/);
+        if (!templateMatch) continue;
+
+        let templateContent = templateMatch[1];
+        let totalInserted = 0;
         const termCountMap = new Map<string, number>();
 
-        const tokens = state.tokens;
+        // 对每个词条做替换
+        for (const entry of index) {
+          // 不链到自己
+          if (
+            entry.path === page.path ||
+            entry.filePathRelative === page.filePathRelative
+          ) {
+            continue;
+          }
+          if (ignoreSet.has(entry.term)) continue;
 
-        for (let i = 0; i < tokens.length; i++) {
-          const token = tokens[i];
-          if (token.type !== "inline" || !token.children) continue;
+          if (
+            maxLinksPerPage > 0 &&
+            totalInserted >= maxLinksPerPage
+          ) {
+            break;
+          }
 
-          const children = token.children;
-          let inLink = false;
+          const res = linkify(
+            templateContent,
+            entry,
+            termCountMap,
+            { totalInserted }
+          );
 
-          for (let j = 0; j < children.length; j++) {
-            const child = children[j];
+          if (res.added > 0) {
+            totalInserted += res.added;
+            templateContent = res.text;
 
-            if (child.type === "link_open") {
-              inLink = true;
-              continue;
-            }
-            if (child.type === "link_close") {
-              inLink = false;
-              continue;
-            }
-            if (inLink) continue;
-
-            if (child.type !== "text") continue;
-
-            let original = child.content;
-            let modified = original;
-            let changed = false;
-
-            for (const entry of globalIndex) {
-              // 不在本页把本页自己再链一遍
-              if (
-                entry.path === pagePath ||
-                entry.filePathRelative === rel
-              ) {
-                continue;
-              }
-              if (ignoreSet.has(entry.term)) continue;
-
-              if (
-                maxLinksPerPage > 0 &&
-                totalLinksInserted >= maxLinksPerPage
-              ) {
-                break;
-              }
-
-              const res = linkify(
-                modified,
-                entry,
-                termCountMap,
-                { totalInserted: totalLinksInserted }
+            if (debug) {
+              console.log(
+                `[autoLinkerPro] SFC page ${page.filePathRelative} link term="${entry.term}" -> "${entry.path}", added ${res.added}`
               );
-
-              if (res.added > 0) {
-                totalLinksInserted += res.added;
-                modified = res.text;
-                changed = true;
-
-                if (debug) {
-                  console.log(
-                    `[autoLinkerPro] link term="${entry.term}" -> "${entry.path}" on page ${rel}, added ${res.added}`
-                  );
-                }
-              }
-            }
-
-            if (changed && modified !== original) {
-              // 把纯文本 token 变成原始 HTML
-              child.type = "html_inline";
-              child.tag = "";
-              child.content = modified;
-              child.children = null;
             }
           }
         }
 
-        if (debug) {
-          console.log(
-            `[autoLinkerPro] page ${rel} inserted links:`,
-            totalLinksInserted
+        if (totalInserted > 0) {
+          const newTemplateBlock =
+            `<template>${templateContent}</template>`;
+          const newSfc = sfc.replace(
+            /<template>[\s\S]*?<\/template>/,
+            newTemplateBlock
           );
+
+          await fs.promises.writeFile(compPath, newSfc, "utf-8");
+
+          if (debug) {
+            console.log(
+              `[autoLinkerPro] SFC page ${page.filePathRelative} patched, inserted = ${totalInserted}`
+            );
+          }
         }
-      });
+      }
     },
   };
 };

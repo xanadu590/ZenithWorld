@@ -1,8 +1,8 @@
 <template><div><div class="role-grid">
-  <!-- 1. 灵动骑士（简版） -->
+  <!-- 1. <RouterLink to="/docs/world/characters/superhero/character-EtherealKnight.html" class="auto-link auto-link--first">灵动骑士</RouterLink>（简版） -->
   <RoleCard
     stacked
-    title="灵动骑士"
+    title="<RouterLink to="/docs/world/characters/superhero/character-EtherealKnight.html" class="auto-link">灵动骑士</RouterLink>"
     avatar="/images/EtherealKnight/CombatSuit.jpg"
     :abilities="['风元素强化']"
   />
@@ -25,7 +25,7 @@
   :stacked="true"
   :titleOnTop="true"
   to="/docs/world/characters/superhero/character-EtherealKnight.html"
-  title="灵动骑士"
+  title="<RouterLink to="/docs/world/characters/superhero/character-EtherealKnight.html" class="auto-link">灵动骑士</RouterLink>"
   avatar="/images/EtherealKnightCombatSuit.jpg"
   :metaFields="[
     { label: '别名', value: 'E-Knight' },
@@ -47,8 +47,8 @@
   avatar="/images/chars/yin-kuanglin.png"
   to="/characters/yin-kuanglin.html"
   :metaFields="[
-    { label: '别名', value: '天灾' },
-    { label: '阵营', value: { text: '灵动骑士团', href: '/factions/knight.html' } },
+    { label: '别名', value: '<RouterLink to="/docs/world/characters/superhero/character-Scourge.html" class="auto-link auto-link--first">天灾</RouterLink>' },
+    { label: '阵营', value: { text: '<RouterLink to="/docs/world/characters/superhero/character-EtherealKnight.html" class="auto-link">灵动骑士</RouterLink>团', href: '/factions/knight.html' } },
     { label: '状态', value: '生存' },
     { label: '出场', value: '《新科城·第一章》' }
   ]"
@@ -64,7 +64,7 @@
 </div>
 <RandomCard /><ul>
 <li><RouteLink to="/docs/world/characters/superhero/character-EtherealKnight.html">灵动骑士</RouteLink></li>
-<li><RouteLink to="/docs/world/characters/superhero/character-Scourge.html">天灾</RouteLink></li>
+<li><RouteLink to="/docs/world/characters/superhero/character-Scourge.html"><RouterLink to="/docs/world/characters/superhero/character-Scourge.html" class="auto-link">天灾</RouterLink></RouteLink></li>
 <li><RouteLink to="/docs/world/characters/superhero/character-HearTone.html">HearTone</RouteLink></li>
 <li><RouteLink to="/docs/world/characters/superhero/character-M-A-Y.html">M·A·Y</RouteLink></li>
 <li><RouteLink to="/docs/world/characters/superhero/character-Illustra.html">character-Illustra</RouteLink></li>
