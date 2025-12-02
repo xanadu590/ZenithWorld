@@ -8,7 +8,7 @@ import recommendedArticles from "./plugins/recommended-articles/index.js";
 
 import nosearchPlugin from "./plugins/nosearch/index.js";
 
-import { autoLinkerProPlugin } from "./plugins/autoLinkerPro/index.js";
+import { autoLinkerSfcAst } from "./plugins/autoLinkerPro/index.js";
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -40,7 +40,7 @@ export default defineUserConfig({
   plugins: [
     recommendedArticles(),
     nosearchPlugin(),
-    autoLinkerProPlugin({
+    autoLinkerSfcAst({
       minLength: 2,
       blacklist: ["火", "风", "水", "土", "力量", "主神"],
       maxLinksPerPage: 60,

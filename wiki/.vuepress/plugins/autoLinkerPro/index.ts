@@ -1,125 +1,75 @@
-// wiki/.vuepress/plugins/autoLinkerPro/index.ts
 import type { Plugin } from "vuepress";
 import { path as vpPath } from "vuepress/utils";
+import {
+  parse as vueParse,
+  transform,
+  generate,
+  NodeTypes,
+  ElementTypes,
+} from "@vue/compiler-dom";
 import fs from "fs";
 
-/** 一个可自动被链接的词条 */
-export interface AutoLinkEntry {
-  term: string;            // 要匹配的词
-  path: string;            // 路由路径，如 /docs/world/xxx.html
+/** 词条结构 */
+interface Entry {
+  term: string;
+  path: string;
   filePathRelative?: string;
 }
 
-/** 插件配置项 */
-export interface AutoLinkerProOptions {
-  /** 最小匹配长度：term 小于这个长度就不参与自动内链（中文推荐 2） */
+/** 用户配置 */
+interface Options {
   minLength?: number;
-
-  /** 每页最多插入多少个自动链接（防止“满屏蓝字”） */
   maxLinksPerPage?: number;
-
-  /** 同一个词在一页最多出现多少次链接 */
   maxLinksPerTerm?: number;
-
-  /** 黑名单：即便被收录，也永远不自动内链 */
   blacklist?: string[];
-
-  /** 调试开关：true 时会在控制台输出详细 log */
   debug?: boolean;
-
-  /** 索引 JSON 输出路径（相对 public），默认 data/auto-link-index.json */
   indexOutput?: string;
 }
 
-/**
- * 把一段纯文本里的 term 替换成 <RouterLink>，并控制次数
- */
-function createLinkifier(
-  maxLinksPerPage: number,
-  maxLinksPerTerm: number
-) {
-  return function linkifyText(
-    text: string,
-    entry: AutoLinkEntry,
-    termCountMap: Map<string, number>,
-    counters: { totalInserted: number }
-  ): { text: string; added: number } {
-    const term = entry.term;
-    const to = entry.path;
+export const autoLinkerSfcAst = (options: Options = {}): Plugin => {
+  const {
+    minLength = 2,
+    maxLinksPerPage = 60,
+    maxLinksPerTerm = 4,
+    blacklist = [],
+    debug = false,
+    indexOutput = "data/auto-link-index.json",
+  } = options;
 
-    if (!to) return { text, added: 0 };
-    if (!text.includes(term)) return { text, added: 0 };
+  const blacklistSet = new Set(blacklist);
 
-    const parts = text.split(term);
-    if (parts.length === 1) return { text, added: 0 };
-
-    let result = parts[0];
-    let added = 0;
-
-    for (let i = 1; i < parts.length; i++) {
-      // 全页总上限
-      if (maxLinksPerPage > 0 && counters.totalInserted >= maxLinksPerPage) {
-        result += term + parts.slice(i).join(term);
-        return { text: result, added };
-      }
-
-      const prevCount = termCountMap.get(term) ?? 0;
-      // 单词上限
-      if (maxLinksPerTerm > 0 && prevCount >= maxLinksPerTerm) {
-        result += term + parts[i];
-        continue;
-      }
-
-      const first = prevCount === 0;
-      const classes = first
-        ? "auto-link auto-link--first"
-        : "auto-link";
-
-      // 这里直接生成 Vue 模板里的 <RouterLink>，交给前端渲染
-      const link =
-        `<RouterLink to="${to}" class="${classes}">` +
-        term +
-        `</RouterLink>`;
-
-      result += link + parts[i];
-
-      termCountMap.set(term, prevCount + 1);
-      counters.totalInserted++;
-      added++;
-    }
-
-    return { text: result, added };
-  };
-}
-
-/**
- * 插件主函数：在 onPrepared 阶段，直接修改 .temp/pages/*.html.vue 里的 <template>
- */
-export const autoLinkerProPlugin = (
-  options: AutoLinkerProOptions = {}
-): Plugin => {
-  const minLength = options.minLength ?? 2; // 中文建议 2
-  const maxLinksPerPage = options.maxLinksPerPage ?? 60;
-  const maxLinksPerTerm = options.maxLinksPerTerm ?? 4;
-  const blacklist = new Set(options.blacklist ?? []);
-  const debug = options.debug ?? false;
-  const indexOutput = options.indexOutput ?? "data/auto-link-index.json";
-
-  const linkify = createLinkifier(maxLinksPerPage, maxLinksPerTerm);
+  // 内部函数：生成 <RouterLink> AST 节点
+  const makeRouterLink = (to: string, text: string, isFirst: boolean) => ({
+    type: NodeTypes.ELEMENT,
+    tag: "RouterLink",
+    tagType: ElementTypes.COMPONENT,
+    props: [
+      {
+        type: NodeTypes.ATTRIBUTE,
+        name: "to",
+        value: { type: NodeTypes.TEXT, content: to },
+      },
+      {
+        type: NodeTypes.ATTRIBUTE,
+        name: "class",
+        value: {
+          type: NodeTypes.TEXT,
+          content: isFirst ? "auto-link auto-link--first" : "auto-link",
+        },
+      },
+    ],
+    // children 里放一个 TEXT 节点
+    children: [{ type: NodeTypes.TEXT, content: text }],
+  });
 
   return {
-    name: "vuepress-plugin-auto-linker-pro-sfc",
+    name: "auto-linker-sfc-ast",
 
-    /**
-     * onPrepared 时：
-     * 1. 用 app.pages 构建“词条索引”
-     * 2. 写一份 JSON 到 public 目录
-     * 3. 逐个读取 .temp/pages/*.html.vue 文件，替换 <template> 里的文本
-     */
     async onPrepared(app) {
-      const index: AutoLinkEntry[] = [];
+      const entries: Entry[] = [];
 
-      const addTerm = (
+      // 1. 先扫描所有标题构建索引
+      const addEntry = (
         term: string,
         pagePath: string,
         filePathRelative?: string
@@ -127,144 +77,165 @@ export const autoLinkerProPlugin = (
         const t = (term || "").trim();
         if (!t) return;
         if (t.length < minLength) return;
-        if (blacklist.has(t)) return;
+        if (blacklistSet.has(t)) return;
 
-        index.push({
-          term: t,
-          path: pagePath,
-          filePathRelative,
-        });
+        entries.push({ term: t, path: pagePath, filePathRelative });
       };
 
-      // 1. 扫描所有页面标题 + 别名
       for (const page of app.pages) {
         const fm: any = page.frontmatter || {};
-        const pagePath = page.path;
-        if (!pagePath) continue;
-
-        const title =
-          (fm.autoLinkTitle ?? page.title ?? "").toString().trim();
-        const aliases: string[] = Array.isArray(fm.autoLinkAliases)
+        const title = (fm.autoLinkTitle ?? page.title ?? "").toString().trim();
+        const aliases = Array.isArray(fm.autoLinkAliases)
           ? fm.autoLinkAliases
           : [];
 
-        if (title) {
-          addTerm(title, pagePath, page.filePathRelative || undefined);
-        }
-
-        for (const alias of aliases) {
-          addTerm(alias, pagePath, page.filePathRelative || undefined);
-        }
+        if (title) addEntry(title, page.path, page.filePathRelative);
+        for (const al of aliases)
+          addEntry(al, page.path, page.filePathRelative);
       }
 
-      // 词长从长到短排序（先匹配“异常构造”再匹配“异常”）
-      index.sort((a, b) => b.term.length - a.term.length);
+      entries.sort((a, b) => b.term.length - a.term.length);
 
-      if (debug) {
-        console.log("[autoLinkerPro] built index:", index);
-      }
-
-      // 2. 写 JSON 索引到 public 目录
+      // 写 JSON
       const outFile = vpPath.resolve(app.dir.public(), indexOutput);
       await fs.promises.mkdir(vpPath.dirname(outFile), { recursive: true });
       await fs.promises.writeFile(
         outFile,
-        JSON.stringify(index, null, 2),
+        JSON.stringify(entries, null, 2),
         "utf-8"
       );
 
-      if (debug) {
-        console.log("[autoLinkerPro] index json written:", outFile);
-      }
+      if (debug) console.log("[autoLinker] index:", entries);
 
-      // 3. 修改 .temp/pages/*.html.vue
+      // 2. 修改 .temp/pages/*.html.vue
       for (const page of app.pages) {
         const fm: any = page.frontmatter || {};
-        const autoLink = fm.autoLink;
-        if (autoLink === false) continue; // 本页关闭自动内链
+        if (fm.autoLink === false) continue;
 
-        const ignoreList: string[] = Array.isArray(fm.autoLinkIgnore)
-          ? fm.autoLinkIgnore
-          : [];
-        const ignoreSet = new Set(ignoreList);
+        const ignore = new Set(
+          Array.isArray(fm.autoLinkIgnore) ? fm.autoLinkIgnore : []
+        );
 
         const compRel = page.componentFilePathRelative;
         if (!compRel) continue;
 
         const compPath = vpPath.resolve(app.dir.temp(), compRel);
-
-        // 读 .html.vue 文件
-        let sfc: string;
+        let sfcCode = "";
         try {
-          sfc = await fs.promises.readFile(compPath, "utf-8");
+          sfcCode = await fs.promises.readFile(compPath, "utf-8");
         } catch {
           continue;
         }
 
-        // 提取 <template> 部分
-        const templateMatch = sfc.match(/<template>([\s\S]*?)<\/template>/);
-        if (!templateMatch) continue;
+        const match = sfcCode.match(/<template>([\s\S]*?)<\/template>/);
+        if (!match) continue;
 
-        let templateContent = templateMatch[1];
+        let templateCode = match[1];
+
+        // 解析为 AST
+        const ast = vueParse(templateCode);
+
         let totalInserted = 0;
-        const termCountMap = new Map<string, number>();
+        const termCount = new Map<string, number>();
 
-        // 对每个词条做替换
-        for (const entry of index) {
-          // 不链到自己
-          if (
-            entry.path === page.path ||
-            entry.filePathRelative === page.filePathRelative
-          ) {
-            continue;
-          }
-          if (ignoreSet.has(entry.term)) continue;
+        // AST transform: 找 TEXT node 并替换
+        transform(ast, {
+          nodeTransforms: [
+            (node) => {
+              // 这里强行把 node 当 any 用，避免 TS 报 node.type / children 错
+              const n = node as any;
+              if (n.type !== NodeTypes.TEXT) return;
 
-          if (
-            maxLinksPerPage > 0 &&
-            totalInserted >= maxLinksPerPage
-          ) {
-            break;
-          }
+              let text: string = n.content;
+              let needReplace = false;
+              const newChildren: any[] = [];
 
-          const res = linkify(
-            templateContent,
-            entry,
-            termCountMap,
-            { totalInserted }
+              for (const entry of entries) {
+                if (entry.path === page.path) continue;
+                if (ignore.has(entry.term)) continue;
+
+                const t = entry.term;
+                if (!text.includes(t)) continue;
+
+                const parts = text.split(t);
+                if (parts.length <= 1) continue;
+
+                let rebuilt: string[] = [parts[0]];
+
+                for (let i = 1; i < parts.length; i++) {
+                  if (
+                    maxLinksPerPage > 0 &&
+                    totalInserted >= maxLinksPerPage
+                  ) {
+                    // 到达全页上限，后面全部原样拼回去
+                    rebuilt.push(t);
+                    rebuilt.push(parts.slice(i).join(t));
+                    break;
+                  }
+
+                  const used = termCount.get(t) ?? 0;
+                  if (maxLinksPerTerm > 0 && used >= maxLinksPerTerm) {
+                    // 单个词上限，原样拼
+                    rebuilt.push(t);
+                    rebuilt.push(parts[i]);
+                    continue;
+                  }
+
+                  // 先把当前累积的纯文本塞进 children
+                  const plainText = rebuilt.join("");
+                  if (plainText) {
+                    newChildren.push(plainText);
+                  }
+
+                  // 再插一个 <RouterLink>
+                  const linkNode = makeRouterLink(
+                    entry.path,
+                    t,
+                    used === 0
+                  );
+                  newChildren.push(linkNode);
+
+                  // 重置 rebuilt，从当前剩余文本开始
+                  rebuilt = [parts[i]];
+
+                  termCount.set(t, used + 1);
+                  totalInserted++;
+                  needReplace = true;
+                }
+
+                // 把最后一段文本也塞进去
+                const tail = rebuilt.join("");
+                if (tail) {
+                  newChildren.push(tail);
+                }
+
+                if (needReplace) break;
+              }
+
+              if (needReplace) {
+                // 把 TEXT 节点变成复合表达式节点
+                n.type = NodeTypes.COMPOUND_EXPRESSION;
+                n.children = newChildren; // 这里我们直接用 any，TS 不再报错
+              }
+            },
+          ],
+        });
+
+        const newTemplate = generate(ast).code;
+        const patched = sfcCode.replace(
+          /<template>[\s\S]*?<\/template>/,
+          `<template>${newTemplate}</template>`
+        );
+
+        await fs.promises.writeFile(compPath, patched, "utf-8");
+
+        if (debug)
+          console.log(
+            `[autoLinker] patched ${page.filePathRelative}, inserted: ${totalInserted}`
           );
-
-          if (res.added > 0) {
-            totalInserted += res.added;
-            templateContent = res.text;
-
-            if (debug) {
-              console.log(
-                `[autoLinkerPro] SFC page ${page.filePathRelative} link term="${entry.term}" -> "${entry.path}", added ${res.added}`
-              );
-            }
-          }
-        }
-
-        if (totalInserted > 0) {
-          const newTemplateBlock =
-            `<template>${templateContent}</template>`;
-          const newSfc = sfc.replace(
-            /<template>[\s\S]*?<\/template>/,
-            newTemplateBlock
-          );
-
-          await fs.promises.writeFile(compPath, newSfc, "utf-8");
-
-          if (debug) {
-            console.log(
-              `[autoLinkerPro] SFC page ${page.filePathRelative} patched, inserted = ${totalInserted}`
-            );
-          }
-        }
       }
     },
   };
 };
 
-export default autoLinkerProPlugin;
+export default autoLinkerSfcAst;
