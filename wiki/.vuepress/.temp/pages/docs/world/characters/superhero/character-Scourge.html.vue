@@ -57,7 +57,7 @@
 <li>恋人：秦臻然</li>
 <li>家人：尹广林</li>
 </ul>
-<p>战友：灵动骑士</p>
+<p>战友：<RouteLink to="/docs/world/characters/superhero/character-EtherealKnight.html">灵动骑士</RouteLink></p>
 <ul>
 <li>宿敌：秦烨（红皇帝）</li>
 </ul>

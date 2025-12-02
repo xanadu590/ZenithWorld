@@ -24,7 +24,8 @@ export interface AutoLinkerProOptions {
 }
 
 /**
- * 插件主函数（注意：这里不再依赖 app.pages，只吃一个静态 entries）
+ * 插件主函数（静态索引版）
+ * 这里不依赖 app.pages，只吃传进来的 entries
  */
 export const autoLinkerProPlugin = (
   options: AutoLinkerProOptions
@@ -68,13 +69,17 @@ export const autoLinkerProPlugin = (
         let totalLinksInserted = 0;
         const termCountMap = new Map<string, number>();
 
+        /**
+         * 把一段纯文本里的 term 替换成 <RouteLink>
+         */
         const linkifyOneTerm = (
           text: string,
           entry: AutoLinkEntry
         ): { text: string; added: number } => {
           const term = entry.term;
-          const href = entry.path;
+          const to = entry.path;
 
+          if (!to) return { text, added: 0 };
           if (!text.includes(term)) return { text, added: 0 };
 
           const parts = text.split(term);
@@ -97,7 +102,8 @@ export const autoLinkerProPlugin = (
               continue;
             }
 
-            result += `<a href=" ">${term}</a >` + parts[i];
+            // 用 RouteLink，而不是 <a href>
+            result += `<RouteLink to="${to}">${term}</RouteLink>` + parts[i];
 
             termCountMap.set(term, prevCount + 1);
             totalLinksInserted++;
@@ -152,10 +158,17 @@ export const autoLinkerProPlugin = (
               if (res.added > 0) {
                 modified = res.text;
                 changed = true;
+
+                if (resolved.debug) {
+                  console.log(
+                    `[autoLinkerPro] link term="${term}" to="${entry.path}" on page ${rel}, added ${res.added}`
+                  );
+                }
               }
             }
 
             if (changed && modified !== original) {
+              // 把纯文本 token 变成原始 HTML
               child.type = "html_inline";
               child.tag = "";
               child.content = modified;
