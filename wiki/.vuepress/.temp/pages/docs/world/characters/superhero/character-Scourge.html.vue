@@ -56,9 +56,9 @@
 <li>朋友：乐酷，陈禾子，米舞森</li>
 <li>恋人：秦臻然</li>
 <li>家人：尹广林</li>
-<li>战友：宇文南城</li>
+<li>战友：<RouterLink to="/docs/world/characters/superhero/character-EtherealKnight.html" class="auto-link auto-link--first" data-tooltip="意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！">宇文南城</RouterLink></li>
 </ul>
-<p>战友：灵动骑士</p>
+<p>战友：<RouterLink to="/docs/world/characters/superhero/character-EtherealKnight.html" class="auto-link auto-link--first" data-tooltip="意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！">灵动骑士</RouterLink></p>
 <ul>
 <li>宿敌：秦烨（红皇帝）</li>
 </ul>

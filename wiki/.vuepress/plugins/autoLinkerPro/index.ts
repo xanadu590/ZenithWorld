@@ -5,9 +5,10 @@ import fs from "fs";
 
 /** 一个可自动被链接的词条 */
 export interface AutoLinkEntry {
-  term: string; // 要匹配的词
-  path: string; // 路由路径，如 /docs/world/xxx.html
+  term: string;              // 要匹配的词
+  path: string;              // 路由路径，如 /docs/world/xxx.html
   filePathRelative?: string;
+  tooltip?: string;          // 悬停提示文本
 }
 
 /** 插件配置项 */
@@ -76,9 +77,16 @@ function createLinkifier(
         ? "auto-link auto-link--first"
         : "auto-link";
 
+      // tooltip 文本：优先用 entry.tooltip，没有就退回到 term 本身
+      const tooltip = (entry.tooltip || term).replace(/"/g, "&quot;");
+
       // 生成 Vue 模板里的 <RouterLink>，交给前端渲染
       const link =
-        `<RouterLink to="${to}" class="${classes}">` +
+        `<RouterLink` +
+        ` to="${to}"` +
+        ` class="${classes}"` +
+        ` data-tooltip="${tooltip}"` +    // ✅ 悬停提示用
+        `>` +
         term +
         `</RouterLink>`;
 
@@ -117,7 +125,8 @@ export const autoLinkerProPlugin = (
       const addTerm = (
         term: string,
         pagePath: string,
-        filePathRelative?: string
+        filePathRelative?: string,
+        tooltip?: string
       ) => {
         const t = (term || "").trim();
         if (!t) return;
@@ -128,6 +137,7 @@ export const autoLinkerProPlugin = (
           term: t,
           path: pagePath,
           filePathRelative,
+          tooltip,
         });
       };
 
@@ -137,6 +147,13 @@ export const autoLinkerProPlugin = (
         const pagePath = page.path;
         if (!pagePath) continue;
 
+        // 用于 tooltip 的基础文本（可选）
+        const baseTooltip: string =
+          (fm.autoLinkTooltip as string) ??
+          (fm.summary as string) ??
+          (fm.description as string) ??
+          "";
+
         const title =
           (fm.autoLinkTitle ?? page.title ?? "").toString().trim();
         const aliases: string[] = Array.isArray(fm.autoLinkAliases)
@@ -144,11 +161,11 @@ export const autoLinkerProPlugin = (
           : [];
 
         if (title) {
-          addTerm(title, pagePath, page.filePathRelative || undefined);
+          addTerm(title, pagePath, page.filePathRelative || undefined, baseTooltip);
         }
 
         for (const alias of aliases) {
-          addTerm(alias, pagePath, page.filePathRelative || undefined);
+          addTerm(alias, pagePath, page.filePathRelative || undefined, baseTooltip);
         }
       }
 
@@ -205,7 +222,7 @@ export const autoLinkerProPlugin = (
         let totalInserted = 0;
         const termCountMap = new Map<string, number>();
 
-        // 👉 关键改动：按「标签 / 文本」切分，只替换文本，不碰任何标签和属性
+        // 👉 按「标签 / 文本」切分，只替换文本，不碰任何标签和属性
         const segments = templateContent.split(/(<[^>]+>)/g);
         const newSegments: string[] = [];
 

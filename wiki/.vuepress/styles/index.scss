@@ -24,3 +24,44 @@
 .role-grid > *{
   flex: 0 0 auto;
 }
+
+.auto-link {
+  position: relative;
+  cursor: pointer;
+  text-decoration: underline dotted;
+}
+
+/* 悬停提示卡片 */
+.auto-link[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 0;
+  top: 100%;
+  z-index: 20;
+
+  max-width: 260px;
+  padding: 6px 10px;
+  margin-top: 4px;
+
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+
+  background: var(--vp-c-bg-soft, #fff);
+  color: var(--vp-c-text, #222);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+
+  white-space: normal;
+}
+
+.auto-link[data-tooltip]:hover::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 100%;
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent transparent
+    var(--vp-c-bg-soft, #fff) transparent;
+  z-index: 21;
+}
