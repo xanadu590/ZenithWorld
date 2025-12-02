@@ -56,6 +56,7 @@
 <li>擅长的事：厨艺，但是只会做自己喜欢吃的；与人交往，长相极佳的她几乎可以获得任何人的好感，即使是反派；游戏，游戏技术很好。</li>
 <li>获得超能力的契机：在喜欢的游戏《剑与酒杯》里与好友一起击杀了一个特殊boss后，获得了特殊能力</li>
 </ul>
+<h1 id="人物关系图谱" tabindex="-1"><a class="header-anchor" href="#人物关系图谱"><span>人物关系图谱</span></a></h1>
 <hr>
 <ClientOnly>
   <RelationGraph
