@@ -53,7 +53,9 @@ sidebar: false
 * 朋友：乐酷，陈禾子，米舞森
 * 恋人：秦臻然
 * 家人：尹广林
-* 战友：灵动骑士
+
+战友：灵动骑士
+
 * 宿敌：秦烨（红皇帝）
 
 [Scourge]: /docs/world/characters/superhero/character-Scourge.md
