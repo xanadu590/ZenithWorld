@@ -55,6 +55,11 @@
     "filePathRelative": "docs/world/characters/README.md"
   },
   {
+    "term": "异常构造",
+    "path": "/docs/world/concepts/isomer/",
+    "filePathRelative": "docs/world/concepts/isomer/README.md"
+  },
+  {
     "term": "灵动骑士",
     "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
     "filePathRelative": "docs/world/characters/superhero/character-EtherealKnight.md"
@@ -83,11 +88,6 @@
     "term": "十二主神",
     "path": "/docs/world/concepts/twelveprimedeities/",
     "filePathRelative": "docs/world/concepts/twelveprimedeities/README.md"
-  },
-  {
-    "term": "异常构造",
-    "path": "/docs/world/concepts/isomer/",
-    "filePathRelative": "docs/world/concepts/isomer/README.md"
   },
   {
     "term": "关系卡",

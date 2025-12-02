@@ -1,269 +1,211 @@
 // docs/.vuepress/plugins/autoLinkerPro/index.ts
-import type { Plugin, App, Page } from "vuepress";
-import { fs, path } from "vuepress/utils";
+import type { Plugin } from "vuepress";
+import { path as vpPath } from "vuepress/utils";
+import fs from "fs";
 
-/** 一个可自动被链接的词条 */
 export interface AutoLinkEntry {
-  term: string;              // 要匹配的词
-  path: string;              // 对应页面最终路由路径，如 /docs/world/xxx.html
-  filePathRelative?: string; // 调试用：来自哪个源文件
+  term: string; // 要匹配的词
+  path: string; // 路由路径，如 /docs/world/xxx.html
+  filePathRelative?: string;
 }
 
 export interface AutoLinkerProOptions {
-  /** 最小匹配长度：term 长度小于这个数的不参与自动内链（比如中文 2） */
+  /** 最小匹配长度：term 小于这个长度就不参与自动内链 */
   minLength?: number;
-  /** 黑名单：这些词即使被扫描出来，也永远不自动内链 */
-  blacklist?: string[];
-  /** 每个页面最多插入多少个自动链接（防止满屏“蓝光”） */
+
+  /** 每页最多插入多少个自动链接（防止“满屏蓝字”） */
   maxLinksPerPage?: number;
-  /** 每个词在一页里最多出现多少次链接（比如同一词只链前 3 次） */
+
+  /** 同一个词在一页最多出现多少次链接 */
   maxLinksPerTerm?: number;
-  /** 调试开关 */
+
+  /** 黑名单：即便被收录，也永远不自动内链 */
+  blacklist?: string[];
+
+  /** 调试开关：true 时会在控制台输出详细 log */
   debug?: boolean;
+
+  /** 索引 JSON 输出路径（相对 public） */
+  indexOutput?: string;
 }
 
-/** 判断是否外链：以 http:// 或 https:// 开头 */
-const isExternal = (to: string): boolean => /^https?:\/\//i.test(to.trim());
-
-/** 工具：转义正则特殊字符 */
-const escapeRegExp = (str: string): string =>
-  str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
 /**
- * 扫描 app.pages，生成“标题/别名 → 路径”索引
+ * 简单的字符串替换函数：在 text 里把 term 替换成 markdown 链接
  */
-const buildTitleIndex = (
-  app: App,
-  options: Required<AutoLinkerProOptions>
-): AutoLinkEntry[] => {
-  const { minLength, blacklist, debug } = options;
-  const index: AutoLinkEntry[] = [];
-
-  for (const page of app.pages) {
-    const fm: any = page.frontmatter || {};
-    const autoLink = fm.autoLink ?? true;
-    if (!autoLink) continue;
-
-    // 标题优先级：autoLinkTitle > title > page.title
-    const baseTitle: string | undefined =
-      fm.autoLinkTitle || fm.title || page.title;
-
-    const aliases: string[] = Array.isArray(fm.autoLinkAliases)
-      ? fm.autoLinkAliases
-      : [];
-
-    const allTerms = [baseTitle, ...aliases].filter(
-      (s): s is string => !!s && s.trim().length >= minLength
-    );
-
-    for (const term of allTerms) {
-      const trimmed = term.trim();
-      if (!trimmed) continue;
-      if (blacklist.includes(trimmed)) continue;
-
-      index.push({
-        term: trimmed,
-        path: page.path,
-        filePathRelative: page.filePathRelative || "",
-      });
-    }
-  }
-
-  // 长词优先（“异常构造”先于“异常”）
-  index.sort((a, b) => b.term.length - a.term.length);
-
-  if (debug) {
-    console.log("[autoLinkerPro] built index:", index);
-  }
-
-  return index;
-};
-
-/**
- * 保护不想被替换的区域：
- * - fenced code block   ```...```
- * - HTML 注释           <!-- ... -->
- * - markdown image      ![alt](url)
- * - markdown link       [text](url)
- * - inline code         `code`
- */
-const protectSensitiveAreas = (raw: string) => {
-  const placeholders: string[] = [];
-  const contents: string[] = [];
-  let text = raw;
-
-  const pushPlaceholder = (match: string): string => {
-    const id = `__AUTO_LINK_PRO_PLACEHOLDER_${placeholders.length}__`;
-    placeholders.push(id);
-    contents.push(match);
-    return id;
-  };
-
-  const patterns: RegExp[] = [
-    /```[\s\S]*?```/g,                // fenced code block
-    /<!--[\s\S]*?-->/g,               // HTML 注释
-    /!\[[^\]]*?\]\([^\)]*?\)/g,       // image
-    /\[[^\]]+?\]\([^\)]*?\)/g,        // markdown link
-    /`[^`]*`/g,                       // inline code
-  ];
-
-  for (const pattern of patterns) {
-    text = text.replace(pattern, (m) => pushPlaceholder(m));
-  }
-
-  const restore = (processed: string): string => {
-    let out = processed;
-    placeholders.forEach((ph, i) => {
-      out = out.replace(ph, contents[i]);
-    });
-    return out;
-  };
-
-  return { text, restore };
-};
-
-/**
- * 对单个页面执行自动内链（直接修改 page.content）
- */
-const processPageContent = (
-  page: Page,
-  index: AutoLinkEntry[],
-  options: Required<AutoLinkerProOptions>
-) => {
-  const fm: any = page.frontmatter || {};
-  const autoLink = fm.autoLink ?? true;
-  if (!autoLink) return;
-  if (!page.content) return;
-
-  const ignoreList: string[] = Array.isArray(fm.autoLinkIgnore)
-    ? fm.autoLinkIgnore
-    : [];
-
-  const { maxLinksPerPage, maxLinksPerTerm, debug } = options;
-
-  let totalLinksInserted = 0;
-  const termCountMap = new Map<string, number>();
-
-  const originalContent = page.content;
-  const { text: protectedText, restore } = protectSensitiveAreas(originalContent);
-  let working = protectedText;
-
-  const isOverPageLimit = () =>
-    maxLinksPerPage > 0 && totalLinksInserted >= maxLinksPerPage;
-
-  const isOverTermLimit = (term: string) => {
-    if (maxLinksPerTerm <= 0) return false;
-    const count = termCountMap.get(term) ?? 0;
-    return count >= maxLinksPerTerm;
-  };
-
-  // 针对整个 Markdown 文本执行“全局替换”
-  for (const entry of index) {
+function createLinkifier(
+  maxLinksPerPage: number,
+  maxLinksPerTerm: number
+) {
+  return function linkifyText(
+    text: string,
+    entry: AutoLinkEntry,
+    termCountMap: Map<string, number>,
+    counters: { totalInserted: number }
+  ): { text: string; added: number } {
     const term = entry.term;
+    const to = entry.path;
 
-    // 不在本页中自我链接
-    if (entry.path === page.path) continue;
+    if (!to) return { text, added: 0 };
+    if (!text.includes(term)) return { text, added: 0 };
 
-    // 页内忽略
-    if (ignoreList.includes(term)) continue;
+    const parts = text.split(term);
+    if (parts.length === 1) return { text, added: 0 };
 
-    if (isOverPageLimit()) break;
-    if (!working.includes(term)) continue;
+    let result = parts[0];
+    let added = 0;
 
-    const escapedTerm = escapeRegExp(term);
-    const pattern = new RegExp(escapedTerm, "g");
-
-    working = working.replace(pattern, (match: string): string => {
-      if (isOverPageLimit() || isOverTermLimit(term)) {
-        return match;
+    for (let i = 1; i < parts.length; i++) {
+      // 全页总上限
+      if (maxLinksPerPage > 0 && counters.totalInserted >= maxLinksPerPage) {
+        result += term + parts.slice(i).join(term);
+        return { text: result, added };
       }
 
-      const prev = termCountMap.get(term) ?? 0;
-      termCountMap.set(term, prev + 1);
-      totalLinksInserted++;
-
-      const to = entry.path;
-
-      // 内链 / 外链统一先转成 Markdown 链接，交给 VuePress 后续处理
-      if (!isExternal(to)) {
-        return `[${match}](${to})`;
+      const prevCount = termCountMap.get(term) ?? 0;
+      // 单词上限
+      if (maxLinksPerTerm > 0 && prevCount >= maxLinksPerTerm) {
+        result += term + parts[i];
+        continue;
       }
-      return `[${match}](${to})`;
-    });
-  }
 
-  const finalContent = restore(working);
+      // 这里我们生成 Markdown 链接，交给 VuePress 后续解析
+      const link = `[${term}](${to})`;
 
-  // 如果开启 debug，并且真的插入了链接，打印前后对比的片段
-  if (debug && totalLinksInserted > 0) {
-    const rel = page.filePathRelative || "(unknown)";
-    console.log(
-      `[autoLinkerPro] page ${rel} inserted links: ${totalLinksInserted}`
-    );
+      result += link + parts[i];
 
-    // 打印一小段差异，方便你肉眼确认
-    // 这里取前 400 个字符做示例
-    const beforeSample = originalContent.slice(0, 400);
-    const afterSample = finalContent.slice(0, 400);
-    console.log(
-      `[autoLinkerPro] BEFORE sample for ${rel}:\n` + beforeSample
-    );
-    console.log(
-      `[autoLinkerPro] AFTER sample for ${rel}:\n` + afterSample
-    );
-  }
+      termCountMap.set(term, prevCount + 1);
+      counters.totalInserted++;
+      added++;
+    }
 
-  page.content = finalContent;
-};
-
-// ----------------- 主插件 -----------------
+    return { text: result, added };
+  };
+}
 
 export const autoLinkerProPlugin = (
   options: AutoLinkerProOptions = {}
 ): Plugin => {
-  const resolved: Required<AutoLinkerProOptions> = {
-    minLength: options.minLength ?? 2,
-    blacklist: options.blacklist ?? [],
-    maxLinksPerPage: options.maxLinksPerPage ?? 80,
-    maxLinksPerTerm: options.maxLinksPerTerm ?? 5,
-    debug: options.debug ?? false,
-  };
+  const minLength = options.minLength ?? 2; // 中文建议 2
+  const maxLinksPerPage = options.maxLinksPerPage ?? 60;
+  const maxLinksPerTerm = options.maxLinksPerTerm ?? 4;
+  const blacklist = new Set(options.blacklist ?? []);
+  const debug = options.debug ?? false;
+  const indexOutput = options.indexOutput ?? "data/auto-link-index.json";
 
   return {
-    name: "vuepress-plugin-auto-linker-pro-onPrepared",
+    name: "vuepress-plugin-auto-linker-pro-static",
 
     /**
-     * onPrepared 阶段：
-     * 1. 扫描 pages 生成索引
-     * 2. 写索引 JSON（temp + public）
-     * 3. 直接修改每个 page.content（Markdown）实现自动内链
+     * 在 onPrepared：
+     * 1. 先从 app.pages 构建“标题索引”
+     * 2. 写一份 JSON 到 public/data/auto-link-index.json（给前端用）
+     * 3. 再遍历所有 page.content，直接做字符串替换，写回去
      */
     async onPrepared(app) {
-      const index = buildTitleIndex(app, resolved);
+      /** 1. 构建索引 */
+      const index: AutoLinkEntry[] = [];
 
-      // ❶ 写 temp JSON，方便将来其它 Node 端插件复用
-      const tempFile = app.dir.temp("auto-linker/index.json");
-      await fs.ensureDir(path.dirname(tempFile));
-      await fs.writeFile(tempFile, JSON.stringify(index, null, 2), "utf-8");
+      const addTerm = (term: string, pagePath: string, filePathRelative?: string) => {
+        const t = (term || "").trim();
+        if (!t) return;
+        if (t.length < minLength) return;
+        if (blacklist.has(t)) return;
 
-      // ❷ 写 public JSON，方便前端 fetch 使用
-      const publicFile = path.resolve(
-        app.dir.public(),
-        "data/auto-link-index.json"
-      );
-      await fs.ensureDir(path.dirname(publicFile));
-      await fs.writeFile(publicFile, JSON.stringify(index, null, 2), "utf-8");
-
-      if (resolved.debug) {
-        console.log("[autoLinkerPro] index json written:", {
-          tempFile,
-          publicFile,
+        index.push({
+          term: t,
+          path: pagePath,
+          filePathRelative,
         });
+      };
+
+      for (const page of app.pages) {
+        const fm: any = page.frontmatter || {};
+        const title =
+          (fm.autoLinkTitle ?? page.title ?? "").toString().trim();
+        const aliases: string[] = Array.isArray(fm.autoLinkAliases)
+          ? fm.autoLinkAliases
+          : [];
+
+        const pagePath = page.path;
+        if (!pagePath) continue;
+
+        if (title) {
+          addTerm(title, pagePath, page.filePathRelative || undefined);
+        }
+
+        for (const alias of aliases) {
+          addTerm(alias, pagePath, page.filePathRelative || undefined);
+        }
       }
 
-      // ❸ 遍历所有页面，直接改写 Markdown 内容
+      // 按词长从长到短排序（“异常构造” 优先于 “异常”）
+      index.sort((a, b) => b.term.length - a.term.length);
+
+      if (debug) {
+        console.log("[autoLinkerPro] built index:", index);
+      }
+
+      /** 2. 写 JSON 索引到 public 目录（可选） */
+      const outFile = vpPath.resolve(app.dir.public(), indexOutput);
+      await fs.promises.mkdir(vpPath.dirname(outFile), { recursive: true });
+      await fs.promises.writeFile(
+        outFile,
+        JSON.stringify(index, null, 2),
+        "utf-8"
+      );
+
+      if (debug) {
+        console.log("[autoLinkerPro] index json written:", outFile);
+      }
+
+      /** 3. 遍历所有页面，直接改 page.content */
+      const linkify = createLinkifier(maxLinksPerPage, maxLinksPerTerm);
+
       for (const page of app.pages) {
-        processPageContent(page, index, resolved);
+        const fm: any = page.frontmatter || {};
+        const autoLink = fm.autoLink;
+        // 允许通过 frontmatter 关闭本页自动内链
+        if (autoLink === false) continue;
+
+        // 本页的忽略词
+        const ignoreList: string[] = Array.isArray(fm.autoLinkIgnore)
+          ? fm.autoLinkIgnore
+          : [];
+        const ignoreSet = new Set(ignoreList);
+
+        let content = page.content;
+        if (!content) continue;
+
+        const termCountMap = new Map<string, number>();
+        const counters = { totalInserted: 0 };
+
+        for (const entry of index) {
+          // 不在本页内把本页标题自己再链一遍
+          if (entry.path === page.path) continue;
+          if (ignoreSet.has(entry.term)) continue;
+
+          if (
+            maxLinksPerPage > 0 &&
+            counters.totalInserted >= maxLinksPerPage
+          ) {
+            break;
+          }
+
+          const res = linkify(content, entry, termCountMap, counters);
+          if (res.added > 0) {
+            content = res.text;
+          }
+        }
+
+        if (counters.totalInserted > 0) {
+          if (debug) {
+            console.log(
+              `[autoLinkerPro] page ${page.filePathRelative} patched, inserted = ${counters.totalInserted}`
+            );
+          }
+          // 关键：写回 page.content，后面 VuePress 会用这个内容生成 .temp HTML
+          page.content = content;
+        }
       }
     },
   };
