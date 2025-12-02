@@ -6,7 +6,7 @@ import type { Plugin } from "vuepress";
  */
 export interface AutoLinkEntry {
   term: string;  // 要匹配的词
-  path: string;  // "/docs/xxx.html" or "https://xxx"
+  path: string;  // "/docs/xxx.html" 或 "https://xxx"
 }
 
 /**
@@ -25,14 +25,11 @@ export interface AutoLinkerProOptions {
   debug?: boolean;
 }
 
-const isExternal = (to: string): boolean =>
-  /^https?:\/\//i.test(to.trim());
-
 /** 全局静态索引（只来自 entries） */
 let globalIndex: AutoLinkEntry[] = [];
 
 /**
- * 插件主函数（纯静态版）
+ * 插件主函数（纯静态版，统一用 RouteLink）
  */
 export const autoLinkerProPlugin = (
   options: AutoLinkerProOptions
@@ -66,7 +63,8 @@ export const autoLinkerProPlugin = (
           if (whitelist.length > 0 && !whitelist.includes(term)) return false;
           return true;
         })
-        .sort((a, b) => b.term.length - a.term.length); // 长词优先
+        // 长词优先，避免“主神”先匹配掉“十二主神”里的“主神”
+        .sort((a, b) => b.term.length - a.term.length);
 
       if (debug) {
         console.log("[autoLinkerPro] static index:", globalIndex);
@@ -88,7 +86,7 @@ export const autoLinkerProPlugin = (
         const fm: any = env.frontmatter || {};
         const rel: string = env.filePathRelative || "(unknown)";
 
-        // 页内禁用
+        // 页内禁用：frontmatter.autoLink: false
         if (fm.autoLink === false) return;
 
         const ignoreList: string[] = Array.isArray(fm.autoLinkIgnore)
@@ -101,7 +99,10 @@ export const autoLinkerProPlugin = (
         const termCountMap = new Map<string, number>();
 
         /**
-         * 把 text 中出现的 term 替换成 RouteLink 或 a
+         * 把 text 中出现的 term 替换成 <RouteLink>
+         * 说明：
+         * - 不再直接生成 <a href>，统一交给 RouteLink 渲染
+         * - 即使 path 是 "https://..."，VuePress 也会在客户端正常渲染成外链
          */
         const linkifyOneTerm = (
           text: string,
@@ -137,13 +138,9 @@ export const autoLinkerProPlugin = (
               ? "auto-link auto-link--first"
               : "auto-link";
 
-            let html = "";
-
-            if (isExternal(to)) {
-              html = `<RouteLink to="${to}" class="${classes}">${term}</RouteLink>`;
-            } else {
-              html = `<RouteLink to="${to}" class="${classes}">${term}</RouteLink>`;
-            }
+            // ⭐ 关键修改：无论内链/外链，一律使用 RouteLink
+            // 由 VuePress / Vue Router 负责最终渲染 <a href="...">
+            const html = `<RouteLink to="${to}" class="${classes}">${term}</RouteLink>`;
 
             result += html + parts[i];
 
