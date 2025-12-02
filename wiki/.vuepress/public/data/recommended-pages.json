@@ -42,12 +42,6 @@
     "hotScore": 0
   },
   {
-    "title": "十二主神",
-    "path": "/docs/world/concepts/twelveprimedeities/",
-    "lastUpdated": 1763641434000,
-    "hotScore": 0
-  },
-  {
     "title": "灵动骑士",
     "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
     "lastUpdated": 1764636029000,
@@ -93,6 +87,12 @@
     "title": "超级英雄",
     "path": "/docs/world/characters/superhero/",
     "lastUpdated": 1764419366000,
+    "hotScore": 0
+  },
+  {
+    "title": "十二主神",
+    "path": "/docs/world/concepts/twelveprimedeities/",
+    "lastUpdated": 1763641434000,
     "hotScore": 0
   },
   {

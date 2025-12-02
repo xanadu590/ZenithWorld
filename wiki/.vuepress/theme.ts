@@ -175,6 +175,7 @@ export default hopeTheme({
       apiKey: "e12946c7f8693e562f078360da358419a57197338607669795398c2ee3fddf59",
       indexUid: "wiki",
     },
+    
 
      // ✅ 在 theme 里配置 slimsearch（不要在 config.ts 再注册）
     // slimsearch: {

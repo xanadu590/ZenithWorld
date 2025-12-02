@@ -70,6 +70,7 @@ characters:
 - [天灾](/docs/world/characters/superhero/character-Scourge.html)
 - [HearTone](/docs/world/characters/superhero/character-HearTone.html)
 - [M·A·Y](/docs/world/characters/superhero/character-M-A-Y.html)
+- [测试页面](/docs/world/characters/superhero/test-b.html)
 - ……把你所有角色都列上来
 
 
