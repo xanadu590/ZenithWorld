@@ -191,16 +191,32 @@ export const autoLinkerProPlugin = (
         console.log("[autoLinkerPro] extendsMarkdown registered");
       }
 
-      md.core.ruler.push("auto-linker-pro", (state) => {
+      // 规则名字改成一个绝对不会撞车的
+      md.core.ruler.push("zenith-auto-linker-pro", (state) => {
         if (!globalIndex.length) return;
 
         const env: any = state.env || {};
         const fm: any = env.frontmatter || {};
         const rel: string = env.filePathRelative || "(unknown)";
+        const pagePath: string = env.path || "";
+
+        if (debug) {
+          console.log(
+            "[autoLinkerPro] core rule run for",
+            rel,
+            "path:",
+            pagePath
+          );
+        }
 
         // 页内开关：autoLink: false 可以关闭本页自动内链
         const autoLink = fm.autoLink;
-        if (autoLink === false) return;
+        if (autoLink === false) {
+          if (debug) {
+            console.log("[autoLinkerPro] autoLink=false, skip", rel);
+          }
+          return;
+        }
 
         // 本页忽略的词
         const ignoreList: string[] = Array.isArray(fm.autoLinkIgnore)
@@ -241,7 +257,12 @@ export const autoLinkerProPlugin = (
 
             for (const entry of globalIndex) {
               // 不在本页把本页自己再链一遍
-              if (entry.path === env.path) continue;
+              if (
+                entry.path === pagePath ||
+                entry.filePathRelative === rel
+              ) {
+                continue;
+              }
               if (ignoreSet.has(entry.term)) continue;
 
               if (
@@ -259,14 +280,13 @@ export const autoLinkerProPlugin = (
               );
 
               if (res.added > 0) {
-                // 注意：linkify 内部会更新 totalInserted（通过引用对象）
                 totalLinksInserted += res.added;
                 modified = res.text;
                 changed = true;
 
                 if (debug) {
                   console.log(
-                    `[autoLinkerPro] link term="${entry.term}" to="${entry.path}" on page ${rel}, added ${res.added}`
+                    `[autoLinkerPro] link term="${entry.term}" -> "${entry.path}" on page ${rel}, added ${res.added}`
                   );
                 }
               }
