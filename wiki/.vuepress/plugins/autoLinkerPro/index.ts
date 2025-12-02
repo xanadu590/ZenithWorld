@@ -6,7 +6,7 @@ import type { Plugin } from "vuepress";
  */
 export interface AutoLinkEntry {
   term: string;  // 要匹配的词
-  path: string;  // 对应页面最终路由路径，如 /docs/world/xxx.html
+  path: string;  // 对应页面最终路由路径，如 /docs/world/xxx.html 或外链 https://...
 }
 
 export interface AutoLinkerProOptions {
@@ -22,6 +22,13 @@ export interface AutoLinkerProOptions {
   /** 调试用：开启后会在控制台输出索引信息 */
   debug?: boolean;
 }
+
+/**
+ * 判断是否外链：以 http:// 或 https:// 开头
+ */
+const isExternal = (to: string): boolean => {
+  return /^https?:\/\//i.test(to.trim());
+};
 
 /**
  * 插件主函数（静态索引版）
@@ -70,7 +77,11 @@ export const autoLinkerProPlugin = (
         const termCountMap = new Map<string, number>();
 
         /**
-         * 把一段纯文本里的 term 替换成 <RouteLink>
+         * 把一段纯文本里的 term 替换成链接
+         * - 内链：<RouteLink to="...">
+         * - 外链：<a href=" " target="_blank" rel="noopener noreferrer">
+         * 会为所有自动生成的链接增加 class="auto-link ..."，方便你用 CSS 控制样式
+         * 首次出现的链接会额外加 auto-link--first
          */
         const linkifyOneTerm = (
           text: string,
@@ -95,15 +106,35 @@ export const autoLinkerProPlugin = (
               return { text: result, added };
             }
 
-            // 单词上限
+            // 当前词的出现次数
             const prevCount = termCountMap.get(term) ?? 0;
             if (maxLinksPerTerm > 0 && prevCount >= maxLinksPerTerm) {
               result += term + parts[i];
               continue;
             }
 
-            // 用 RouteLink，而不是 <a href>
-            result += `<RouteLink to="${to}">${term}</RouteLink>` + parts[i];
+            const first = prevCount === 0;
+            const classes = first
+              ? "auto-link auto-link--first"
+              : "auto-link";
+
+            let replaced = "";
+
+            if (isExternal(to)) {
+              // 外链
+              replaced =
+                `<a href="${to}" class="${classes}" target="_blank" rel="noopener noreferrer">` +
+                term +
+                `</a >`;
+            } else {
+              // 内链：使用 RouteLink，走 Vue Router，无刷新跳转
+              replaced =
+                `<RouteLink to="${to}" class="${classes}">` +
+                term +
+                `</RouteLink>`;
+            }
+
+            result += replaced + parts[i];
 
             termCountMap.set(term, prevCount + 1);
             totalLinksInserted++;
