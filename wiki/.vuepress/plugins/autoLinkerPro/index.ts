@@ -172,22 +172,19 @@ const protectSensitiveAreas = (
 
 /**
  * 核心：对单个页面执行自动内链替换
+ * 注意：这里不再需要 app，只依赖全局的 globalTitleIndex
  */
 const processPageContent = (
   page: Page,
-  app: App,
   options: Required<AutoLinkerProOptions>
 ) => {
   const fm: any = page.frontmatter || {};
   const autoLink = fm.autoLink ?? true;
   if (!autoLink) return;
 
-  // 没内容不处理
-  if (!page.content) return;
-
-  // 如果还没构建索引，这里构建一次
-  if (!globalTitleIndex) {
-    globalTitleIndex = buildTitleIndex(app, options);
+  // 没内容或没索引不处理
+  if (!page.content || !globalTitleIndex || globalTitleIndex.length === 0) {
+    return;
   }
 
   const ignoreList: string[] = Array.isArray(fm.autoLinkIgnore)
@@ -221,7 +218,7 @@ const processPageContent = (
     return count >= maxLinksPerTerm;
   };
 
-  for (const entry of globalTitleIndex!) {
+  for (const entry of globalTitleIndex) {
     const term = entry.term;
 
     // 跳过本页面自己的标题（避免自我链接）
@@ -303,16 +300,26 @@ export const autoLinkerProPlugin = (
     name: "vuepress-plugin-auto-linker-pro",
 
     // 每次 dev / build 启动时清空索引缓存
-    onInitialized(app) {
+    onInitialized() {
       globalTitleIndex = null;
-      if (resolved.debug) {
-        console.log("[autoLinkerPro] initialized");
-      }
     },
 
-    // 每一个 page 在被处理时，做自动内链
-    extendsPage(page, app) {
-      processPageContent(page, app, resolved);
+    // 在所有页面解析完之后构建索引并处理页面内容
+    async onPrepared(app) {
+      // 先构建全局索引
+      globalTitleIndex = buildTitleIndex(app, resolved);
+
+      // 然后遍历每一页做自动内链
+      for (const page of app.pages) {
+        processPageContent(page, resolved);
+      }
+
+      if (resolved.debug) {
+        console.log(
+          "[autoLinkerPro] processed pages with auto linking, total pages:",
+          app.pages.length
+        );
+      }
     },
   };
 };
