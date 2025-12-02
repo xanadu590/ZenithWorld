@@ -40,7 +40,29 @@ export default defineUserConfig({
   plugins: [
     recommendedArticles(),
     nosearchPlugin(),
-    
+    autoLinkerProPlugin({
+      debug: true,   // 先开着方便看 log
+      entries: [
+        // 先只测这一条：把“灵动骑士”变成链接
+        {
+          term: "灵动骑士",
+          path: "/docs/world/characters/superhero/character-EtherealKnight.html",
+        },
+
+        // 你也可以把“异常构造”“十二主神”先一起加上
+        {
+          term: "异常构造",
+          path: "/docs/world/concepts/isomer/",
+        },
+        {
+          term: "十二主神",
+          path: "/docs/world/concepts/twelveprimedeities/",
+        },
+      ],
+
+      maxLinksPerPage: 50,
+      maxLinksPerTerm: 3,
+    }),
   ],
 
 
