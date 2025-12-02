@@ -144,7 +144,8 @@ const processPageContent = (
   let totalLinksInserted = 0;
   const termCountMap = new Map<string, number>();
 
-  const { text: protectedText, restore } = protectSensitiveAreas(page.content);
+  const originalContent = page.content;
+  const { text: protectedText, restore } = protectSensitiveAreas(originalContent);
   let working = protectedText;
 
   const isOverPageLimit = () =>
@@ -183,21 +184,32 @@ const processPageContent = (
 
       const to = entry.path;
 
-      // 内链 → Markdown 链接，交给 VuePress 转成 RouterLink
+      // 内链 / 外链统一先转成 Markdown 链接，交给 VuePress 后续处理
       if (!isExternal(to)) {
         return `[${match}](${to})`;
       }
-
-      // 外链 → 直接用 Markdown 链接（后面主题会渲染成 <a target="_blank">）
       return `[${match}](${to})`;
     });
   }
 
   const finalContent = restore(working);
 
+  // 如果开启 debug，并且真的插入了链接，打印前后对比的片段
   if (debug && totalLinksInserted > 0) {
+    const rel = page.filePathRelative || "(unknown)";
     console.log(
-      `[autoLinkerPro] page ${page.filePathRelative} inserted links: ${totalLinksInserted}`
+      `[autoLinkerPro] page ${rel} inserted links: ${totalLinksInserted}`
+    );
+
+    // 打印一小段差异，方便你肉眼确认
+    // 这里取前 400 个字符做示例
+    const beforeSample = originalContent.slice(0, 400);
+    const afterSample = finalContent.slice(0, 400);
+    console.log(
+      `[autoLinkerPro] BEFORE sample for ${rel}:\n` + beforeSample
+    );
+    console.log(
+      `[autoLinkerPro] AFTER sample for ${rel}:\n` + afterSample
     );
   }
 
