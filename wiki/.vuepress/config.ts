@@ -40,7 +40,13 @@ export default defineUserConfig({
   plugins: [
     recommendedArticles(),
     nosearchPlugin(),
-    autoLinkerProPlugin(),
+    autoLinkerProPlugin({
+      minLength: 2,
+      maxLinksPerPage: 60,
+      maxLinksPerTerm: 4,
+      blacklist: ["火", "风", "水", "土"],
+      debug: true,  // 先开着看日志，稳定后可以关
+    }),
   ],
 
 
