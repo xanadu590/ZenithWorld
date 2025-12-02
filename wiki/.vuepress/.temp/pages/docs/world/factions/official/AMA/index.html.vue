@@ -32,7 +32,7 @@
 <h2 id="分类体系-13类" tabindex="-1"><a class="header-anchor" href="#分类体系-13类"><span>分类体系（13类）</span></a></h2>
 <p>根据异常管理局的官方划分，超自然事物共分为十三类：</p>
 <ol>
-<li><RouteLink to="/docs/world/concepts/isomer/">异常构造</RouteLink></li>
+<li><RouteLink to="/docs/world/concepts/isomer/"><RouterLink to="/docs/world/concepts/isomer/" class="auto-link auto-link--first">异常构造</RouterLink></RouteLink></li>
 <li>历史记录</li>
 <li>宗教传承</li>
 <li>东方神秘</li>

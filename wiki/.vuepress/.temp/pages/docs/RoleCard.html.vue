@@ -63,8 +63,8 @@
 />
 </div>
 <RandomCard /><ul>
-<li><RouteLink to="/docs/world/characters/superhero/character-EtherealKnight.html">灵动骑士</RouteLink></li>
-<li><RouteLink to="/docs/world/characters/superhero/character-Scourge.html">天灾</RouteLink></li>
+<li><RouteLink to="/docs/world/characters/superhero/character-EtherealKnight.html"><RouterLink to="/docs/world/characters/superhero/character-EtherealKnight.html" class="auto-link auto-link--first">灵动骑士</RouterLink></RouteLink></li>
+<li><RouteLink to="/docs/world/characters/superhero/character-Scourge.html"><RouterLink to="/docs/world/characters/superhero/character-Scourge.html" class="auto-link auto-link--first">天灾</RouterLink></RouteLink></li>
 <li><RouteLink to="/docs/world/characters/superhero/character-HearTone.html">HearTone</RouteLink></li>
 <li><RouteLink to="/docs/world/characters/superhero/character-M-A-Y.html">M·A·Y</RouteLink></li>
 <li><RouteLink to="/docs/world/characters/superhero/character-Illustra.html">character-Illustra</RouteLink></li>
