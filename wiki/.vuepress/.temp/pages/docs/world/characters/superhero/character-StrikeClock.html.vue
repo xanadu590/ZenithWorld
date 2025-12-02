@@ -7,7 +7,7 @@
 <LeadBlock quote="嗯，对于成为救世主这件事，我并不是自愿的，只是……那些无法自救的人，不应被抛弃。" /><ul>
 <li>姓名：钟立明</li>
 <li>性别：男</li>
-<li>英雄名：警钟（character-StrikeClock)</li>
+<li>英雄名：<RouteLink to="/docs/world/characters/superhero/character-StrikeClock.html" class="auto-link auto-link--first">警钟</RouteLink>（character-StrikeClock)</li>
 <li>昵称：无</li>
 <li>年龄：23</li>
 <li>种族：人类</li>

@@ -7,7 +7,7 @@
 <LeadBlock quote="生活也许很艰难，但是有家人和朋友在一起，我就有勇气面对。" /><ul>
 <li>姓名：hope</li>
 <li>性别：女</li>
-<li>英雄名：巫师希望（Wizard Hope)</li>
+<li>英雄名：<RouteLink to="/docs/world/characters/superhero/character-WizardHope.html" class="auto-link auto-link--first">巫师希望</RouteLink>（Wizard Hope)</li>
 <li>昵称：无</li>
 <li>年龄：23</li>
 <li>种族：人类</li>

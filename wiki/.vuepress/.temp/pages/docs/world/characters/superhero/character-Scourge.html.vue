@@ -4,7 +4,7 @@
 <LeadBlock quote="啊哈哈！我很强的……干嘛！不要那样看着我！" /><ul>
 <li>姓名：尹守</li>
 <li>性别：男</li>
-<li>英雄名：天灾（Scourge)</li>
+<li>英雄名：<RouteLink to="/docs/world/characters/superhero/character-Scourge.html" class="auto-link auto-link--first">天灾</RouteLink>（Scourge)</li>
 <li>昵称：后宫男</li>
 <li>年龄：26</li>
 <li>种族：人类</li>

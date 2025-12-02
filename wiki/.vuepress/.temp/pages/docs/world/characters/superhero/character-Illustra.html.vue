@@ -7,7 +7,7 @@
 <LeadBlock quote="啊啊！烦死了烦死了！我爸根的真的不想出来营业啊！" /><ul>
 <li>姓名：高乐</li>
 <li>性别：女</li>
-<li>英雄名：幻绘星（Illustar)</li>
+<li>英雄名：<RouteLink to="/docs/world/characters/superhero/character-Illustra.html" class="auto-link auto-link--first">幻绘星</RouteLink>（Illustar)</li>
 <li>昵称：艾露露</li>
 <li>年龄：24</li>
 <li>种族：人类</li>

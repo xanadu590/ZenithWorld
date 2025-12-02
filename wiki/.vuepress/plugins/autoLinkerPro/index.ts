@@ -1,101 +1,124 @@
 // docs/.vuepress/plugins/autoLinkerPro/index.ts
-import type { Plugin } from "vuepress";
+import type { Plugin, App } from "vuepress";
 
 /**
  * 一个可自动被链接的词条
  */
 export interface AutoLinkEntry {
   term: string;  // 要匹配的词
-  path: string;  // 对应页面最终路由路径，如 /docs/world/xxx.html 或外链 https://...
+  path: string;  // 对应页面路由路径，如 /docs/world/xxx.html 或外链 https://...
 }
 
 export interface AutoLinkerProOptions {
-  /** 提前准备好的“词 → 路径”索引（静态配置或脚本生成） */
-  entries: AutoLinkEntry[];
-
-  /** 每个页面最多插入多少个自动链接（防止满屏“蓝光”） */
+  /** 每个页面最多插入多少个自动链接（防止满屏蓝光） */
   maxLinksPerPage?: number;
 
-  /** 每个词在一页里最多出现多少次链接（比如同一词只链前 3 次） */
+  /** 每个词在一页最多出现多少次（建议 3~5） */
   maxLinksPerTerm?: number;
 
-  /** 最小匹配长度：term 长度小于这个数的不参与自动内链（比如中文 2） */
+  /** 最小匹配长度（中文推荐 2） */
   minLength?: number;
 
-  /** 黑名单：这些词即使在 entries 里出现，也永远不自动内链 */
+  /** 黑名单词（不自动内链） */
   blacklist?: string[];
 
-  /** 调试用：开启后会在控制台输出索引信息 */
+  /** 白名单（如设置则只有白名单词参与） */
+  whitelist?: string[];
+
+  /** 调试输出 */
   debug?: boolean;
 }
 
 /**
- * 判断是否外链：以 http:// 或 https:// 开头
+ * 判断是否外链
  */
-const isExternal = (to: string): boolean => {
-  return /^https?:\/\//i.test(to.trim());
+const isExternal = (to: string) => /^https?:\/\//i.test(to.trim());
+
+/**
+ * 自动从所有页面扫描标题，生成词 → 路径映射
+ */
+const buildTitleIndex = (app: App, opt: Required<AutoLinkerProOptions>): AutoLinkEntry[] => {
+  const raw: AutoLinkEntry[] = [];
+
+  for (const page of app.pages) {
+    const title = (page.title || "").trim();
+    if (!title) continue;
+
+    const to = page.path;
+
+    // 应用白名单
+    if (opt.whitelist.length && !opt.whitelist.includes(title)) {
+      continue;
+    }
+
+    // 屏蔽黑名单
+    if (opt.blacklist.includes(title)) continue;
+
+    // 最小长度过滤
+    if (title.length < opt.minLength) continue;
+
+    raw.push({
+      term: title,
+      path: to,
+    });
+  }
+
+  // 按长度从长到短排序（避免“异常构造”被“异常”覆盖）
+  raw.sort((a, b) => b.term.length - a.term.length);
+
+  return raw;
 };
 
 /**
- * 插件主函数（静态索引版）
- * 这里不依赖 app.pages，只吃传进来的 entries
+ * 插件主函数
  */
 export const autoLinkerProPlugin = (
   options: AutoLinkerProOptions
 ): Plugin => {
-  const resolved = {
+  
+  const resolved: Required<AutoLinkerProOptions> = {
     maxLinksPerPage: options.maxLinksPerPage ?? 80,
     maxLinksPerTerm: options.maxLinksPerTerm ?? 5,
     minLength: options.minLength ?? 1,
     blacklist: options.blacklist ?? [],
+    whitelist: options.whitelist ?? [],
     debug: options.debug ?? false,
   };
 
-  // ---- 构建 & 预处理全局索引 ----
-  // 1. 去掉空 term
-  // 2. 应用 minLength & blacklist
-  // 3. 按 term 长度从长到短排序（“异常构造”优先于“异常”）
-  const globalTitleIndex: AutoLinkEntry[] = (options.entries || [])
-    .map((e) => {
-      return {
-        term: (e.term || "").trim(),
-        path: e.path,
-      };
-    })
-    .filter((e) => {
-      if (!e.term) return false;
-      if (!e.path) return false;
-      if (e.term.length < resolved.minLength) return false;
-      if (resolved.blacklist.includes(e.term)) return false;
-      return true;
-    })
-    .sort((a, b) => b.term.length - a.term.length);
-
-  if (resolved.debug) {
-    console.log("[autoLinkerPro] prepared index:", globalTitleIndex);
-  }
+  let globalIndex: AutoLinkEntry[] = [];
 
   return {
-    name: "vuepress-plugin-auto-linker-pro-md-static",
+    name: "vuepress-plugin-auto-linker-pro",
 
+    /**
+     * 在页面全部加载完毕后扫描标题
+     */
+    onInitialized(app) {
+      globalIndex = buildTitleIndex(app, resolved);
+
+      if (resolved.debug) {
+        console.log("[autoLinkerPro] built index:", globalIndex);
+        console.log("[autoLinkerPro] pages count =", app.pages.length);
+      }
+    },
+
+    /**
+     * Markdown 扩展（自动替换成链接）
+     */
     extendsMarkdown(md) {
       if (resolved.debug) {
-        console.log(
-          "[autoLinkerPro] extendsMarkdown registered, entries =",
-          globalTitleIndex
-        );
+        console.log("[autoLinkerPro] extendsMarkdown registered");
       }
 
-      md.core.ruler.push("auto-linker-pro-static", (state) => {
-        if (!globalTitleIndex.length) return;
+      md.core.ruler.push("auto-linker-pro", (state) => {
+        if (!globalIndex.length) return;
 
         const env: any = state.env || {};
         const fm: any = env.frontmatter || {};
-        const rel: string = env.filePathRelative || "(unknown)";
+        const rel = env.filePathRelative || "(unknown)";
 
-        // 页内开关：frontmatter.autoLink: false 可以关闭
-        const autoLink = fm.autoLink ?? true;
-        if (!autoLink) return;
+        // 页面级开关
+        if (fm.autoLink === false) return;
 
         const ignoreList: string[] = Array.isArray(fm.autoLinkIgnore)
           ? fm.autoLinkIgnore
@@ -103,25 +126,19 @@ export const autoLinkerProPlugin = (
 
         const { maxLinksPerPage, maxLinksPerTerm } = resolved;
 
-        let totalLinksInserted = 0;
-        const termCountMap = new Map<string, number>();
+        let totalLinks = 0;
+        const termCount = new Map<string, number>();
 
         /**
-         * 把一段纯文本里的 term 替换成链接
-         * - 内链：<RouteLink to="...">
-         * - 外链：<a href=" " target="_blank" rel="noopener noreferrer">
-         * 会为所有自动生成的链接增加 class="auto-link ..."，方便你用 CSS 控制样式
-         * 首次出现的链接会额外加 auto-link--first
+         * 替换文本中的 term → <RouteLink>
          */
-        const linkifyOneTerm = (
-          text: string,
-          entry: AutoLinkEntry
-        ): { text: string; added: number } => {
+        const linkifyOneTerm = (text: string, entry: AutoLinkEntry) => {
           const term = entry.term;
           const to = entry.path;
 
-          if (!to) return { text, added: 0 };
-          if (!text.includes(term)) return { text, added: 0 };
+          if (!text.includes(term)) {
+            return { text, added: 0 };
+          }
 
           const parts = text.split(term);
           if (parts.length === 1) return { text, added: 0 };
@@ -130,61 +147,59 @@ export const autoLinkerProPlugin = (
           let added = 0;
 
           for (let i = 1; i < parts.length; i++) {
-            // 全页上限
-            if (maxLinksPerPage > 0 && totalLinksInserted >= maxLinksPerPage) {
+
+            if (totalLinks >= maxLinksPerPage) {
               result += term + parts.slice(i).join(term);
               return { text: result, added };
             }
 
-            // 当前词的出现次数
-            const prevCount = termCountMap.get(term) ?? 0;
-            if (maxLinksPerTerm > 0 && prevCount >= maxLinksPerTerm) {
+            const prev = termCount.get(term) ?? 0;
+            if (prev >= maxLinksPerTerm) {
               result += term + parts[i];
               continue;
             }
 
-            const first = prevCount === 0;
-            const classes = first
+            const classes = prev === 0
               ? "auto-link auto-link--first"
               : "auto-link";
 
-            let replaced = "";
+            let html = "";
 
             if (isExternal(to)) {
-              // 外链
-              replaced =
-                `<a href="${to}" class="${classes}" target="_blank" rel="noopener noreferrer">` +
+              html =
+                `<a href=" " class="${classes}" target="_blank" rel="noopener noreferrer">` +
                 term +
                 `</a >`;
             } else {
-              // 内链：使用 RouteLink，走 Vue Router，无刷新跳转
-              replaced =
+              html =
                 `<RouteLink to="${to}" class="${classes}">` +
                 term +
                 `</RouteLink>`;
             }
 
-            result += replaced + parts[i];
+            result += html + parts[i];
 
-            termCountMap.set(term, prevCount + 1);
-            totalLinksInserted++;
+            termCount.set(term, prev + 1);
+            totalLinks++;
             added++;
           }
 
           return { text: result, added };
         };
 
+        /**
+         * 遍历 tokens 进行替换
+         */
         const tokens = state.tokens;
 
         for (let i = 0; i < tokens.length; i++) {
           const token = tokens[i];
           if (token.type !== "inline" || !token.children) continue;
 
-          const children = token.children;
           let inLink = false;
 
-          for (let j = 0; j < children.length; j++) {
-            const child = children[j];
+          for (let j = 0; j < token.children.length; j++) {
+            const child = token.children[j];
 
             if (child.type === "link_open") {
               inLink = true;
@@ -198,22 +213,14 @@ export const autoLinkerProPlugin = (
 
             if (child.type !== "text") continue;
 
-            let original = child.content;
-            let modified = original;
+            let modified = child.content;
             let changed = false;
 
-            for (const entry of globalTitleIndex) {
+            for (const entry of globalIndex) {
               const term = entry.term;
 
-              // 页内忽略名单
               if (ignoreList.includes(term)) continue;
-
-              if (
-                maxLinksPerPage > 0 &&
-                totalLinksInserted >= maxLinksPerPage
-              ) {
-                break;
-              }
+              if (totalLinks >= maxLinksPerPage) break;
 
               const res = linkifyOneTerm(modified, entry);
               if (res.added > 0) {
@@ -222,14 +229,13 @@ export const autoLinkerProPlugin = (
 
                 if (resolved.debug) {
                   console.log(
-                    `[autoLinkerPro] link term="${term}" to="${entry.path}" on page ${rel}, added ${res.added}`
+                    `[autoLinkerPro] link term="${term}" → ${entry.path} | page=${rel} | added=${res.added}`
                   );
                 }
               }
             }
 
-            if (changed && modified !== original) {
-              // 把纯文本 token 变成原始 HTML
+            if (changed) {
               child.type = "html_inline";
               child.tag = "";
               child.content = modified;
@@ -240,8 +246,8 @@ export const autoLinkerProPlugin = (
 
         if (resolved.debug) {
           console.log(
-            `[autoLinkerPro] page ${rel} inserted links:`,
-            totalLinksInserted
+            `[autoLinkerPro] page ${rel} totalLinks=`,
+            totalLinks
           );
         }
       });

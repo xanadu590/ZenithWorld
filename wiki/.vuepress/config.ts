@@ -41,11 +41,7 @@ export default defineUserConfig({
     recommendedArticles(),
     nosearchPlugin(),
     autoLinkerProPlugin({
-      entries: [
-        { term: "灵动骑士", path: "/docs/world/characters/superhero/character-EtherealKnight.html" },
-        { term: "异常构造", path: "/docs/world/concepts/isomer/" },
-        { term: "十二主神", path: "/docs/world/concepts/twelveprimedeities/" },
-      ],
+      
       minLength: 2,
       blacklist: ["火", "风", "水", "土", "力量", "主神"],
       maxLinksPerPage: 60,
