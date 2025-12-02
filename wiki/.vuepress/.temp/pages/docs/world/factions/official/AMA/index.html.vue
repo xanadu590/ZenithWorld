@@ -1,4 +1,4 @@
-<template><div><p>名称：<RouteLink to="/docs/world/factions/official/AMA/" class="auto-link auto-link--first">异常事物管理局</RouteLink><br>
+<template><div><p>名称：异常事物管理局<br>
 译名：Anomaly Management Agency<br>
 简称：AMA<br>
 成立日期：</p>

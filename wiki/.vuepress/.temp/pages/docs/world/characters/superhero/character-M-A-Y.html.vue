@@ -7,7 +7,7 @@
 <LeadBlock quote="瓦尔德！开庭！行于汝应当审判！罪于汝该当裁决！" /><ul>
 <li>姓名：梅小满</li>
 <li>性别：男</li>
-<li>英雄名：<RouteLink to="/docs/world/characters/superhero/character-M-A-Y.html" class="auto-link auto-link--first">月五</RouteLink>（M-A-Y)</li>
+<li>英雄名：月五（M-A-Y)</li>
 <li>昵称：那个中二病</li>
 <li>年龄：21</li>
 <li>种族：人类</li>

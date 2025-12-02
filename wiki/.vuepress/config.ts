@@ -41,7 +41,6 @@ export default defineUserConfig({
     recommendedArticles(),
     nosearchPlugin(),
     autoLinkerProPlugin({
-      
       minLength: 2,
       blacklist: ["火", "风", "水", "土", "力量", "主神"],
       maxLinksPerPage: 60,

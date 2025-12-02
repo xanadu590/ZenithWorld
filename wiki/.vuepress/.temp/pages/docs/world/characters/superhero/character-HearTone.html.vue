@@ -7,7 +7,7 @@
 <LeadBlock quote="我确实说过不会对女人出手……但我的意思并不是让你把我变成女人！你这混账神明，快把我变回去！" /><ul>
 <li>姓名：方知足</li>
 <li>性别：男</li>
-<li>英雄名：<RouteLink to="/docs/world/characters/superhero/character-HearTone.html" class="auto-link auto-link--first">赤听</RouteLink>（Hear Tone)</li>
+<li>英雄名：赤听（Hear Tone)</li>
 <li>昵称：心心</li>
 <li>年龄：22</li>
 <li>种族：人类</li>
