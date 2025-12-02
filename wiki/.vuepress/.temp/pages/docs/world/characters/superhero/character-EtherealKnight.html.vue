@@ -8,7 +8,7 @@
 <LeadBlock quote="绝世的容貌，高洁的灵魂，无缺的完人……咳咳，好吧，这句确实有点过了。" /><ul>
 <li>姓名：宇文南城</li>
 <li>性别：女</li>
-<li>英雄名：<a href=" ">灵动骑士</a >（Ethereal Knight)</li>
+<li>英雄名：灵动骑士（Ethereal Knight)</li>
 <li>昵称：灵骑、07、E-Knight</li>
 <li>年龄：19</li>
 <li>种族：人类</li>
