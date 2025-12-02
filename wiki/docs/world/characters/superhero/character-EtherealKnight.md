@@ -7,6 +7,7 @@ autoLinkTitle: 灵动骑士   # 用这个作为匹配关键字，代替 title
 autoLinkAliases:        # 别名，多个词都自动指向本页
   - 巅峰议会（Peak Council）
   - 巅峰组织
+  - 宇文南城
 autoLinkIgnore:         # 在本页中不要把这些词自动变成链接（即便它们是别的页面标题）
   - 月神
   - 异常构造
