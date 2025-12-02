@@ -1,8 +1,8 @@
-<template><div><p>名称：异常构造<br>
+<template><div><p>名称：<RouteLink to="/docs/world/concepts/isomer/" class="auto-link auto-link--first">异常构造</RouteLink><br>
 译名：Isomer<br>
 简称：异构、ISO</p>
 <h2 id="关于「异常构造」的详细定义" tabindex="-1"><a class="header-anchor" href="#关于「异常构造」的详细定义"><span>关于「异常构造」的详细定义</span></a></h2>
-<p>在这个世界，即便存在大量离奇事物，【异常构造】仍是其中最特殊且最危险的一类。</p>
+<p>在这个世界，即便存在大量离奇事物，【<RouteLink to="/docs/world/concepts/isomer/" class="auto-link">异常构造</RouteLink>】仍是其中最特殊且最危险的一类。</p>
 <h3 id="旧定义" tabindex="-1"><a class="header-anchor" href="#旧定义"><span>旧定义</span></a></h3>
 <p>在危机管理机构时期，最初的定义是：</p>
 <blockquote>
@@ -10,13 +10,13 @@
 </blockquote>
 <p>问题在于，这个定义过于宽泛，导致许多“只是难以理解但不算异常”的现象也被划入该类。</p>
 <h3 id="新定义" tabindex="-1"><a class="header-anchor" href="#新定义"><span>新定义</span></a></h3>
-<p>某位博士提出了一个颠覆性的理论：【异常构造】的本质，是对【宇宙本源】的消耗行为。<br>
+<p>某位博士提出了一个颠覆性的理论：【<RouteLink to="/docs/world/concepts/isomer/" class="auto-link">异常构造</RouteLink>】的本质，是对【宇宙本源】的消耗行为。<br>
 关于【宇宙本源】的性质，他给了一个可理解的类比：</p>
 <blockquote>
 <p>类似宇宙大爆炸后残余且支持宇宙运行的那部分巨大能量。</p>
 </blockquote>
 <p>它驱动宇宙膨胀、维持分子运动，但终究有限。当它耗尽，宇宙将趋于热寂甚至开始收缩。<br>
-而【异常构造】之所以能够看起来“凭空创造物质、能量”或“违反物理定律”，其根本原因不是无中生有，而是直接消耗宇宙本源来弥补所需能量。</p>
+而【<RouteLink to="/docs/world/concepts/isomer/" class="auto-link">异常构造</RouteLink>】之所以能够看起来“凭空创造物质、能量”或“违反物理定律”，其根本原因不是无中生有，而是直接消耗宇宙本源来弥补所需能量。</p>
 <h3 id="例子" tabindex="-1"><a class="header-anchor" href="#例子"><span>例子</span></a></h3>
 <p>例如，一个能“凭空产出能源”的异常构造：它可能在内部维持一个虫洞，连接“一秒之后的未来”，从未来截取能量带回现在。这看似提供无尽能源，但维持虫洞本身、时间能量的跨越，都必须消耗宇宙本源。<br>
 此理论让人类第一次意识到：滥用异常构造会直接加速宇宙死亡。异常构造属于全宇宙级别的风险。<br>
