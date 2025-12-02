@@ -25,14 +25,15 @@
   flex: 0 0 auto;
 }
 
-.auto-link {
+/* 只作用于文档正文里的自动索引链接 */
+.vp-doc .auto-link[data-tooltip] {
   position: relative;
   cursor: pointer;
   text-decoration: underline dotted;
 }
 
 /* 悬停提示卡片 */
-.auto-link[data-tooltip]:hover::after {
+.vp-doc .auto-link[data-tooltip]:hover::after {
   content: attr(data-tooltip);
   position: absolute;
   left: 0;
@@ -54,7 +55,7 @@
   white-space: normal;
 }
 
-.auto-link[data-tooltip]:hover::before {
+.vp-doc .auto-link[data-tooltip]:hover::before {
   content: "";
   position: absolute;
   left: 10px;
