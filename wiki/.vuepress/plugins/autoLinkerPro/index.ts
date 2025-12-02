@@ -1,74 +1,70 @@
 // docs/.vuepress/plugins/autoLinkerPro/index.ts
 import type { Plugin, App } from "vuepress";
-import fs from "fs";
-import { path as vpPath } from "vuepress/utils";
+import { fs, path } from "vuepress/utils";
 
 /**
  * 一个可自动被链接的词条
  */
 export interface AutoLinkEntry {
-  term: string;  // 要匹配的词
-  path: string;  // 对应页面最终路由路径，如 /docs/world/xxx.html 或外链 https://...
+  term: string;              // 要匹配的词
+  path: string;              // 对应页面最终路由路径，如 /docs/world/xxx.html 或外链 https://...
+  filePathRelative?: string; // 只是调试用：这个 term 是哪一个源文件贡献的
 }
 
-/**
- * 插件配置
- */
 export interface AutoLinkerProOptions {
-  /** 每个页面最多插入多少个自动链接（防止满屏“蓝光”） */
-  maxLinksPerPage?: number;
-
-  /** 每个词在一页里最多出现多少次链接（比如同一词只链前 3 次） */
-  maxLinksPerTerm?: number;
-
-  /** 最小匹配长度：term 长度小于这个数的不参与自动内链（比如中文 2） */
+  /**
+   * 最小匹配长度：term 长度小于这个数的不参与自动内链（比如中文 2）
+   */
   minLength?: number;
 
-  /** 黑名单：这些词即使在标题里出现，也永远不自动内链 */
+  /**
+   * 黑名单：这些词即使被扫描出来，也永远不自动内链
+   * 例如 ["火", "风", "水", "土", "主神", "力量"]
+   */
   blacklist?: string[];
 
-  /** 白名单：如设置，则只有白名单里的词才参与（一般留空不用） */
-  whitelist?: string[];
+  /**
+   * 每个页面最多插入多少个自动链接（防止满屏“蓝光”）
+   */
+  maxLinksPerPage?: number;
 
-  /** 调试用：开启后会在控制台输出索引信息 */
+  /**
+   * 每个词在一页里最多出现多少次链接（比如同一词只链前 3 次）
+   */
+  maxLinksPerTerm?: number;
+
+  /**
+   * 调试用：开启后会在控制台输出更多日志
+   */
   debug?: boolean;
 }
 
-/**
- * 判断是否外链：以 http:// 或 https:// 开头
- */
-const isExternal = (to: string): boolean => {
-  return /^https?:\/\//i.test(to.trim());
-};
+/** 判断是否外链：以 http:// 或 https:// 开头 */
+const isExternal = (to: string): boolean => /^https?:\/\//i.test(to.trim());
 
 /**
- * 全局索引缓存：由 onInitialized 构建
- */
-let globalTitleIndex: AutoLinkEntry[] = [];
-
-/**
- * 自动扫描全站页面，构建“标题/别名 → 路径”索引
+ * 利用 app.pages 自动构建「标题/别名 → 路径」索引
  */
 const buildTitleIndex = (
   app: App,
   options: Required<AutoLinkerProOptions>
 ): AutoLinkEntry[] => {
-  const { minLength, blacklist, whitelist, debug } = options;
+  const { minLength, blacklist, debug } = options;
 
   const index: AutoLinkEntry[] = [];
-  const seen = new Set<string>(); // term 去重
 
   for (const page of app.pages) {
     const fm: any = page.frontmatter || {};
 
-    // page 级开关：autoLink: false 表示本页不作为“词条源”
+    // 页级开关：frontmatter.autoLink: false 可以关闭本页被扫描 & 被链接
     const autoLink = fm.autoLink ?? true;
     if (!autoLink) continue;
 
-    // 优先级：autoLinkTitle > frontmatter.title > page.title
+    // 标题优先级：frontmatter.autoLinkTitle > frontmatter.title > page.title
     const baseTitle: string | undefined =
       fm.autoLinkTitle || fm.title || page.title;
 
+    // 别名：frontmatter.autoLinkAliases
     const aliases: string[] = Array.isArray(fm.autoLinkAliases)
       ? fm.autoLinkAliases
       : [];
@@ -77,29 +73,20 @@ const buildTitleIndex = (
       (s): s is string => !!s && s.trim().length >= minLength
     );
 
-    for (const raw of allTerms) {
-      const term = raw.trim();
-      if (!term) continue;
-
-      // 长度过滤
-      if (term.length < minLength) continue;
-      // 黑名单过滤
-      if (blacklist.includes(term)) continue;
-      // 白名单限制
-      if (whitelist.length && !whitelist.includes(term)) continue;
-
-      const key = `${term}@@${page.path}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
+    for (const term of allTerms) {
+      const trimmed = term.trim();
+      if (!trimmed) continue;
+      if (blacklist.includes(trimmed)) continue;
 
       index.push({
-        term,
+        term: trimmed,
         path: page.path,
+        filePathRelative: page.filePathRelative || "",
       });
     }
   }
 
-  // 按 term 长度从长到短排序（保证“异常构造”优先于“异常”）
+  // 按 term 长度从长到短排序，保证“异常构造”先于“异常”
   index.sort((a, b) => b.term.length - a.term.length);
 
   if (debug) {
@@ -109,47 +96,57 @@ const buildTitleIndex = (
   return index;
 };
 
-/**
- * 插件主函数
- */
+// ----------------- 主插件 -----------------
+
 export const autoLinkerProPlugin = (
   options: AutoLinkerProOptions = {}
 ): Plugin => {
   const resolved: Required<AutoLinkerProOptions> = {
+    minLength: options.minLength ?? 2,
+    blacklist: options.blacklist ?? [],
     maxLinksPerPage: options.maxLinksPerPage ?? 80,
     maxLinksPerTerm: options.maxLinksPerTerm ?? 5,
-    minLength: options.minLength ?? 1,
-    blacklist: options.blacklist ?? [],
-    whitelist: options.whitelist ?? [],
     debug: options.debug ?? false,
   };
+
+  // 这里存放「全站标题索引」
+  let globalTitleIndex: AutoLinkEntry[] = [];
 
   return {
     name: "vuepress-plugin-auto-linker-pro",
 
     /**
      * 初始化阶段：
-     * 1. 扫描 app.pages 生成索引；
-     * 2. 缓存在内存里给自动内链用；
-     * 3. 同时写出一个静态 JSON 文件，方便你以后复用。
+     * 1. 从 app.pages 扫描标题/别名，构建全站索引
+     * 2. 把索引写成：
+     *    - .temp/auto-linker/index.json（给 Node 端其它插件 import）
+     *    - public/data/auto-link-index.json（给浏览器 fetch）
      */
     async onInitialized(app) {
       globalTitleIndex = buildTitleIndex(app, resolved);
 
-      const json = JSON.stringify(globalTitleIndex, null, 2);
+      // 写入临时目录：.vuepress/.temp/auto-linker/index.json
+      const tempFile = app.dir.temp("auto-linker/index.json");
+      const tempDir = path.dirname(tempFile);
+      await fs.ensureDir(tempDir);
+      await fs.writeFile(
+        tempFile,
+        JSON.stringify(globalTitleIndex, null, 2),
+        "utf-8"
+      );
 
-      // ① 写到临时目录：.vuepress/.temp/auto-linker/index.json
-      const tempFile = vpPath.resolve(app.dir.temp(), "auto-linker/index.json");
-      await fs.promises.mkdir(vpPath.dirname(tempFile), { recursive: true });
-      await fs.promises.writeFile(tempFile, json, "utf-8");
-
-      // ② 同时写到 public：.vuepress/public/data/auto-link-index.json
-      const publicFile = vpPath.resolve(
+      // 写入 public：.vuepress/public/data/auto-link-index.json
+      const publicFile = path.resolve(
         app.dir.public(),
         "data/auto-link-index.json"
       );
-      await fs.promises.mkdir(vpPath.dirname(publicFile), { recursive: true });
-      await fs.promises.writeFile(publicFile, json, "utf-8");
+      const publicDir = path.dirname(publicFile);
+      await fs.ensureDir(publicDir);
+      await fs.writeFile(
+        publicFile,
+        JSON.stringify(globalTitleIndex, null, 2),
+        "utf-8"
+      );
 
       if (resolved.debug) {
         console.log("[autoLinkerPro] index json written:", {
@@ -160,7 +157,8 @@ export const autoLinkerProPlugin = (
     },
 
     /**
-     * Markdown 扩展：根据全局索引，把纯文本替换成内链/外链
+     * Markdown 渲染阶段：
+     * 利用 globalTitleIndex 对所有普通文本执行自动内链
      */
     extendsMarkdown(md) {
       if (resolved.debug) {
@@ -168,17 +166,44 @@ export const autoLinkerProPlugin = (
       }
 
       md.core.ruler.push("auto-linker-pro-dynamic", (state) => {
-        if (!globalTitleIndex.length) return;
-
         const env: any = state.env || {};
         const fm: any = env.frontmatter || {};
         const rel: string = env.filePathRelative || "(unknown)";
 
-        // 页内总开关：frontmatter.autoLink: false 可以关闭本页自动内链
-        const autoLink = fm.autoLink ?? true;
-        if (!autoLink) return;
+        if (resolved.debug) {
+          console.log(
+            "[autoLinkerPro] RULE START page =",
+            rel,
+            "| frontmatter.autoLink =",
+            fm.autoLink,
+            "| globalIndex length =",
+            globalTitleIndex.length
+          );
+        }
 
-        // 本页的忽略词列表
+        if (!globalTitleIndex.length) {
+          if (resolved.debug) {
+            console.warn(
+              "[autoLinkerPro] globalIndex is empty, skip page:",
+              rel
+            );
+          }
+          return;
+        }
+
+        // 页内开关：frontmatter.autoLink: false 可以关闭本页自动内链
+        const autoLink = fm.autoLink ?? true;
+        if (!autoLink) {
+          if (resolved.debug) {
+            console.log(
+              "[autoLinkerPro] page disabled by frontmatter.autoLink=false:",
+              rel
+            );
+          }
+          return;
+        }
+
+        // 页内忽略列表：frontmatter.autoLinkIgnore: [ "灵动骑士", "异常构造" ]
         const ignoreList: string[] = Array.isArray(fm.autoLinkIgnore)
           ? fm.autoLinkIgnore
           : [];
@@ -192,7 +217,8 @@ export const autoLinkerProPlugin = (
          * 把一段纯文本里的 term 替换成链接
          * - 内链：<RouteLink to="...">
          * - 外链：<a href=" " target="_blank" rel="noopener noreferrer">
-         * 所有生成的链接都会带 class="auto-link"，首个还会加 auto-link--first
+         * 所有自动生成的链接都会带上 class="auto-link ..."，方便你在 CSS 里高亮
+         * 首次出现的链接会额外加 auto-link--first
          */
         const linkifyOneTerm = (
           text: string,
@@ -277,6 +303,7 @@ export const autoLinkerProPlugin = (
             }
             if (inLink) continue;
 
+            // 只处理纯文本节点
             if (child.type !== "text") continue;
 
             let original = child.content;
@@ -286,7 +313,7 @@ export const autoLinkerProPlugin = (
             for (const entry of globalTitleIndex) {
               const term = entry.term;
 
-              // 页内忽略词
+              // 页内忽略名单
               if (ignoreList.includes(term)) continue;
 
               if (

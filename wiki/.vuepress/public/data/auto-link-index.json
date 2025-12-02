@@ -1,98 +1,122 @@
 [
   {
     "term": "巅峰议会（Peak Council）",
-    "path": "/docs/world/characters/superhero/character-EtherealKnight.html"
+    "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
+    "filePathRelative": "docs/world/characters/superhero/character-EtherealKnight.md"
   },
   {
     "term": "异常事物管理局",
-    "path": "/docs/world/factions/official/AMA/"
+    "path": "/docs/world/factions/official/AMA/",
+    "filePathRelative": "docs/world/factions/official/AMA/README.md"
   },
   {
     "term": "人物关系图谱",
-    "path": "/docs/characterline.html"
+    "path": "/docs/characterline.html",
+    "filePathRelative": "docs/characterline.md"
   },
   {
     "term": "世界大事年表",
-    "path": "/docs/timeline.html"
+    "path": "/docs/timeline.html",
+    "filePathRelative": "docs/timeline.md"
   },
   {
     "term": "世界观总览",
-    "path": "/docs/"
+    "path": "/docs/",
+    "filePathRelative": "docs/README.md"
   },
   {
     "term": "测试目标A",
-    "path": "/docs/world/characters/superhero/test-a.html"
+    "path": "/docs/world/characters/superhero/test-a.html",
+    "filePathRelative": "docs/world/characters/superhero/test-a.md"
   },
   {
     "term": "巅峰世界",
-    "path": "/"
+    "path": "/",
+    "filePathRelative": "README.md"
   },
   {
     "term": "高级搜索",
-    "path": "/docs/advanced-search.html"
+    "path": "/docs/advanced-search.html",
+    "filePathRelative": "docs/advanced-search.md"
   },
   {
     "term": "推荐文章",
-    "path": "/docs/hotpages.html"
+    "path": "/docs/hotpages.html",
+    "filePathRelative": "docs/hotpages.md"
   },
   {
     "term": "世界地图",
-    "path": "/docs/worldmap.html"
+    "path": "/docs/worldmap.html",
+    "filePathRelative": "docs/worldmap.md"
   },
   {
     "term": "角色介绍",
-    "path": "/docs/world/characters/"
+    "path": "/docs/world/characters/",
+    "filePathRelative": "docs/world/characters/README.md"
   },
   {
     "term": "灵动骑士",
-    "path": "/docs/world/characters/superhero/character-EtherealKnight.html"
+    "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
+    "filePathRelative": "docs/world/characters/superhero/character-EtherealKnight.md"
   },
   {
     "term": "巅峰组织",
-    "path": "/docs/world/characters/superhero/character-EtherealKnight.html"
+    "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
+    "filePathRelative": "docs/world/characters/superhero/character-EtherealKnight.md"
   },
   {
     "term": "巫师希望",
-    "path": "/docs/world/characters/superhero/character-WizardHope.html"
+    "path": "/docs/world/characters/superhero/character-WizardHope.html",
+    "filePathRelative": "docs/world/characters/superhero/character-WizardHope.md"
   },
   {
     "term": "超级英雄",
-    "path": "/docs/world/characters/superhero/"
+    "path": "/docs/world/characters/superhero/",
+    "filePathRelative": "docs/world/characters/superhero/README.md"
   },
   {
     "term": "测试 B",
-    "path": "/docs/world/characters/superhero/test-b.html"
+    "path": "/docs/world/characters/superhero/test-b.html",
+    "filePathRelative": "docs/world/characters/superhero/test-b.md"
   },
   {
     "term": "异常构造",
-    "path": "/docs/world/concepts/isomer/"
+    "path": "/docs/world/concepts/isomer/",
+    "filePathRelative": "docs/world/concepts/isomer/README.md"
   },
   {
     "term": "十二主神",
-    "path": "/docs/world/concepts/twelveprimedeities/"
+    "path": "/docs/world/concepts/twelveprimedeities/",
+    "filePathRelative": "docs/world/concepts/twelveprimedeities/README.md"
   },
   {
     "term": "关系卡",
-    "path": "/docs/RoleCard.html"
+    "path": "/docs/RoleCard.html",
+    "filePathRelative": "docs/RoleCard.md"
   },
   {
     "term": "幻绘星",
-    "path": "/docs/world/characters/superhero/character-Illustra.html"
+    "path": "/docs/world/characters/superhero/character-Illustra.html",
+    "filePathRelative": "docs/world/characters/superhero/character-Illustra.md"
   },
   {
     "term": "赤听",
-    "path": "/docs/world/characters/superhero/character-HearTone.html"
+    "path": "/docs/world/characters/superhero/character-HearTone.html",
+    "filePathRelative": "docs/world/characters/superhero/character-HearTone.md"
   },
   {
     "term": "月五",
-    "path": "/docs/world/characters/superhero/character-M-A-Y.html"
+    "path": "/docs/world/characters/superhero/character-M-A-Y.html",
+    "filePathRelative": "docs/world/characters/superhero/character-M-A-Y.md"
   },
   {
     "term": "天灾",
-    "path": "/docs/world/characters/superhero/character-Scourge.html"
+    "path": "/docs/world/characters/superhero/character-Scourge.html",
+    "filePathRelative": "docs/world/characters/superhero/character-Scourge.md"
   },
   {
     "term": "警钟",
-    "path": "/docs/world/characters/superhero/character-StrikeClock.html"
+    "path": "/docs/world/characters/superhero/character-StrikeClock.html",
+    "filePathRelative": "docs/world/characters/superhero/character-StrikeClock.md"
   }
 ]
