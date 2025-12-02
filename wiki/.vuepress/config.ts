@@ -38,7 +38,8 @@ export default defineUserConfig({
   // shouldPrefetch: false,
 
   plugins: [
-    recommendedArticles(),
+    //recommendedArticles(),
+    //nosearchPlugin(),
     autoLinkerProPlugin({
       debug: true,   // 先开着方便看 log
       entries: [
