@@ -84,11 +84,16 @@ export const wikiTaxonomyPlugin = (): Plugin => ({
       }
     }
 
-    // 写入临时 JS 模块，供前端 import（SSR 可用）
+    // 这里：生成纯 JS，不再带 `as const`
     const content =
-      "export const taxonomyData = " +
-      JSON.stringify(data, null, 2) +
-      " as const;\n";
+      [
+        "// 此文件由 wiki-taxonomy 插件自动生成，请勿手动修改。",
+        "",
+        "export const taxonomyData = " +
+          JSON.stringify(data, null, 2) +
+          ";",
+        "",
+      ].join("\n");
 
     app.writeTemp("wiki-taxonomy/data.js", content);
   },

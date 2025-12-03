@@ -1,3 +1,5 @@
+// 此文件由 wiki-taxonomy 插件自动生成，请勿手动修改。
+
 export const taxonomyData = {
   "categories": {
     "人物": {
@@ -204,4 +206,4 @@ export const taxonomyData = {
       ]
     }
   }
-} as const;
+};

@@ -14,7 +14,7 @@
 <li>出生年月：</li>
 <li>职业：服务员</li>
 <li>学历：大学毕业</li>
-<li>加入过的团体：世界英雄（World Hero)</li>
+<li>加入过的团体：世界英雄（<RouterLink to="/docs/world/" class="zw-auto-link zw-auto-link--first" data-tooltip="World">World</RouterLink> Hero)</li>
 </ul>
 </div></template>
 
