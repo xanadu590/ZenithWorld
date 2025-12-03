@@ -10,6 +10,8 @@ import nosearchPlugin from "./plugins/nosearch/index.js";
 
 import { autoLinkerProPlugin } from "./plugins/autoLinkerPro/index.js";
 
+import { wikiTaxonomyPlugin } from "./plugins/wikiTaxonomy/index.js";
+
 const isProd = process.env.NODE_ENV === 'production'
 
 export default defineUserConfig({
@@ -46,7 +48,8 @@ export default defineUserConfig({
       maxLinksPerPage: 60,
       maxLinksPerTerm: 4,
       debug: true,
-    })
+    }),
+    wikiTaxonomyPlugin()
   ],
 
 

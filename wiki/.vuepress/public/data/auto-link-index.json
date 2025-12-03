@@ -6,60 +6,10 @@
     "tooltip": "意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！"
   },
   {
-    "term": "黑科技使用者 分类",
-    "path": "/category/%E9%BB%91%E7%A7%91%E6%8A%80%E4%BD%BF%E7%94%A8%E8%80%85/",
-    "tooltip": ""
-  },
-  {
-    "term": "Category",
-    "path": "/en/category/",
-    "tooltip": ""
-  },
-  {
-    "term": "标签: 灵动骑士",
-    "path": "/tag/%E7%81%B5%E5%8A%A8%E9%AA%91%E5%A3%AB/",
-    "tooltip": ""
-  },
-  {
-    "term": "标签: 世界英雄",
-    "path": "/tag/%E4%B8%96%E7%95%8C%E8%8B%B1%E9%9B%84/",
-    "tooltip": ""
-  },
-  {
-    "term": "标签: 魔法少女",
-    "path": "/tag/%E9%AD%94%E6%B3%95%E5%B0%91%E5%A5%B3/",
-    "tooltip": ""
-  },
-  {
-    "term": "标签: 神明代理",
-    "path": "/tag/%E7%A5%9E%E6%98%8E%E4%BB%A3%E7%90%86/",
-    "tooltip": ""
-  },
-  {
-    "term": "Articles",
-    "path": "/en/article/",
-    "tooltip": ""
-  },
-  {
-    "term": "Timeline",
-    "path": "/en/timeline/",
-    "tooltip": ""
-  },
-  {
     "term": "异常事物管理局",
     "path": "/docs/world/factions/official/AMA/",
     "filePathRelative": "docs/world/factions/official/AMA/README.md",
     "tooltip": "名称：异常事物管理局 译名：Anomaly Management Agency 简称：AMA 成立日期： 历史 异常管理局的源头可追溯至【先知】创立的早期组织——【危机管理机构】(Crisis Control Organization，简称C.C.O.)。当【巅峰议会】正式成立后，危机管理机构内部负责关押、限制和控制超自然事物的部门被独立出来，成为【危..."
-  },
-  {
-    "term": "魔法少女 分类",
-    "path": "/category/%E9%AD%94%E6%B3%95%E5%B0%91%E5%A5%B3/",
-    "tooltip": ""
-  },
-  {
-    "term": "神明代理 分类",
-    "path": "/category/%E7%A5%9E%E6%98%8E%E4%BB%A3%E7%90%86/",
-    "tooltip": ""
   },
   {
     "term": "人物关系图谱",
@@ -71,26 +21,6 @@
     "term": "世界大事年表",
     "path": "/docs/timeline.html",
     "filePathRelative": "docs/timeline.md",
-    "tooltip": ""
-  },
-  {
-    "term": "异能者 分类",
-    "path": "/category/%E5%BC%82%E8%83%BD%E8%80%85/",
-    "tooltip": ""
-  },
-  {
-    "term": "魔法师 分类",
-    "path": "/category/%E9%AD%94%E6%B3%95%E5%B8%88/",
-    "tooltip": ""
-  },
-  {
-    "term": "标签: 神明",
-    "path": "/tag/%E7%A5%9E%E6%98%8E/",
-    "tooltip": ""
-  },
-  {
-    "term": "标签: 国际",
-    "path": "/tag/%E5%9B%BD%E9%99%85/",
     "tooltip": ""
   },
   {
@@ -108,26 +38,6 @@
   {
     "term": "World",
     "path": "/docs/world/",
-    "tooltip": ""
-  },
-  {
-    "term": "人类 分类",
-    "path": "/category/%E4%BA%BA%E7%B1%BB/",
-    "tooltip": ""
-  },
-  {
-    "term": "英雄 分类",
-    "path": "/category/%E8%8B%B1%E9%9B%84/",
-    "tooltip": ""
-  },
-  {
-    "term": "组织 分类",
-    "path": "/category/%E7%BB%84%E7%BB%87/",
-    "tooltip": ""
-  },
-  {
-    "term": "官方 分类",
-    "path": "/category/%E5%AE%98%E6%96%B9/",
     "tooltip": ""
   },
   {
@@ -159,6 +69,18 @@
     "path": "/docs/world/characters/",
     "filePathRelative": "docs/world/characters/README.md",
     "tooltip": ""
+  },
+  {
+    "term": "异常构造",
+    "path": "/docs/world/concepts/isomer/",
+    "filePathRelative": "docs/world/concepts/isomer/README.md",
+    "tooltip": "名称：异常构造 译名：Isomer 简称：异构、ISO 关于「异常构造」的详细定义 在这个世界，即便存在大量离奇事物，【异常构造】仍是其中最特殊且最危险的一类。 旧定义 在危机管理机构时期，最初的定义是： “以极不合理的机制运行的事物。” 问题在于，这个定义过于宽泛，导致许多“只是难以理解但不算异常”的现象也被划入该类。 新定义 某位博士提出了一个颠覆..."
+  },
+  {
+    "term": "十二主神",
+    "path": "/docs/world/concepts/twelveprimedeities/",
+    "filePathRelative": "docs/world/concepts/twelveprimedeities/README.md",
+    "tooltip": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。 十二主神 － 天神/全能神/主神 － 太阳神/光明神 － 月神/黑夜神 － 战争之神 － 大地神/母神/生命神 － 风暴神/雷神 － 爱神/美神 － 十二主神的由来 十二主神并不是严格遵守十二这个数字，实际上，并没有完全遵守十二这个数字..."
   },
   {
     "term": "灵动骑士",
@@ -197,23 +119,6 @@
     "tooltip": "我在这里随便写一句：测试目标A会不会被自动加链接。"
   },
   {
-    "term": "十二主神",
-    "path": "/docs/world/concepts/twelveprimedeities/",
-    "filePathRelative": "docs/world/concepts/twelveprimedeities/README.md",
-    "tooltip": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。 十二主神 － 天神/全能神/主神 － 太阳神/光明神 － 月神/黑夜神 － 战争之神 － 大地神/母神/生命神 － 风暴神/雷神 － 爱神/美神 － 十二主神的由来 十二主神并不是严格遵守十二这个数字，实际上，并没有完全遵守十二这个数字..."
-  },
-  {
-    "term": "异常构造",
-    "path": "/docs/world/concepts/isomer/",
-    "filePathRelative": "docs/world/concepts/isomer/README.md",
-    "tooltip": "名称：异常构造 译名：Isomer 简称：异构、ISO 关于「异常构造」的详细定义 在这个世界，即便存在大量离奇事物，【异常构造】仍是其中最特殊且最危险的一类。 旧定义 在危机管理机构时期，最初的定义是： “以极不合理的机制运行的事物。” 问题在于，这个定义过于宽泛，导致许多“只是难以理解但不算异常”的现象也被划入该类。 新定义 某位博士提出了一个颠覆..."
-  },
-  {
-    "term": "Star",
-    "path": "/en/star/",
-    "tooltip": ""
-  },
-  {
     "term": "关系卡",
     "path": "/docs/RoleCard.html",
     "filePathRelative": "docs/RoleCard.md",
@@ -224,16 +129,6 @@
     "path": "/docs/world/characters/superhero/character-Illustra.html",
     "filePathRelative": "docs/world/characters/superhero/character-Illustra.md",
     "tooltip": "基本信息"
-  },
-  {
-    "term": "Tag",
-    "path": "/en/tag/",
-    "tooltip": ""
-  },
-  {
-    "term": "时间轴",
-    "path": "/timeline/",
-    "tooltip": ""
   },
   {
     "term": "赤听",
@@ -258,25 +153,5 @@
     "path": "/docs/world/characters/superhero/character-StrikeClock.html",
     "filePathRelative": "docs/world/characters/superhero/character-StrikeClock.md",
     "tooltip": "基本信息"
-  },
-  {
-    "term": "分类",
-    "path": "/category/",
-    "tooltip": ""
-  },
-  {
-    "term": "标签",
-    "path": "/tag/",
-    "tooltip": ""
-  },
-  {
-    "term": "文章",
-    "path": "/article/",
-    "tooltip": ""
-  },
-  {
-    "term": "星标",
-    "path": "/star/",
-    "tooltip": ""
   }
 ]

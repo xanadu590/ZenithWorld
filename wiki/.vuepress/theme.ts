@@ -178,8 +178,6 @@ export default hopeTheme({
       indexUid: "wiki",
     },
 
-    blog:{},
-    
     
 
      // ✅ 在 theme 里配置 slimsearch（不要在 config.ts 再注册）

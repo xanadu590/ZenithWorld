@@ -3,8 +3,6 @@ import { Layout, NotFound, injectDarkMode, setupDarkMode, setupSidebarItems, scr
 import { defineCatalogInfoGetter } from "C:/Users/super/ZenithWorld/node_modules/.pnpm/@vuepress+plugin-catalog@2._d017a4b155224fdae54332c7bb88aeaf/node_modules/@vuepress/plugin-catalog/lib/client/index.js"
 import { h } from "vue"
 import { resolveComponent } from "vue"
-import { Blog, BloggerInfo, SocialMedias, setupBlog } from "C:/Users/super/ZenithWorld/node_modules/.pnpm/vuepress-theme-hope@2.0.0-r_35b042b71009b980899dc5d42dfe08fa/node_modules/vuepress-theme-hope/lib/bundle/exports/blog.js";
-import "C:/Users/super/ZenithWorld/node_modules/.pnpm/vuepress-theme-hope@2.0.0-r_35b042b71009b980899dc5d42dfe08fa/node_modules/vuepress-theme-hope/lib/bundle/styles/blog/bundle.scss";
 import { GlobalEncrypt, LocalEncrypt } from "C:/Users/super/ZenithWorld/node_modules/.pnpm/vuepress-theme-hope@2.0.0-r_35b042b71009b980899dc5d42dfe08fa/node_modules/vuepress-theme-hope/lib/bundle/exports/encrypt.js";
 import "C:/Users/super/ZenithWorld/node_modules/.pnpm/vuepress-theme-hope@2.0.0-r_35b042b71009b980899dc5d42dfe08fa/node_modules/vuepress-theme-hope/lib/bundle/styles/encrypt/bundle.scss"
 
@@ -39,19 +37,17 @@ export default {
     // inject global properties
     injectDarkMode(app);
 
-    app.component("BloggerInfo", BloggerInfo);
-    app.component("SocialMedias", SocialMedias);
     app.component("GlobalEncrypt", GlobalEncrypt);
     app.component("LocalEncrypt", LocalEncrypt);
   },
   setup: () => {
     setupDarkMode();
     setupSidebarItems();
-    setupBlog();
+
   },
   layouts: {
     Layout,
     NotFound,
-    Blog,
+
   }
 };
