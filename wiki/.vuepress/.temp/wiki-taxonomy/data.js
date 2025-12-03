@@ -1,23 +1,34 @@
 export const taxonomyData = {
   "categories": {
-    "人类,英雄,异能者": {
-      "key": "unknown",
+    "人物": {
+      "key": "characters",
       "pages": [
         {
           "title": "灵动骑士",
           "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
-          "category": "人类,英雄,异能者",
-          "key": "unknown",
+          "category": "人物",
+          "key": "characters",
           "tags": [
             "灵动骑士",
             "世界英雄"
           ]
         },
         {
+          "title": "赤听",
+          "path": "/docs/world/characters/superhero/character-HearTone.html",
+          "category": "人物",
+          "key": "characters",
+          "tags": [
+            "世界英雄",
+            "魔法少女",
+            "神明代理"
+          ]
+        },
+        {
           "title": "幻绘星",
           "path": "/docs/world/characters/superhero/character-Illustra.html",
-          "category": "人类,英雄,异能者",
-          "key": "unknown",
+          "category": "人物",
+          "key": "characters",
           "tags": [
             "世界英雄"
           ]
@@ -25,66 +36,47 @@ export const taxonomyData = {
         {
           "title": "月五",
           "path": "/docs/world/characters/superhero/character-M-A-Y.html",
-          "category": "人类,英雄,异能者",
-          "key": "unknown",
+          "category": "人物",
+          "key": "characters",
           "tags": [
             "世界英雄"
           ]
-        }
-      ]
-    },
-    "人类,英雄,魔法少女,神明代理": {
-      "key": "unknown",
-      "pages": [
+        },
         {
-          "title": "赤听",
-          "path": "/docs/world/characters/superhero/character-HearTone.html",
-          "category": "人类,英雄,魔法少女,神明代理",
-          "key": "unknown",
-          "tags": [
-            "世界英雄",
-            "魔法少女",
-            "神明代理"
-          ]
-        }
-      ]
-    },
-    "人类,英雄,黑科技使用者": {
-      "key": "unknown",
-      "pages": [
+          "title": "天灾",
+          "path": "/docs/world/characters/superhero/character-Scourge.html",
+          "category": "人物",
+          "key": "characters",
+          "tags": []
+        },
         {
           "title": "警钟",
           "path": "/docs/world/characters/superhero/character-StrikeClock.html",
-          "category": "人类,英雄,黑科技使用者",
-          "key": "unknown",
+          "category": "人物",
+          "key": "characters",
           "tags": [
             "世界英雄"
           ]
-        }
-      ]
-    },
-    "人类,英雄,魔法师": {
-      "key": "unknown",
-      "pages": [
+        },
         {
           "title": "巫师希望",
           "path": "/docs/world/characters/superhero/character-WizardHope.html",
-          "category": "人类,英雄,魔法师",
-          "key": "unknown",
+          "category": "人物",
+          "key": "characters",
           "tags": [
             "世界英雄"
           ]
         }
       ]
     },
-    "组织,官方": {
-      "key": "unknown",
+    "组织": {
+      "key": "factions",
       "pages": [
         {
           "title": "异常事物管理局",
           "path": "/docs/world/factions/official/AMA/",
-          "category": "组织,官方",
-          "key": "unknown",
+          "category": "组织",
+          "key": "factions",
           "tags": [
             "国际"
           ]
@@ -98,8 +90,8 @@ export const taxonomyData = {
         {
           "title": "灵动骑士",
           "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
-          "category": "人类,英雄,异能者",
-          "key": "unknown",
+          "category": "人物",
+          "key": "characters",
           "tags": [
             "灵动骑士",
             "世界英雄"
@@ -112,8 +104,8 @@ export const taxonomyData = {
         {
           "title": "灵动骑士",
           "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
-          "category": "人类,英雄,异能者",
-          "key": "unknown",
+          "category": "人物",
+          "key": "characters",
           "tags": [
             "灵动骑士",
             "世界英雄"
@@ -122,8 +114,8 @@ export const taxonomyData = {
         {
           "title": "赤听",
           "path": "/docs/world/characters/superhero/character-HearTone.html",
-          "category": "人类,英雄,魔法少女,神明代理",
-          "key": "unknown",
+          "category": "人物",
+          "key": "characters",
           "tags": [
             "世界英雄",
             "魔法少女",
@@ -133,8 +125,8 @@ export const taxonomyData = {
         {
           "title": "幻绘星",
           "path": "/docs/world/characters/superhero/character-Illustra.html",
-          "category": "人类,英雄,异能者",
-          "key": "unknown",
+          "category": "人物",
+          "key": "characters",
           "tags": [
             "世界英雄"
           ]
@@ -142,8 +134,8 @@ export const taxonomyData = {
         {
           "title": "月五",
           "path": "/docs/world/characters/superhero/character-M-A-Y.html",
-          "category": "人类,英雄,异能者",
-          "key": "unknown",
+          "category": "人物",
+          "key": "characters",
           "tags": [
             "世界英雄"
           ]
@@ -151,8 +143,8 @@ export const taxonomyData = {
         {
           "title": "警钟",
           "path": "/docs/world/characters/superhero/character-StrikeClock.html",
-          "category": "人类,英雄,黑科技使用者",
-          "key": "unknown",
+          "category": "人物",
+          "key": "characters",
           "tags": [
             "世界英雄"
           ]
@@ -160,8 +152,8 @@ export const taxonomyData = {
         {
           "title": "巫师希望",
           "path": "/docs/world/characters/superhero/character-WizardHope.html",
-          "category": "人类,英雄,魔法师",
-          "key": "unknown",
+          "category": "人物",
+          "key": "characters",
           "tags": [
             "世界英雄"
           ]
@@ -173,8 +165,8 @@ export const taxonomyData = {
         {
           "title": "赤听",
           "path": "/docs/world/characters/superhero/character-HearTone.html",
-          "category": "人类,英雄,魔法少女,神明代理",
-          "key": "unknown",
+          "category": "人物",
+          "key": "characters",
           "tags": [
             "世界英雄",
             "魔法少女",
@@ -188,8 +180,8 @@ export const taxonomyData = {
         {
           "title": "赤听",
           "path": "/docs/world/characters/superhero/character-HearTone.html",
-          "category": "人类,英雄,魔法少女,神明代理",
-          "key": "unknown",
+          "category": "人物",
+          "key": "characters",
           "tags": [
             "世界英雄",
             "魔法少女",
@@ -203,8 +195,8 @@ export const taxonomyData = {
         {
           "title": "异常事物管理局",
           "path": "/docs/world/factions/official/AMA/",
-          "category": "组织,官方",
-          "key": "unknown",
+          "category": "组织",
+          "key": "factions",
           "tags": [
             "国际"
           ]

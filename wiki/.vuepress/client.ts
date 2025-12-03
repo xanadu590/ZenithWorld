@@ -20,6 +20,8 @@ import TwikooComment from './components/TwikooComment.vue'
 import TeamLineupLayout from './layouts/TeamLineupLayout.vue'
 import MeiliFilterSearch from './components/search/MeiliFilterSearch.vue'
 
+import TaxonomyList from './components/TaxonomyList.vue'
+
 
 export type AISetting = {
   show: boolean
@@ -114,7 +116,7 @@ export default defineClientConfig({
     app.component('TwikooComment', TwikooComment)
     app.component('MeiliFilterSearch', MeiliFilterSearch)
 
-    
+    app.component('TaxonomyList', TaxonomyList)
 
     // ✅ 新增：每次路由切换后上报访问
     if (router) {
