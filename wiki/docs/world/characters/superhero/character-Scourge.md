@@ -2,6 +2,8 @@
 sidebar: false
 category:
 - 人物
+tag: 
+- 异能者
 ---
 
 # [天灾][Scourge]
