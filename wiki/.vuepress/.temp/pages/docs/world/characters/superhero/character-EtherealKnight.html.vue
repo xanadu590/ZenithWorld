@@ -15,7 +15,7 @@
 <li>出生年月：2011年7月30日</li>
 <li>职业：学生</li>
 <li>学历：大学本科（在读）</li>
-<li>加入过的团体：世界英雄（World Hero)，拯救者联盟</li>
+<li>加入过的团体：世界英雄（<RouterLink to="/docs/world/" class="zw-auto-link zw-auto-link--first" data-tooltip="World">World</RouterLink> Hero)，拯救者联盟</li>
 </ul>
 <PersonaQACard :bank="qaBank" /><h2 id="外貌特征" tabindex="-1"><a class="header-anchor" href="#外貌特征"><span>外貌特征</span></a></h2>
 <LeadBlock quote="也许这份容貌……并不是赐福。" /><ul>
