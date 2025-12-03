@@ -11,9 +11,9 @@ export const taxonomyLayout = {
         ]
       },
       {
-        "label": "神明",
+        "label": "英雄",
         "tags": [
-          "神明",
+          "世界英雄",
           "月神体系",
           "旧时代神明",
           "新时代神明"
@@ -22,7 +22,7 @@ export const taxonomyLayout = {
       {
         "label": "巅峰议会成员",
         "tags": [
-          "巅峰议会",
+          "魔法少女",
           "议会成员"
         ]
       }

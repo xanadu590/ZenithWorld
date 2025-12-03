@@ -49,7 +49,9 @@ export const taxonomyData = {
           "path": "/docs/world/characters/superhero/character-Scourge.html",
           "category": "人物",
           "key": "characters",
-          "tags": []
+          "tags": [
+            "异能者"
+          ]
         },
         {
           "title": "警钟",
@@ -188,6 +190,19 @@ export const taxonomyData = {
             "世界英雄",
             "魔法少女",
             "神明代理"
+          ]
+        }
+      ]
+    },
+    "异能者": {
+      "pages": [
+        {
+          "title": "天灾",
+          "path": "/docs/world/characters/superhero/character-Scourge.html",
+          "category": "人物",
+          "key": "characters",
+          "tags": [
+            "异能者"
           ]
         }
       ]

@@ -1,9 +1,7 @@
 <template>
   <div class="taxonomy-list">
-    <!-- 分类大框区 -->
+    <!-- 只有分类大框，不要“按分类查看”字样 -->
     <section class="tax-section">
-      <h2>按分类查看</h2>
-
       <div class="tax-card-grid">
         <article
           v-for="cat in groupedCategories"
@@ -41,50 +39,16 @@
         </article>
       </div>
     </section>
-
-    <!-- 原来的“按标签查看”区 -->
-    <section v-if="showTags" class="tax-section">
-      <h2>按标签查看</h2>
-
-      <div
-        v-for="tag in orderedTags"
-        :key="tag.name"
-        class="tax-tag-block"
-      >
-        <h3 class="tax-title">
-          {{ tag.name }}
-          <span class="tax-count">（{{ tag.entry.pages.length }}）</span>
-        </h3>
-
-        <ul class="tax-pages">
-          <li v-for="page in tag.entry.pages" :key="page.path">
-            <RouterLink :to="page.path">
-              {{ page.title }}
-              <span class="tax-label">[{{ page.category }}]</span>
-            </RouterLink>
-          </li>
-        </ul>
-      </div>
-    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-// SSR 阶段直接从 temp 导入数据和布局
+// 直接从 temp 导入数据和布局，SSR 可用
 // @ts-ignore
 import { taxonomyData } from "@temp/wiki-taxonomy/data.js";
 // @ts-ignore
 import { taxonomyLayout } from "@temp/wiki-taxonomy/layout.js";
 import { computed } from "vue";
-
-const props = withDefaults(
-  defineProps<{
-    showTags?: boolean;
-  }>(),
-  {
-    showTags: true,
-  },
-);
 
 // 五大分类的固定顺序（中文）
 const CATEGORY_ORDER = ["人物", "组织", "地点", "概念", "事件"];
@@ -162,18 +126,6 @@ const groupedCategories = computed(() => {
 
   return result;
 });
-
-// “按标签查看”区沿用原来的逻辑
-const orderedTags = computed(() => {
-  const tags = (taxonomyData as AnyTaxData).tags || {};
-  const list = Object.keys(tags).map((name) => ({
-    name,
-    entry: tags[name],
-  }));
-
-  list.sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
-  return list;
-});
 </script>
 
 <style scoped>
@@ -242,38 +194,5 @@ const orderedTags = computed(() => {
 .tax-link {
   text-decoration: underline;
   text-decoration-thickness: 1px;
-}
-
-/* “按标签查看”区 */
-.tax-tag-block + .tax-tag-block {
-  margin-top: 1rem;
-}
-
-.tax-title {
-  margin: 0.75rem 0 0.25rem;
-  font-size: 1.05rem;
-  font-weight: 600;
-}
-
-.tax-count {
-  font-size: 0.9rem;
-  color: var(--text-color-secondary, #888);
-}
-
-.tax-pages {
-  margin: 0 0 0.5rem 1.25rem;
-  padding: 0;
-  list-style: disc;
-  font-size: 0.95rem;
-}
-
-.tax-pages li + li {
-  margin-top: 0.15rem;
-}
-
-.tax-label {
-  margin-left: 0.25rem;
-  font-size: 0.85em;
-  color: var(--text-color-secondary, #888);
 }
 </style>
