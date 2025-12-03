@@ -1,10 +1,7 @@
 ---
 title: 警钟
 sidebar: false
-category:
-- 人类
-- 英雄
-- 黑科技使用者
+category: 人物
 tag:
 - 世界英雄
 isOriginal: true

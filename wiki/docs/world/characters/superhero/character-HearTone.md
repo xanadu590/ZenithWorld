@@ -2,10 +2,7 @@
 title: 赤听
 sidebar: false
 category:
-- 人类
-- 英雄
-- 魔法少女
-- 神明代理
+- 人物
 tag:
 - 世界英雄
 - 魔法少女

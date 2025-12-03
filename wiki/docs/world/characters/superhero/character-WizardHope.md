@@ -1,10 +1,7 @@
 ---
 title: 巫师希望
 sidebar: false
-category:
-- 人类
-- 英雄
-- 魔法师
+category: 人物
 tag:
 - 世界英雄
 isOriginal: true

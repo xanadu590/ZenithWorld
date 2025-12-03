@@ -14,7 +14,7 @@
 <li>出生年月：</li>
 <li>职业：小卖部老板</li>
 <li>学历：高中辍学</li>
-<li>加入过的团体：世界英雄（<RouterLink to="/docs/world/" class="zw-auto-link zw-auto-link--first" data-tooltip="World">World</RouterLink> Hero)</li>
+<li>加入过的团体：世界英雄（World Hero)</li>
 </ul>
 </div></template>
 

@@ -1,5 +1,7 @@
 ---
 sidebar: false
+category:
+- 人物
 ---
 
 # [天灾][Scourge]

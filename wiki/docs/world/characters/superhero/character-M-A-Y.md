@@ -2,9 +2,7 @@
 title: 月五
 sidebar: false
 category:
-- 人类
-- 英雄
-- 异能者
+- 人物
 tag:
 - 世界英雄
 isOriginal: true
