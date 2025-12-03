@@ -74,8 +74,8 @@ function createLinkifier(
 
       const first = prevCount === 0;
       const classes = first
-        ? "auto-link auto-link--first"
-        : "auto-link";
+        ? "zw-auto-link zw-auto-link--first"
+        : "zw-auto-link";
 
       // tooltip 文本：优先用 entry.tooltip，没有就退回到 term 本身
       const tooltip = (entry.tooltip || term).replace(/"/g, "&quot;");
