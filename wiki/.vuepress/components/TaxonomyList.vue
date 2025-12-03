@@ -53,6 +53,7 @@
 
 <script setup lang="ts">
 // 关键点：直接从 @temp 导入，保证 SSR 阶段就有数据
+// @ts-ignore
 import { taxonomyData } from "@temp/wiki-taxonomy/data.js";
 import { computed } from "vue";
 
