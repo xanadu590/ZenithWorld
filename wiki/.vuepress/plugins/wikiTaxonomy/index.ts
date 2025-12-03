@@ -1,11 +1,13 @@
 // docs/.vuepress/plugins/wikiTaxonomy/index.ts
 import type { Plugin } from "vuepress";
+import fs from "fs";
+import { path as vpPath } from "@vuepress/utils";
 
 interface TaxonomyPageRef {
   title: string;
   path: string;
-  category: string;     // 中文：人物 / 组织 / ...
-  key: string;          // 英文：characters / factions / ...
+  category: string; // 中文：人物 / 组织 / ...
+  key: string;      // 英文：characters / factions / ...
   tags: string[];
 }
 
@@ -35,7 +37,6 @@ const CATEGORY_MAP: Record<string, string> = {
 export const wikiTaxonomyPlugin = (): Plugin => ({
   name: "wiki-taxonomy",
 
-  // 构建前把所有页面扫一遍
   onInitialized(app) {
     const data: TaxonomyData = {
       categories: {},
@@ -48,7 +49,6 @@ export const wikiTaxonomyPlugin = (): Plugin => ({
       const rawCategory = fm?.category;
       const rawTags = fm?.tag ?? fm?.tags;
 
-      // 只处理有 category 的页面
       if (!rawCategory) continue;
 
       const category = String(rawCategory);
@@ -62,13 +62,12 @@ export const wikiTaxonomyPlugin = (): Plugin => ({
 
       const ref: TaxonomyPageRef = {
         title: page.title || fm?.title || page.path,
-        path: page.path, // 例如 /world/characters/xxx.html → /world/characters/xxx/
+        path: page.path,
         category,
         key,
         tags,
       };
 
-      // 写入分类
       if (!data.categories[category]) {
         data.categories[category] = {
           key,
@@ -77,24 +76,50 @@ export const wikiTaxonomyPlugin = (): Plugin => ({
       }
       data.categories[category].pages.push(ref);
 
-      // 写入 tag
       for (const tag of tags) {
         if (!data.tags[tag]) data.tags[tag] = { pages: [] };
         data.tags[tag].pages.push(ref);
       }
     }
 
-    // 这里：生成纯 JS，不再带 `as const`
-    const content =
-      [
-        "// 此文件由 wiki-taxonomy 插件自动生成，请勿手动修改。",
-        "",
-        "export const taxonomyData = " +
-          JSON.stringify(data, null, 2) +
-          ";",
-        "",
-      ].join("\n");
+    // 1）写入数据文件 data.js
+    const dataContent = [
+      "// 此文件由 wiki-taxonomy 插件自动生成，请勿手动修改。",
+      "",
+      "export const taxonomyData = " + JSON.stringify(data, null, 2) + ";",
+      "",
+    ].join("\n");
 
-    app.writeTemp("wiki-taxonomy/data.js", content);
+    app.writeTemp("wiki-taxonomy/data.js", dataContent);
+
+    // 2）读取可选布局配置 .vuepress/taxonomy-layout.json
+    const layoutSourcePath = vpPath.resolve(
+      app.dir.source(".vuepress"),
+      "taxonomy-layout.json",
+    );
+
+    let layout: any = {};
+
+    if (fs.existsSync(layoutSourcePath)) {
+      try {
+        const raw = fs.readFileSync(layoutSourcePath, "utf-8");
+        layout = JSON.parse(raw);
+      } catch (e) {
+        console.warn(
+          "[wiki-taxonomy] 读取 taxonomy-layout.json 失败：",
+          e,
+        );
+        layout = {};
+      }
+    }
+
+    const layoutContent = [
+      "// 此文件由 wiki-taxonomy 插件自动生成，请勿手动修改。",
+      "",
+      "export const taxonomyLayout = " + JSON.stringify(layout, null, 2) + ";",
+      "",
+    ].join("\n");
+
+    app.writeTemp("wiki-taxonomy/layout.js", layoutContent);
   },
 });
