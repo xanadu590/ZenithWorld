@@ -36,18 +36,6 @@
     "hotScore": 0
   },
   {
-    "title": "十二主神",
-    "path": "/docs/world/concepts/twelveprimedeities/",
-    "lastUpdated": 1763641434000,
-    "hotScore": 0
-  },
-  {
-    "title": "异常构造",
-    "path": "/docs/world/concepts/isomer/",
-    "lastUpdated": 1764576698000,
-    "hotScore": 0
-  },
-  {
     "title": "灵动骑士",
     "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
     "lastUpdated": 1764680133000,
@@ -108,6 +96,18 @@
     "hotScore": 0
   },
   {
+    "title": "十二主神",
+    "path": "/docs/world/concepts/twelveprimedeities/",
+    "lastUpdated": 1763641434000,
+    "hotScore": 0
+  },
+  {
+    "title": "异常构造",
+    "path": "/docs/world/concepts/isomer/",
+    "lastUpdated": 1764576698000,
+    "hotScore": 0
+  },
+  {
     "title": "异常事物管理局",
     "path": "/docs/world/factions/official/AMA/",
     "lastUpdated": 1763624638000,
@@ -116,6 +116,156 @@
   {
     "title": "World",
     "path": "/docs/world/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "分类",
+    "path": "/category/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "人类 分类",
+    "path": "/category/%E4%BA%BA%E7%B1%BB/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "英雄 分类",
+    "path": "/category/%E8%8B%B1%E9%9B%84/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "异能者 分类",
+    "path": "/category/%E5%BC%82%E8%83%BD%E8%80%85/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "魔法少女 分类",
+    "path": "/category/%E9%AD%94%E6%B3%95%E5%B0%91%E5%A5%B3/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "神明代理 分类",
+    "path": "/category/%E7%A5%9E%E6%98%8E%E4%BB%A3%E7%90%86/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "黑科技使用者 分类",
+    "path": "/category/%E9%BB%91%E7%A7%91%E6%8A%80%E4%BD%BF%E7%94%A8%E8%80%85/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "魔法师 分类",
+    "path": "/category/%E9%AD%94%E6%B3%95%E5%B8%88/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "组织 分类",
+    "path": "/category/%E7%BB%84%E7%BB%87/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "官方 分类",
+    "path": "/category/%E5%AE%98%E6%96%B9/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "Category",
+    "path": "/en/category/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "标签",
+    "path": "/tag/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "标签: 灵动骑士",
+    "path": "/tag/%E7%81%B5%E5%8A%A8%E9%AA%91%E5%A3%AB/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "标签: 世界英雄",
+    "path": "/tag/%E4%B8%96%E7%95%8C%E8%8B%B1%E9%9B%84/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "标签: 魔法少女",
+    "path": "/tag/%E9%AD%94%E6%B3%95%E5%B0%91%E5%A5%B3/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "标签: 神明代理",
+    "path": "/tag/%E7%A5%9E%E6%98%8E%E4%BB%A3%E7%90%86/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "标签: 神明",
+    "path": "/tag/%E7%A5%9E%E6%98%8E/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "标签: 国际",
+    "path": "/tag/%E5%9B%BD%E9%99%85/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "Tag",
+    "path": "/en/tag/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "文章",
+    "path": "/article/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "Articles",
+    "path": "/en/article/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "星标",
+    "path": "/star/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "Star",
+    "path": "/en/star/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "时间轴",
+    "path": "/timeline/",
+    "lastUpdated": null,
+    "hotScore": 0
+  },
+  {
+    "title": "Timeline",
+    "path": "/en/timeline/",
     "lastUpdated": null,
     "hotScore": 0
   }
