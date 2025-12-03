@@ -25,45 +25,86 @@
   flex: 0 0 auto;
 }
 
-/* 自动内链 —— 基础状态 */
+/* 取消浏览器默认的下划线 */
+a,
+a:visited,
+.router-link,
+.router-link:visited {
+  text-decoration: none !important;
+}
+
+/* 自动内链本体 */
 .zw-auto-link {
   position: relative;
   cursor: pointer;
-  text-decoration: underline dotted;
+  text-decoration: none;        /* 去掉默认下划线 */
 }
 
-/* tooltip 内容 */
-.zw-auto-link[data-tooltip]:hover::after {
-  content: attr(data-tooltip);
+/* 1. 下划线：用 ::before，从中间展开 */
+.zw-auto-link::before {
+  content: "";
   position: absolute;
-  left: 0;
-  top: 100%;
+  left: 50%;
+  bottom: -1px;                 /* 线条距离文字底部的距离 */
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--vp-c-brand, #3b82f6);
+  transition: width .22s ease;  /* 线条动画 */
+}
+
+.zw-auto-link:hover::before {
+  width: 100%;                  /* 悬停时，从中心向两边展开 */
+}
+
+/* 2. 提示卡片本体：默认不可见（改成在右边展开 + 更宽） */
+.zw-auto-link::after {
+  content: attr(data-tooltip);     /* data-tooltip 里的文字 */
+  position: absolute;
+
+  /* 👉 改成在文字右边显示 */
+  left: calc(100% + 8px);          /* 距离文字右侧 8px */
+  top: 50%;                        /* 垂直居中对齐文字 */
+  transform: translateY(-50%);     /* 以中线为基准 */
+
   z-index: 9999;
 
-  max-width: 260px;
-  padding: 6px 10px;
-  margin-top: 4px;
+/* ⭐ 关键：给它明确的宽度区间，避免被压成一条线 */
+  max-width: 300px;            /* 最宽 380px */
+  width: max-content;          /* 根据内容自动，但不小于 min-width */
+  box-sizing: border-box;
+  display: block;
+  white-space: normal;
+  padding: 20px 30px;          /* 正常一点的内边距 */
+  margin-top: 0;                   /* 不再需要下移 */
 
   border-radius: 8px;
   font-size: 12px;
-  line-height: 1.4;
+  line-height: 1.5;
 
   background: var(--vp-c-bg-soft, #fff);
   color: var(--vp-c-text, #222);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
 
-  white-space: normal;
+  opacity: 0;                      /* 初始看不见 */
+  pointer-events: none;            /* 不挡下面的链接 */
+
+  /* 动画：只控制透明度就够了 */
+  transition:
+    opacity .18s ease;
+  transition-delay: 0s;            /* 不延迟，方便“消失”立刻生效 */
 }
 
-/* tooltip 的箭头 */
+/* 3. 悬停时：先让线条跑完，再出现卡片 */
+.zw-auto-link:hover::after {
+  opacity: 1;
+
+  /* 延迟 = 线条动画时间（.22s） */
+  transition-delay: .22s;
+}
+
+/* 可选：如果想给卡片一个小箭头，可以用额外一个伪元素做 */
 .zw-auto-link[data-tooltip]:hover::before {
-  content: "";
-  position: absolute;
-  left: 10px;
-  top: 100%;
-  border-width: 6px;
-  border-style: solid;
-  border-color: transparent transparent
-    var(--vp-c-bg-soft, #fff) transparent;
-  z-index: 99999;
+  /* 如果你想保留上面的线条，就不要在这里改 ::before 的 content；
+     想要箭头就改成用 ::after / 额外一个元素来画箭头。这里先简单保持线条逻辑。 */
 }

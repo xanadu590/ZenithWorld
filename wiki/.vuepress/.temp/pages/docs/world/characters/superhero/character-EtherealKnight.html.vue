@@ -77,7 +77,7 @@
 <li>朋友：舒雪，韩英宇，姬泽</li>
 <li>恋人：卞体羽</li>
 <li>家人：无</li>
-<li>战友：肖银池，兰音悦，柯丹，韩笑雨中，连珐紫，伊美素，<RouterLink to="/docs/world/characters/superhero/character-Scourge.html" class="auto-link auto-link--first" data-tooltip="基本信息">天灾</RouterLink></li>
+<li>战友：肖银池，兰音悦，柯丹，韩笑雨中，连珐紫，伊美素，<RouterLink to="/docs/world/characters/superhero/character-Scourge.html" class="zw-auto-link zw-auto-link--first" data-tooltip="基本信息">天灾</RouterLink></li>
 <li>宿敌：金华谑（金王子）</li>
 </ul>
 <blockquote>

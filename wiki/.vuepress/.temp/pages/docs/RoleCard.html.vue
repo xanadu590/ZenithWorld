@@ -63,8 +63,8 @@
 />
 </div>
 <RandomCard /><ul>
-<li><RouteLink to="/docs/world/characters/superhero/character-EtherealKnight.html"><RouterLink to="/docs/world/characters/superhero/character-EtherealKnight.html" class="auto-link auto-link--first" data-tooltip="意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！">灵动骑士</RouterLink></RouteLink></li>
-<li><RouteLink to="/docs/world/characters/superhero/character-Scourge.html"><RouterLink to="/docs/world/characters/superhero/character-Scourge.html" class="auto-link auto-link--first" data-tooltip="基本信息">天灾</RouterLink></RouteLink></li>
+<li><RouteLink to="/docs/world/characters/superhero/character-EtherealKnight.html"><RouterLink to="/docs/world/characters/superhero/character-EtherealKnight.html" class="zw-auto-link zw-auto-link--first" data-tooltip="意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！">灵动骑士</RouterLink></RouteLink></li>
+<li><RouteLink to="/docs/world/characters/superhero/character-Scourge.html"><RouterLink to="/docs/world/characters/superhero/character-Scourge.html" class="zw-auto-link zw-auto-link--first" data-tooltip="基本信息">天灾</RouterLink></RouteLink></li>
 <li><RouteLink to="/docs/world/characters/superhero/character-HearTone.html">HearTone</RouteLink></li>
 <li><RouteLink to="/docs/world/characters/superhero/character-M-A-Y.html">M·A·Y</RouteLink></li>
 <li><RouteLink to="/docs/world/characters/superhero/character-Illustra.html">character-Illustra</RouteLink></li>
