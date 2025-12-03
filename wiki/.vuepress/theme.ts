@@ -22,6 +22,8 @@ export default hopeTheme({
 
   // 文档源目录（相对仓库根路径）
   docsDir: "wiki",
+
+  blog:{},
   
   locales: {
     "/en/": {
