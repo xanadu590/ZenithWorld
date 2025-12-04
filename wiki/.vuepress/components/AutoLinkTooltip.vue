@@ -68,14 +68,27 @@
 import { ref, onMounted, onUnmounted, nextTick, computed } from 'vue'
 
 /**
- * =======================
- * 0. 模块级共享状态（关键）
- * =======================
- * activeId：当前全局正在使用的卡片 id
- * nextId：  用来给每个实例分配唯一 id
+ * ============================
+ * 0. 全局共享状态（解决多卡片同时显示）
+ * ============================
+ * - 通过 globalThis.__ZW_TIP_STORE__ 挂一个全局 store
+ * - 即使这个组件被打包成多个副本模块，也会共用同一份状态
  */
-const activeId = ref<number | null>(null)
-let nextId = 1
+type TipStore = {
+  activeId: ReturnType<typeof ref<number | null>>
+  nextId: number
+}
+
+// 在 globalThis 上创建 / 复用同一个 store
+const g = globalThis as any
+if (!g.__ZW_TIP_STORE__) {
+  g.__ZW_TIP_STORE__ = {
+    activeId: ref<number | null>(null),
+    nextId: 1,
+  } as TipStore
+}
+const tipStore = g.__ZW_TIP_STORE__ as TipStore
+const activeId = tipStore.activeId
 
 /**
  * 一、输入参数（保持不变）
@@ -91,20 +104,20 @@ const props = defineProps<{
 /**
  * 二、每个实例自己的 id & 可见性
  */
-const myId = nextId++                  // 这个实例的 id
-const isActive = computed(() => activeId.value === myId)  // 只有自己是当前激活 id 时才显示
+const myId = tipStore.nextId++ // 全局自增，确保跨副本也是唯一
+const isActive = computed(() => activeId.value === myId)
 
 /**
- * 三、实例级状态（保持不变）
+ * 三、实例级状态
  * hovering：鼠标是否在“触发区域”（链接 + 卡片附近）
- * locked：  是否已经锁定（进度圈满一圈后，长显）
+ * locked：  进度圈转满后是否已经锁定（长显）
  */
 const tooltipRef = ref<HTMLElement | null>(null)
 const hovering = ref(false)
 const locked = ref(false)
 
 /**
- * 四、进度圈计时器（保持不变）
+ * 四、进度圈计时器
  * progress：0 ~ 100 对应圆弧百分比
  * DURATION：从开始到锁定的时间（毫秒）
  */
@@ -162,7 +175,8 @@ const startTimer = () => {
 }
 
 /**
- * 点击页面其它地方：如果当前处于锁定状态，则关闭卡片并重置
+ * 点击页面其它地方：
+ * - 如果当前处于锁定状态，则关闭卡片并重置
  */
 const handleDocumentClick = (e: MouseEvent) => {
   if (!locked.value) return
@@ -198,7 +212,7 @@ const setupHoverSource = async () => {
     /**
      * ⭐ 关键逻辑：
      * 鼠标移入某个链接时，将全局 activeId 改为自己的 myId，
-     * 其它实例的 isActive 会变 false，立刻隐藏自己的卡片。
+     * 其它实例的 isActive 会变 false，立刻隐藏它们的卡片。
      */
     activeId.value = myId
 
@@ -260,23 +274,23 @@ onUnmounted(() => {
   height: 330px;
 
   box-sizing: border-box;
-  padding: 14px;  /* 与 RoleCard padding 一致 */
+  padding: 14px; /* 与 RoleCard padding 一致 */
 
   border-radius: 14px;
   border: 2px solid var(--c-border, #6e9fff);
   background: var(--vp-c-bg-soft, var(--c-bg, #fff));
-  box-shadow: 0 2px 12px rgba(0,0,0,.05);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
   color: var(--c-text, #111);
 
-  font-size: 0.8rem;                  /* 与 RoleCard 统一的基础字号 */
-  line-height: var(--card-line-height, 1);  /* 与 RoleCard 一致 */
+  font-size: 0.8rem; /* 与 RoleCard 统一的基础字号 */
+  line-height: var(--card-line-height, 1); /* 与 RoleCard 一致 */
 
   z-index: 9999;
 
   white-space: normal;
   word-break: break-word;
 
-  overflow: hidden;  /* ⭐ 内容不允许撑大卡片 */
+  overflow: hidden; /* ⭐ 内容不允许撑大卡片 */
 }
 
 /* 暗色主题下保持和 RoleCard 一致 */
@@ -303,7 +317,7 @@ html[data-theme="dark"] .zw-tip-card {
 }
 
 .tip-progress::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 3px;
   border-radius: inherit;
@@ -318,12 +332,12 @@ html[data-theme="dark"] .zw-tip-card {
 /* ===== 3) 第 1 行：标题 —— 对齐 RoleCard.stacked .title-top ===== */
 .tip-title {
   margin: -4px 0 8px;
-  margin-bottom: var(--card-title-gap, 6px);             /* 与 RoleCard 同名变量 */
-  font-size: var(--card-title-size, 1rem);               /* 默认 1rem，可用变量全局调 */
+  margin-bottom: var(--card-title-gap, 6px); /* 与 RoleCard 同名变量 */
+  font-size: var(--card-title-size, 1rem); /* 默认 1rem，可用变量全局调 */
   font-weight: 700;
   line-height: 1.2;
   text-align: var(--card-title-align, center);
-  color: #003a70;            /* 深蓝色字体，可调 */
+  color: #003a70; /* 深蓝色字体，可调 */
 
   /* ⭐ 居中（因为用 inline-block 会偏左） */
   margin-left: 50%;
@@ -332,13 +346,13 @@ html[data-theme="dark"] .zw-tip-card {
 
 /* 上半部分天蓝色背景 */
 .zw-tip-card::before {
-  content: "";
+  content: '';
   position: absolute;
-  inset: 0;                   /* 覆盖整个卡片 */
-  height: 10%;                /* 上方带色区域高度，这里保持你原来的 10% */
-  background: #c4e5ff;        /* 你设定的天蓝色 */
+  inset: 0; /* 覆盖整个卡片 */
+  height: 10%; /* 上方带色区域高度，这里保持你原来的 10% */
+  background: #c4e5ff; /* 你设定的天蓝色 */
   border-radius: 14px 14px 0 0; /* 与卡片圆角融合 */
-  z-index: -1;                /* 让内容在上面 */
+  z-index: -1; /* 让内容在上面 */
 }
 
 /* ===== 4) 第 2 行：图片 + 基本信息 ===== */
@@ -379,9 +393,9 @@ html[data-theme="dark"] .zw-tip-card {
 
   display: flex;
   flex-direction: column;
-  gap: var(--card-meta-gap, 6px);          /* 每两条信息之间的间距，与 RoleCard 同名变量 */
+  gap: var(--card-meta-gap, 6px); /* 每两条信息之间的间距，与 RoleCard 同名变量 */
 
-  font-size: var(--card-meta-size, 0.8rem);   /* 默认 0.85rem，与 RoleCard 一致 */
+  font-size: var(--card-meta-size, 0.8rem); /* 默认 0.85rem，与 RoleCard 一致 */
   color: var(--card-meta-color, inherit);
 }
 
@@ -403,7 +417,7 @@ html[data-theme="dark"] .zw-tip-card {
   color: var(--c-text-light, #65758b);
 }
 
-html[data-theme="dark"] .k {
+html[data-theme='dark'] .k {
   color: var(--c-text-light, #a8b3cf);
 }
 
@@ -420,25 +434,34 @@ html[data-theme="dark"] .k {
 
 /* ===== 6) 第 3 行：底部简介块 —— 对齐 RoleCard.stacked .bottom ===== */
 .tip-bottom {
-  margin-top: var(--card-section-gap, 8px);  /* 第二行与第三行间距（与 RoleCard 同名） */
+  margin-top: var(--card-section-gap, 8px); /* 第二行与第三行间距（与 RoleCard 同名） */
 
-  background: var(
-    --card-bottom-bg,
-    rgba(0, 0, 0, 0.05)
-  );
+  background: var(--card-bottom-bg, rgba(0, 0, 0, 0.05));
   border-radius: 8px;
 
-  padding-top:    var(--card-summary-padding-y, var(--card-summary-gap, 8px));
-  padding-bottom: var(--card-summary-padding-y, var(--card-summary-gap, 70px));
-  padding-left:   var(--card-summary-padding-x, var(--card-summary-gap, 10px));
-  padding-right:  var(--card-summary-padding-x, var(--card-summary-gap, 10px));
+  padding-top: var(
+    --card-summary-padding-y,
+    var(--card-summary-gap, 8px)
+  );
+  padding-bottom: var(
+    --card-summary-padding-y,
+    var(--card-summary-gap, 70px)
+  );
+  padding-left: var(
+    --card-summary-padding-x,
+    var(--card-summary-gap, 10px)
+  );
+  padding-right: var(
+    --card-summary-padding-x,
+    var(--card-summary-gap, 10px)
+  );
 
   font-size: var(--card-summary-size, 0.85rem);
   color: var(--card-summary-color, inherit);
   text-align: var(--card-summary-align, left);
 }
 
-html[data-theme="dark"] .tip-bottom {
+html[data-theme='dark'] .tip-bottom {
   background: var(--card-bottom-bg-dark, rgba(255, 255, 255, 0.08));
 }
 
