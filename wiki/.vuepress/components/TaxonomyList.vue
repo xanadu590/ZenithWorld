@@ -1,6 +1,6 @@
 <template>
   <div class="taxonomy-list">
-    <!-- 只有分类大框，不要“按分类查看”字样 -->
+    <!-- 只有分类大框，不要“按分类查看”等字样 -->
     <section class="tax-section">
       <div class="tax-card-grid">
         <article
@@ -107,8 +107,7 @@ const groupedCategories = computed(() => {
 
     // 剩余条目归入“其他XX”组
     if (remaining.length > 0) {
-      const othersLabel =
-        layoutConf.othersLabel || `其他${name}`;
+      const othersLabel = layoutConf.othersLabel || `其他${name}`;
       groups.push({
         label: othersLabel,
         pages: remaining,
@@ -169,8 +168,12 @@ const groupedCategories = computed(() => {
   color: var(--text-color-secondary, #888);
 }
 
+.tax-card-body {
+  margin-top: 0.25rem;
+}
+
 .tax-group + .tax-group {
-  margin-top: 0.4rem;
+  margin-top: 0.5rem;
 }
 
 .tax-group-title {
@@ -191,6 +194,7 @@ const groupedCategories = computed(() => {
   font-size: 0.9rem;
 }
 
+/* 这里先用简单下划线，后面你要的话可以改成 zw-auto-link 风格 */
 .tax-link {
   text-decoration: underline;
   text-decoration-thickness: 1px;
