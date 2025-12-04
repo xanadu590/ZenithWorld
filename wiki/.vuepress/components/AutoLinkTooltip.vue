@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick, computed, watch } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, computed } from 'vue'
 
 /**
  * ============================
@@ -91,7 +91,7 @@ const tipStore = g.__ZW_TIP_STORE__ as TipStore
 const activeId = tipStore.activeId
 
 /**
- * 一、输入参数
+ * 一、输入参数（保持不变）
  */
 const props = defineProps<{
   term: string
@@ -134,38 +134,6 @@ const clearTimer = () => {
 }
 
 /**
- * ✨ 补丁 1：当“这一个实例”成为当前激活卡片时，重置它自己的锁定状态
- * 场景：
- * - A 已经锁定（A.locked = true）
- * - 移到 B：activeId 从 A -> B，B 的 isActive 从 false -> true
- *   => 触发这个 watch，B.locked 被清零，重新从 0% 开始计时
- */
-watch(
-  isActive,
-  (now) => {
-    if (now) {
-      locked.value = false
-      progress.value = 0
-      clearTimer()
-    }
-  }
-)
-
-/**
- * ✨ 补丁 2（可选）：如果 term/to 真换了内容，也重置一次
- * 主要防止将来这个组件被复用到“同一实例切换不同条目”的情况
- */
-watch(
-  () => [props.term, props.to],
-  () => {
-    locked.value = false
-    hovering.value = false
-    progress.value = 0
-    clearTimer()
-  }
-)
-
-/**
  * 启动 2 秒倒计时：
  * - 每帧更新 progress
  * - 未锁定时鼠标离开：中途取消
@@ -175,7 +143,7 @@ const startTimer = () => {
   clearTimer()
   progress.value = 0
 
-  // 已经锁定就不再重新计时（这里的 locked 现在是“本实例自己的锁定态”）
+  // 已经锁定就不再重新计时
   if (locked.value) return
 
   const start = performance.now()
@@ -242,6 +210,7 @@ const setupHoverSource = async () => {
 
   const onEnter = () => {
     /**
+     * ⭐ 关键逻辑：
      * 鼠标移入某个链接时，将全局 activeId 改为自己的 myId，
      * 其它实例的 isActive 会变 false，立刻隐藏它们的卡片。
      */
@@ -325,7 +294,7 @@ onUnmounted(() => {
 }
 
 /* 暗色主题下保持和 RoleCard 一致 */
-html[data-theme='dark'] .zw-tip-card {
+html[data-theme="dark"] .zw-tip-card {
   border-color: #333;
   background: var(--vp-c-bg-soft, #0b0f19);
   color: var(--c-text, #e5e5e5);
