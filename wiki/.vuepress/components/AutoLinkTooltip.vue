@@ -4,6 +4,7 @@
     class="zw-tip-card"
     ref="tooltipRef"
     v-show="(hovering || locked) && isActive"
+    :style="cardStyle"
   >
     <!-- 右上角进度圆圈 -->
     <div
@@ -20,7 +21,7 @@
     <!-- 第 2 行：左图右信息 -->
     <div class="tip-top">
       <div v-if="avatar" class="tip-avatar">
-        < img :src="avatar" alt="avatar" loading="lazy" />
+        <img :src="avatar" alt="avatar" loading="lazy" />
       </div>
 
       <div class="tip-basic">
@@ -114,7 +115,56 @@ const hovering = ref(false)
 const locked = ref(false)
 
 /**
- * 四、进度圈计时器
+ * 四、卡片在视口中的位置（用 fixed + JS 位置控制，避免超出屏幕）
+ */
+const cardTop = ref(0)
+const cardLeft = ref(0)
+const cardStyle = computed(() => ({
+  top: `${cardTop.value}px`,
+  left: `${cardLeft.value}px`,
+}))
+
+/**
+ * 根据触发链接的位置，计算卡片在视口里的 top/left，
+ * 并把它夹在屏幕边界以内（上下、左右都不会超出）。
+ */
+const updatePosition = async () => {
+  await nextTick()
+  const cardEl = tooltipRef.value
+  if (!cardEl) return
+
+  const wrapper = cardEl.closest('.zw-auto-link-wrap') as HTMLElement | null
+  if (!wrapper) return
+
+  const wrapRect = wrapper.getBoundingClientRect()
+  const cardRect = cardEl.getBoundingClientRect()
+  const cardH = cardRect.height || 330
+  const cardW = cardRect.width || 220
+  const margin = 8
+
+  // 1）先放在触发元素右侧
+  let left = wrapRect.right + 16
+
+  // 如果右侧放不下，就往左挪（确保不出屏幕）
+  if (left + cardW + margin > window.innerWidth) {
+    left = window.innerWidth - cardW - margin
+    if (left < margin) left = margin
+  }
+
+  // 2）垂直方向，让卡片中心对齐触发元素中心
+  let top = wrapRect.top + wrapRect.height / 2 - cardH / 2
+
+  const minTop = margin
+  const maxTop = window.innerHeight - cardH - margin
+  if (top < minTop) top = minTop
+  if (top > maxTop) top = maxTop
+
+  cardTop.value = top
+  cardLeft.value = left
+}
+
+/**
+ * 五、进度圈计时器
  */
 const progress = ref(0)
 const DURATION = 2000 // 2 秒
@@ -129,6 +179,19 @@ const clearTimer = () => {
   if (frameId !== null) {
     cancelAnimationFrame(frameId)
     frameId = null
+  }
+}
+
+/**
+ * 统一关闭当前卡片（不管是点击空白、滚动，还是鼠标离得太远）
+ */
+const closeSelf = () => {
+  locked.value = false
+  hovering.value = false
+  progress.value = 0
+  clearTimer()
+  if (activeId.value === myId) {
+    activeId.value = null
   }
 }
 
@@ -189,15 +252,38 @@ const handleDocumentClick = (e: MouseEvent) => {
 
   const el = tooltipRef.value
   if (el && !el.contains(e.target as Node)) {
-    locked.value = false
-    hovering.value = false
-    progress.value = 0
-    clearTimer()
+    closeSelf()
+  }
+}
 
-    // 如果当前关闭的是激活卡片，则把 activeId 也清掉
-    if (activeId.value === myId) {
-      activeId.value = null
-    }
+/**
+ * 六、监听滚动：只要页面滚动，就关闭当前卡片
+ */
+const handleScroll = () => {
+  if (activeId.value !== myId) return
+  // 无论锁定与否，只要滚动就关掉
+  closeSelf()
+}
+
+/**
+ * 七、监听鼠标移动：
+ * - 如果鼠标离“触发链接”的中心点距离 > 半个屏幕高度，则自动关闭
+ */
+const handleMouseMove = (e: MouseEvent) => {
+  if (activeId.value !== myId) return
+  if (!wrapperEl) return
+
+  const rect = wrapperEl.getBoundingClientRect()
+  const cx = rect.left + rect.width / 2
+  const cy = rect.top + rect.height / 2
+
+  const dx = e.clientX - cx
+  const dy = e.clientY - cy
+  const dist = Math.sqrt(dx * dx + dy * dy)
+
+  const threshold = window.innerHeight  // “半个屏幕”的距离
+  if (dist > threshold) {
+    closeSelf()
   }
 }
 
@@ -227,6 +313,7 @@ const setupHoverSource = async () => {
       hovering.value = true
       locked.value = false      // 换链接时重新计时
       progress.value = 0
+      updatePosition()
       startTimer()
       return
     }
@@ -242,6 +329,7 @@ const setupHoverSource = async () => {
     // ⭐ 情况 3：自己但未锁定（比如之前计时中断）
     locked.value = false
     progress.value = 0
+    updatePosition()
     startTimer()
   }
 
@@ -252,7 +340,7 @@ const setupHoverSource = async () => {
       clearTimer()
       progress.value = 0
     }
-    // 已锁定：保持显示，等点击页面其它区域再关闭
+    // 已锁定：保持显示，等点击页面其它区域 / 滚动 / 远离再关闭
   }
 
   wrapperEl.addEventListener('mouseenter', onEnter)
@@ -265,11 +353,17 @@ const setupHoverSource = async () => {
 onMounted(() => {
   setupHoverSource()
   document.addEventListener('click', handleDocumentClick)
+  window.addEventListener('resize', updatePosition)
+  window.addEventListener('scroll', handleScroll, { passive: true })
+  window.addEventListener('mousemove', handleMouseMove)
 })
 
 onUnmounted(() => {
   clearTimer()
   document.removeEventListener('click', handleDocumentClick)
+  window.removeEventListener('resize', updatePosition)
+  window.removeEventListener('scroll', handleScroll)
+  window.removeEventListener('mousemove', handleMouseMove)
 
   // 解绑 hover 源事件（同步注册，避免 Vue 警告）
   if (wrapperEl && onEnter) {
@@ -287,12 +381,10 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* ===== 1) 卡片容器：对齐 RoleCard 的 2:3 尺寸 & 风格 ===== */
+/* ===== 1) 卡片容器：用 fixed + JS 位置控制 ===== */
 .zw-tip-card {
-  position: absolute;
-  left: 100%;
-  top: 50%;
-  transform: translate(16px, -50%);
+  position: fixed; /* ⭐ 相对于视口定位 */
+  /* top / left 由 :style="cardStyle" 决定 */
 
   /* ⭐ 尺寸与 RoleCard 默认一致：220 × 330，比例 2:3 */
   width: 220px;
@@ -307,15 +399,15 @@ onUnmounted(() => {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
   color: var(--c-text, #111);
 
-  font-size: 0.8rem; /* 与 RoleCard 统一的基础字号 */
-  line-height: var(--card-line-height, 1); /* 与 RoleCard 一致 */
+  font-size: 0.8rem;
+  line-height: var(--card-line-height, 1);
 
   z-index: 9999;
 
   white-space: normal;
   word-break: break-word;
 
-  overflow: hidden; /* ⭐ 内容不允许撑大卡片 */
+  overflow: hidden;
 }
 
 /* 暗色主题下保持和 RoleCard 一致 */
@@ -325,7 +417,7 @@ html[data-theme='dark'] .zw-tip-card {
   color: var(--c-text, #e5e5e5);
 }
 
-/* ===== 2) 右上角进度圆圈（不动，只是视觉） ===== */
+/* ===== 2) 右上角进度圆圈 ===== */
 .tip-progress {
   position: absolute;
   right: 6px;
@@ -354,17 +446,16 @@ html[data-theme='dark'] .zw-tip-card {
   background: var(--vp-c-brand, #3b82f6);
 }
 
-/* ===== 3) 第 1 行：标题 —— 对齐 RoleCard.stacked .title-top ===== */
+/* ===== 3) 第 1 行：标题 ===== */
 .tip-title {
   margin: -4px 0 8px;
-  margin-bottom: var(--card-title-gap, 6px); /* 与 RoleCard 同名变量 */
-  font-size: var(--card-title-size, 1rem); /* 默认 1rem，可用变量全局调 */
+  margin-bottom: var(--card-title-gap, 6px);
+  font-size: var(--card-title-size, 1rem);
   font-weight: 700;
   line-height: 1.2;
   text-align: var(--card-title-align, center);
-  color: #003a70; /* 深蓝色字体，可调 */
+  color: #003a70;
 
-  /* ⭐ 居中（因为用 inline-block 会偏左） */
   margin-left: 50%;
   transform: translateX(-50%);
 }
@@ -373,11 +464,11 @@ html[data-theme='dark'] .zw-tip-card {
 .zw-tip-card::before {
   content: '';
   position: absolute;
-  inset: 0; /* 覆盖整个卡片 */
-  height: 10%; /* 上方带色区域高度，这里保持你原来的 10% */
-  background: #c4e5ff; /* 你设定的天蓝色 */
-  border-radius: 14px 14px 0 0; /* 与卡片圆角融合 */
-  z-index: -1; /* 让内容在上面 */
+  inset: 0;
+  height: 10%;
+  background: #c4e5ff;
+  border-radius: 14px 14px 0 0;
+  z-index: -1;
 }
 
 /* ===== 4) 第 2 行：图片 + 基本信息 ===== */
@@ -410,7 +501,7 @@ html[data-theme='dark'] .zw-tip-card {
   min-width: 0;
 }
 
-/* ===== 5) 基本信息 meta —— 完全对齐 RoleCard 的变量名 + 再加省略号 ===== */
+/* ===== 5) 基本信息 meta ===== */
 .meta {
   list-style: none;
   padding: 0;
@@ -418,20 +509,18 @@ html[data-theme='dark'] .zw-tip-card {
 
   display: flex;
   flex-direction: column;
-  gap: var(--card-meta-gap, 6px); /* 每两条信息之间的间距，与 RoleCard 同名变量 */
+  gap: var(--card-meta-gap, 6px);
 
-  font-size: var(--card-meta-size, 0.8rem); /* 默认 0.85rem，与 RoleCard 一致 */
+  font-size: var(--card-meta-size, 0.8rem);
   color: var(--card-meta-color, inherit);
 }
 
-/* 每一行信息：同时支持行高变量 + 省略号效果 */
 .meta li {
   display: flex;
   align-items: baseline;
   gap: 6px;
   line-height: var(--card-meta-line-height, 1.15);
 
-  /* 为了右侧 .v 的省略号，整行不换行 + 超出隐藏 */
   overflow: hidden;
   white-space: nowrap;
 }
@@ -457,9 +546,9 @@ html[data-theme='dark'] .k {
   white-space: nowrap;
 }
 
-/* ===== 6) 第 3 行：底部简介块 —— 对齐 RoleCard.stacked .bottom ===== */
+/* ===== 6) 第 3 行：底部简介块 ===== */
 .tip-bottom {
-  margin-top: var(--card-section-gap, 8px); /* 第二行与第三行间距（与 RoleCard 同名） */
+  margin-top: var(--card-section-gap, 8px);
 
   background: var(--card-bottom-bg, rgba(0, 0, 0, 0.05));
   border-radius: 8px;
@@ -484,6 +573,10 @@ html[data-theme='dark'] .k {
   font-size: var(--card-summary-size, 0.85rem);
   color: var(--card-summary-color, inherit);
   text-align: var(--card-summary-align, left);
+
+  /* 固定高度 + 隐藏超出内容 */
+  height: 70px;
+  overflow: hidden;
 }
 
 html[data-theme='dark'] .tip-bottom {

@@ -2,20 +2,6 @@
 
 export const taxonomyData = {
   "categories": {
-    "组织": {
-      "key": "factions",
-      "pages": [
-        {
-          "title": "异常事物管理局",
-          "path": "/docs/world/factions/official/AMA/",
-          "category": "组织",
-          "key": "factions",
-          "tags": [
-            "国际"
-          ]
-        }
-      ]
-    },
     "人物": {
       "key": "characters",
       "pages": [
@@ -86,10 +72,9 @@ export const taxonomyData = {
           ]
         }
       ]
-    }
-  },
-  "tags": {
-    "国际": {
+    },
+    "组织": {
+      "key": "factions",
       "pages": [
         {
           "title": "异常事物管理局",
@@ -101,7 +86,9 @@ export const taxonomyData = {
           ]
         }
       ]
-    },
+    }
+  },
+  "tags": {
     "灵动骑士": {
       "pages": [
         {
@@ -216,6 +203,19 @@ export const taxonomyData = {
           "key": "characters",
           "tags": [
             "异能者"
+          ]
+        }
+      ]
+    },
+    "国际": {
+      "pages": [
+        {
+          "title": "异常事物管理局",
+          "path": "/docs/world/factions/official/AMA/",
+          "category": "组织",
+          "key": "factions",
+          "tags": [
+            "国际"
           ]
         }
       ]
