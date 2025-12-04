@@ -8,7 +8,12 @@ export interface AutoLinkEntry {
   term: string;              // 要匹配的词
   path: string;              // 路由路径，如 /docs/world/xxx.html
   filePathRelative?: string;
-  tooltip?: string;          // 悬停提示文本
+
+  // 提示/卡片相关信息（可选）
+  tooltip?: string;          // 鼠标悬停时的简短提示文本
+  kind?: string;             // 类型：character / place / faction / concept ...
+  avatar?: string;           // 头像或代表图片
+  summary?: string;          // 更长一点的摘要，用于卡片正文
 }
 
 /** 插件配置项 */
@@ -32,8 +37,17 @@ export interface AutoLinkerProOptions {
   indexOutput?: string;
 }
 
+/** 简单转义，防止属性字符串里出现引号/尖括号导致模板炸掉 */
+function escapeAttr(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
 /**
- * 把一段纯文本里的 term 替换成 <RouterLink>，并控制次数
+ * 把一段纯文本里的 term 替换成 <AutoLinkTip>，并控制次数
  * ⚠️ 注意：只应该对「纯文本」片段使用，不要传入包含 <tag> 的字符串
  */
 function createLinkifier(
@@ -77,18 +91,27 @@ function createLinkifier(
         ? "zw-auto-link zw-auto-link--first"
         : "zw-auto-link";
 
-      // tooltip 文本：优先用 entry.tooltip，没有就退回到 term 本身
-      const tooltip = (entry.tooltip || term).replace(/"/g, "&quot;");
+      // 生成 <AutoLinkTip> 组件，由组件内去渲染 RouterLink + 卡片
+      const safeTerm = escapeAttr(term);
+      const safeTo = escapeAttr(to);
+      const safeTooltip = entry.tooltip ? escapeAttr(entry.tooltip) : "";
+      const safeKind = entry.kind ? escapeAttr(entry.kind) : "";
+      const safeAvatar = entry.avatar ? escapeAttr(entry.avatar) : "";
+      const safeSummary = entry.summary ? escapeAttr(entry.summary) : "";
 
-      // 生成 Vue 模板里的 <RouterLink>，交给前端渲染
+      const attrs: string[] = [];
+      attrs.push(`class="${classes}${safeKind ? " zw-auto-link--" + safeKind : ""}"`);
+      attrs.push(`term="${safeTerm}"`);
+      attrs.push(`to="${safeTo}"`);
+      if (safeTooltip) attrs.push(`tooltip="${safeTooltip}"`);
+      if (safeKind) attrs.push(`kind="${safeKind}"`);
+      if (safeAvatar) attrs.push(`avatar="${safeAvatar}"`);
+      if (safeSummary) attrs.push(`summary="${safeSummary}"`);
+
       const link =
-        `<RouterLink` +
-        ` to="${to}"` +
-        ` class="${classes}"` +
-        ` data-tooltip="${tooltip}"` +    // ✅ 悬停提示用
-        `>` +
-        term +
-        `</RouterLink>`;
+        `<AutoLinkTip ${attrs.join(" ")}>` +
+        safeTerm +
+        `</AutoLinkTip>`;
 
       result += link + parts[i];
 
@@ -126,7 +149,7 @@ export const autoLinkerProPlugin = (
         term: string,
         pagePath: string,
         filePathRelative?: string,
-        tooltip?: string
+        extra?: Partial<Omit<AutoLinkEntry, "term" | "path" | "filePathRelative">>
       ) => {
         const t = (term || "").trim();
         if (!t) return;
@@ -137,7 +160,7 @@ export const autoLinkerProPlugin = (
           term: t,
           path: pagePath,
           filePathRelative,
-          tooltip,
+          ...extra,
         });
       };
 
@@ -147,25 +170,41 @@ export const autoLinkerProPlugin = (
         const pagePath = page.path;
         if (!pagePath) continue;
 
-        // 用于 tooltip 的基础文本（可选）
-        const baseTooltip: string =
-          (fm.autoLinkTooltip as string) ??
-          (fm.summary as string) ??
-          (fm.description as string) ??
-          "";
-
         const title =
           (fm.autoLinkTitle ?? page.title ?? "").toString().trim();
         const aliases: string[] = Array.isArray(fm.autoLinkAliases)
           ? fm.autoLinkAliases
           : [];
 
+        // 这些字段都可选，没写就为空
+        const tooltip: string =
+          (fm.autoLinkTooltip as string) ??
+          (fm.summary as string) ??
+          (fm.description as string) ??
+          "";
+
+        const kind: string | undefined = fm.autoLinkKind;
+        const avatar: string | undefined =
+          fm.autoLinkAvatar || fm.heroImage || fm.image || undefined;
+        const summary: string =
+          (fm.autoLinkSummary as string) ??
+          (fm.summary as string) ??
+          (fm.description as string) ??
+          tooltip; // 没写 summary 就退回 tooltip
+
+        const extra = {
+          tooltip: tooltip || undefined,
+          kind: kind || undefined,
+          avatar,
+          summary: summary || undefined,
+        };
+
         if (title) {
-          addTerm(title, pagePath, page.filePathRelative || undefined, baseTooltip);
+          addTerm(title, pagePath, page.filePathRelative || undefined, extra);
         }
 
         for (const alias of aliases) {
-          addTerm(alias, pagePath, page.filePathRelative || undefined, baseTooltip);
+          addTerm(alias, pagePath, page.filePathRelative || undefined, extra);
         }
       }
 
@@ -176,7 +215,7 @@ export const autoLinkerProPlugin = (
         console.log("[autoLinkerPro] built index:", index);
       }
 
-      // 2. 写 JSON 索引到 public 目录
+      // 2. 写 JSON 索引到 public 目录（以后前端也能拿这个做百科关系图等）
       const outFile = vpPath.resolve(app.dir.public(), indexOutput);
       await fs.promises.mkdir(vpPath.dirname(outFile), { recursive: true });
       await fs.promises.writeFile(
@@ -226,14 +265,14 @@ export const autoLinkerProPlugin = (
         const segments = templateContent.split(/(<[^>]+>)/g);
         const newSegments: string[] = [];
 
-        // 简单追踪是否在 <a> 或 <RouterLink> 里面，避免嵌套链接
+        // 简单追踪是否在 <a> / <RouterLink> / <AutoLinkTip> 里面，避免嵌套
         let inLinkDepth = 0;
 
         const isTag = (seg: string) =>
           seg.startsWith("<") && seg.endsWith(">");
 
-        const linkOpenRE = /^<\s*(a|RouterLink)\b[^>]*>$/i;
-        const linkCloseRE = /^<\s*\/\s*(a|RouterLink)\s*>$/i;
+        const linkOpenRE = /^<\s*(a|RouterLink|AutoLinkTip)\b[^>]*>$/i;
+        const linkCloseRE = /^<\s*\/\s*(a|RouterLink|AutoLinkTip)\s*>$/i;
 
         for (let seg of segments) {
           if (!seg) {
@@ -247,7 +286,7 @@ export const autoLinkerProPlugin = (
 
             // 维护 inLinkDepth
             if (linkOpenRE.test(seg)) {
-              // 自闭合 <RouterLink ... /> 不算进入
+              // 自闭合不算进入
               if (!/\/\s*>$/.test(seg)) {
                 inLinkDepth++;
               }
@@ -259,7 +298,7 @@ export const autoLinkerProPlugin = (
           }
 
           // seg 是纯文本（标签之间的内容）
-          // 1. 在已有 <a>/<RouterLink> 内部就不再自动加链接
+          // 1. 在已有 <a>/<RouterLink>/<AutoLinkTip> 内部就不再自动加链接
           if (inLinkDepth > 0) {
             newSegments.push(seg);
             continue;

@@ -32,7 +32,7 @@
 <h2 id="分类体系-13类" tabindex="-1"><a class="header-anchor" href="#分类体系-13类"><span>分类体系（13类）</span></a></h2>
 <p>根据异常管理局的官方划分，超自然事物共分为十三类：</p>
 <ol>
-<li><RouteLink to="/docs/world/concepts/isomer/"><RouterLink to="/docs/world/concepts/isomer/" class="zw-auto-link zw-auto-link--first" data-tooltip="名称：异常构造 译名：Isomer 简称：异构、ISO 关于「异常构造」的详细定义 在这个世界，即便存在大量离奇事物，【异常构造】仍是其中最特殊且最危险的一类。 旧定义 在危机管理机构时期，最初的定义是： “以极不合理的机制运行的事物。” 问题在于，这个定义过于宽泛，导致许多“只是难以理解但不算异常”的现象也被划入该类。 新定义 某位博士提出了一个颠覆...">异常构造</RouterLink></RouteLink></li>
+<li><RouteLink to="/docs/world/concepts/isomer/"><AutoLinkTip class="zw-auto-link zw-auto-link--first" term="异常构造" to="/docs/world/concepts/isomer/" tooltip="名称：异常构造 译名：Isomer 简称：异构、ISO 关于「异常构造」的详细定义 在这个世界，即便存在大量离奇事物，【异常构造】仍是其中最特殊且最危险的一类。 旧定义 在危机管理机构时期，最初的定义是： “以极不合理的机制运行的事物。” 问题在于，这个定义过于宽泛，导致许多“只是难以理解但不算异常”的现象也被划入该类。 新定义 某位博士提出了一个颠覆..." summary="名称：异常构造 译名：Isomer 简称：异构、ISO 关于「异常构造」的详细定义 在这个世界，即便存在大量离奇事物，【异常构造】仍是其中最特殊且最危险的一类。 旧定义 在危机管理机构时期，最初的定义是： “以极不合理的机制运行的事物。” 问题在于，这个定义过于宽泛，导致许多“只是难以理解但不算异常”的现象也被划入该类。 新定义 某位博士提出了一个颠覆...">异常构造</AutoLinkTip></RouteLink></li>
 <li>历史记录</li>
 <li>宗教传承</li>
 <li>东方神秘</li>

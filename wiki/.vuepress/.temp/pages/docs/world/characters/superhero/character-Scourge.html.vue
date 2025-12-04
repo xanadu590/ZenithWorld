@@ -11,7 +11,7 @@
 <li>出生年月：2004年5月20日</li>
 <li>职业：偶像经纪人</li>
 <li>学历：大专毕业</li>
-<li>加入过的团体：世界英雄（<RouterLink to="/docs/world/" class="zw-auto-link zw-auto-link--first" data-tooltip="World">World</RouterLink> Hero)，九江联盟</li>
+<li>加入过的团体：世界英雄（<AutoLinkTip class="zw-auto-link zw-auto-link--first" term="World" to="/docs/world/">World</AutoLinkTip> Hero)，九江联盟</li>
 </ul>
 <h2 id="外貌特征" tabindex="-1"><a class="header-anchor" href="#外貌特征"><span>外貌特征</span></a></h2>
 <ul>
@@ -56,9 +56,9 @@
 <li>朋友：乐酷，陈禾子，米舞森</li>
 <li>恋人：秦臻然</li>
 <li>家人：尹广林</li>
-<li>战友：<RouterLink to="/docs/world/characters/superhero/character-EtherealKnight.html" class="zw-auto-link zw-auto-link--first" data-tooltip="意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！">宇文南城</RouterLink></li>
+<li>战友：<AutoLinkTip class="zw-auto-link zw-auto-link--first" term="宇文南城" to="/docs/world/characters/superhero/character-EtherealKnight.html" tooltip="意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！" summary="意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！">宇文南城</AutoLinkTip></li>
 </ul>
-<p>战友：<RouterLink to="/docs/world/characters/superhero/character-EtherealKnight.html" class="zw-auto-link zw-auto-link--first" data-tooltip="意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！">灵动骑士</RouterLink></p>
+<p>战友：<AutoLinkTip class="zw-auto-link zw-auto-link--first" term="灵动骑士" to="/docs/world/characters/superhero/character-EtherealKnight.html" tooltip="意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！" summary="意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！">灵动骑士</AutoLinkTip></p>
 <ul>
 <li>宿敌：秦烨（红皇帝）</li>
 </ul>

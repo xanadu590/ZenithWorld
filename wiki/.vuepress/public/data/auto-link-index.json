@@ -3,155 +3,168 @@
     "term": "巅峰议会（Peak Council）",
     "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
     "filePathRelative": "docs/world/characters/superhero/character-EtherealKnight.md",
-    "tooltip": "意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！"
+    "tooltip": "意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！",
+    "summary": "意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！"
   },
   {
     "term": "异常事物管理局",
     "path": "/docs/world/factions/official/AMA/",
     "filePathRelative": "docs/world/factions/official/AMA/README.md",
-    "tooltip": "名称：异常事物管理局 译名：Anomaly Management Agency 简称：AMA 成立日期： 历史 异常管理局的源头可追溯至【先知】创立的早期组织——【危机管理机构】(Crisis Control Organization，简称C.C.O.)。当【巅峰议会】正式成立后，危机管理机构内部负责关押、限制和控制超自然事物的部门被独立出来，成为【危..."
+    "tooltip": "名称：异常事物管理局 译名：Anomaly Management Agency 简称：AMA 成立日期： 历史 异常管理局的源头可追溯至【先知】创立的早期组织——【危机管理机构】(Crisis Control Organization，简称C.C.O.)。当【巅峰议会】正式成立后，危机管理机构内部负责关押、限制和控制超自然事物的部门被独立出来，成为【危...",
+    "summary": "名称：异常事物管理局 译名：Anomaly Management Agency 简称：AMA 成立日期： 历史 异常管理局的源头可追溯至【先知】创立的早期组织——【危机管理机构】(Crisis Control Organization，简称C.C.O.)。当【巅峰议会】正式成立后，危机管理机构内部负责关押、限制和控制超自然事物的部门被独立出来，成为【危..."
   },
   {
     "term": "人物关系图谱",
     "path": "/docs/characterline.html",
     "filePathRelative": "docs/characterline.md",
-    "tooltip": "人物关系图谱"
+    "tooltip": "人物关系图谱",
+    "summary": "人物关系图谱"
   },
   {
     "term": "世界大事年表",
     "path": "/docs/timeline.html",
-    "filePathRelative": "docs/timeline.md",
-    "tooltip": ""
+    "filePathRelative": "docs/timeline.md"
   },
   {
     "term": "世界观总览",
     "path": "/docs/",
-    "filePathRelative": "docs/README.md",
-    "tooltip": ""
+    "filePathRelative": "docs/README.md"
   },
   {
     "term": "测试目标A",
     "path": "/docs/world/characters/superhero/test-a.html",
     "filePathRelative": "docs/world/characters/superhero/test-a.md",
-    "tooltip": "术语总览 这里是按 五大分类 和 标签 自动生成的索引页。 说明：只要某篇文档的 Frontmatter 里写了 category / tag，就会自动出现在下面列表中。"
+    "tooltip": "术语总览 这里是按 五大分类 和 标签 自动生成的索引页。 说明：只要某篇文档的 Frontmatter 里写了 category / tag，就会自动出现在下面列表中。",
+    "summary": "术语总览 这里是按 五大分类 和 标签 自动生成的索引页。 说明：只要某篇文档的 Frontmatter 里写了 category / tag，就会自动出现在下面列表中。"
   },
   {
     "term": "World",
-    "path": "/docs/world/",
-    "tooltip": ""
+    "path": "/docs/world/"
   },
   {
     "term": "巅峰世界",
     "path": "/",
     "filePathRelative": "README.md",
-    "tooltip": "欢迎来到《巅峰世界》百科，英雄与反派的交织在这里上演。"
+    "tooltip": "欢迎来到《巅峰世界》百科，英雄与反派的交织在这里上演。",
+    "avatar": "/images/LOGO-light.jpg",
+    "summary": "欢迎来到《巅峰世界》百科，英雄与反派的交织在这里上演。"
   },
   {
     "term": "高级搜索",
     "path": "/docs/advanced-search.html",
     "filePathRelative": "docs/advanced-search.md",
-    "tooltip": "这里是巅峰世界百科的 高级搜索。你可以根据「人物 / 城市 / 组织 / 概念」等分类来筛选结果。"
+    "tooltip": "这里是巅峰世界百科的 高级搜索。你可以根据「人物 / 城市 / 组织 / 概念」等分类来筛选结果。",
+    "summary": "这里是巅峰世界百科的 高级搜索。你可以根据「人物 / 城市 / 组织 / 概念」等分类来筛选结果。"
   },
   {
     "term": "推荐文章",
     "path": "/docs/hotpages.html",
-    "filePathRelative": "docs/hotpages.md",
-    "tooltip": ""
+    "filePathRelative": "docs/hotpages.md"
   },
   {
     "term": "世界地图",
     "path": "/docs/worldmap.html",
-    "filePathRelative": "docs/worldmap.md",
-    "tooltip": ""
+    "filePathRelative": "docs/worldmap.md"
   },
   {
     "term": "角色介绍",
     "path": "/docs/world/characters/",
-    "filePathRelative": "docs/world/characters/README.md",
-    "tooltip": ""
+    "filePathRelative": "docs/world/characters/README.md"
   },
   {
     "term": "灵动骑士",
     "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
     "filePathRelative": "docs/world/characters/superhero/character-EtherealKnight.md",
-    "tooltip": "意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！"
+    "tooltip": "意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！",
+    "summary": "意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！"
   },
   {
     "term": "巅峰组织",
     "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
     "filePathRelative": "docs/world/characters/superhero/character-EtherealKnight.md",
-    "tooltip": "意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！"
+    "tooltip": "意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！",
+    "summary": "意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！"
   },
   {
     "term": "宇文南城",
     "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
     "filePathRelative": "docs/world/characters/superhero/character-EtherealKnight.md",
-    "tooltip": "意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！"
+    "tooltip": "意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！",
+    "summary": "意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！"
   },
   {
     "term": "巫师希望",
     "path": "/docs/world/characters/superhero/character-WizardHope.html",
     "filePathRelative": "docs/world/characters/superhero/character-WizardHope.md",
-    "tooltip": "基本信息"
+    "tooltip": "基本信息",
+    "summary": "基本信息"
   },
   {
     "term": "超级英雄",
     "path": "/docs/world/characters/superhero/",
     "filePathRelative": "docs/world/characters/superhero/README.md",
-    "tooltip": "这里可以写一点团体的文字介绍。 比如巅峰议会的成立历史、议会目标、对世界格局的影响等等。 下面也可以继续正常写 Markdown 内容： 组织结构 议会会议制度 与各团体的关系 ……把你所有角色都列上来"
+    "tooltip": "这里可以写一点团体的文字介绍。 比如巅峰议会的成立历史、议会目标、对世界格局的影响等等。 下面也可以继续正常写 Markdown 内容： 组织结构 议会会议制度 与各团体的关系 ……把你所有角色都列上来",
+    "summary": "这里可以写一点团体的文字介绍。 比如巅峰议会的成立历史、议会目标、对世界格局的影响等等。 下面也可以继续正常写 Markdown 内容： 组织结构 议会会议制度 与各团体的关系 ……把你所有角色都列上来"
   },
   {
     "term": "测试 B",
     "path": "/docs/world/characters/superhero/test-b.html",
     "filePathRelative": "docs/world/characters/superhero/test-b.md",
-    "tooltip": "我在这里随便写一句：测试目标A会不会被自动加链接。"
+    "tooltip": "我在这里随便写一句：测试目标A会不会被自动加链接。",
+    "summary": "我在这里随便写一句：测试目标A会不会被自动加链接。"
   },
   {
     "term": "异常构造",
     "path": "/docs/world/concepts/isomer/",
     "filePathRelative": "docs/world/concepts/isomer/README.md",
-    "tooltip": "名称：异常构造 译名：Isomer 简称：异构、ISO 关于「异常构造」的详细定义 在这个世界，即便存在大量离奇事物，【异常构造】仍是其中最特殊且最危险的一类。 旧定义 在危机管理机构时期，最初的定义是： “以极不合理的机制运行的事物。” 问题在于，这个定义过于宽泛，导致许多“只是难以理解但不算异常”的现象也被划入该类。 新定义 某位博士提出了一个颠覆..."
+    "tooltip": "名称：异常构造 译名：Isomer 简称：异构、ISO 关于「异常构造」的详细定义 在这个世界，即便存在大量离奇事物，【异常构造】仍是其中最特殊且最危险的一类。 旧定义 在危机管理机构时期，最初的定义是： “以极不合理的机制运行的事物。” 问题在于，这个定义过于宽泛，导致许多“只是难以理解但不算异常”的现象也被划入该类。 新定义 某位博士提出了一个颠覆...",
+    "summary": "名称：异常构造 译名：Isomer 简称：异构、ISO 关于「异常构造」的详细定义 在这个世界，即便存在大量离奇事物，【异常构造】仍是其中最特殊且最危险的一类。 旧定义 在危机管理机构时期，最初的定义是： “以极不合理的机制运行的事物。” 问题在于，这个定义过于宽泛，导致许多“只是难以理解但不算异常”的现象也被划入该类。 新定义 某位博士提出了一个颠覆..."
   },
   {
     "term": "十二主神",
     "path": "/docs/world/concepts/twelveprimedeities/",
     "filePathRelative": "docs/world/concepts/twelveprimedeities/README.md",
-    "tooltip": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。 十二主神 － 天神/全能神/主神 － 太阳神/光明神 － 月神/黑夜神 － 战争之神 － 大地神/母神/生命神 － 风暴神/雷神 － 爱神/美神 － 十二主神的由来 十二主神并不是严格遵守十二这个数字，实际上，并没有完全遵守十二这个数字..."
+    "tooltip": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。 十二主神 － 天神/全能神/主神 － 太阳神/光明神 － 月神/黑夜神 － 战争之神 － 大地神/母神/生命神 － 风暴神/雷神 － 爱神/美神 － 十二主神的由来 十二主神并不是严格遵守十二这个数字，实际上，并没有完全遵守十二这个数字...",
+    "summary": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。 十二主神 － 天神/全能神/主神 － 太阳神/光明神 － 月神/黑夜神 － 战争之神 － 大地神/母神/生命神 － 风暴神/雷神 － 爱神/美神 － 十二主神的由来 十二主神并不是严格遵守十二这个数字，实际上，并没有完全遵守十二这个数字..."
   },
   {
     "term": "关系卡",
     "path": "/docs/RoleCard.html",
-    "filePathRelative": "docs/RoleCard.md",
-    "tooltip": ""
+    "filePathRelative": "docs/RoleCard.md"
   },
   {
     "term": "幻绘星",
     "path": "/docs/world/characters/superhero/character-Illustra.html",
     "filePathRelative": "docs/world/characters/superhero/character-Illustra.md",
-    "tooltip": "基本信息"
+    "tooltip": "基本信息",
+    "summary": "基本信息"
   },
   {
     "term": "赤听",
     "path": "/docs/world/characters/superhero/character-HearTone.html",
     "filePathRelative": "docs/world/characters/superhero/character-HearTone.md",
-    "tooltip": "基本信息"
+    "tooltip": "基本信息",
+    "summary": "基本信息"
   },
   {
     "term": "月五",
     "path": "/docs/world/characters/superhero/character-M-A-Y.html",
     "filePathRelative": "docs/world/characters/superhero/character-M-A-Y.md",
-    "tooltip": "基本信息"
+    "tooltip": "基本信息",
+    "summary": "基本信息"
   },
   {
     "term": "天灾",
     "path": "/docs/world/characters/superhero/character-Scourge.html",
     "filePathRelative": "docs/world/characters/superhero/character-Scourge.md",
-    "tooltip": "基本信息"
+    "tooltip": "基本信息",
+    "summary": "基本信息"
   },
   {
     "term": "警钟",
     "path": "/docs/world/characters/superhero/character-StrikeClock.html",
     "filePathRelative": "docs/world/characters/superhero/character-StrikeClock.md",
-    "tooltip": "基本信息"
+    "tooltip": "基本信息",
+    "summary": "基本信息"
   }
 ]
