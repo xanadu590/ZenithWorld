@@ -68,9 +68,7 @@
 import { ref, onMounted, onUnmounted, nextTick, computed } from 'vue'
 
 /**
- * ============================
  * 0. 全局共享状态（解决多卡片同时显示）
- * ============================
  * - 通过 globalThis.__ZW_TIP_STORE__ 挂一个全局 store
  * - 即使这个组件被打包成多个副本模块，也会共用同一份状态
  */
@@ -79,7 +77,6 @@ type TipStore = {
   nextId: number
 }
 
-// 在 globalThis 上创建 / 复用同一个 store
 const g = globalThis as any
 if (!g.__ZW_TIP_STORE__) {
   g.__ZW_TIP_STORE__ = {
@@ -91,7 +88,7 @@ const tipStore = g.__ZW_TIP_STORE__ as TipStore
 const activeId = tipStore.activeId
 
 /**
- * 一、输入参数（保持不变）
+ * 一、输入参数
  */
 const props = defineProps<{
   term: string
@@ -102,7 +99,7 @@ const props = defineProps<{
 }>()
 
 /**
- * 二、每个实例自己的 id & 可见性
+ * 二、每个实例自己的 id & 是否当前激活
  */
 const myId = tipStore.nextId++ // 全局自增，确保跨副本也是唯一
 const isActive = computed(() => activeId.value === myId)
@@ -118,8 +115,6 @@ const locked = ref(false)
 
 /**
  * 四、进度圈计时器
- * progress：0 ~ 100 对应圆弧百分比
- * DURATION：从开始到锁定的时间（毫秒）
  */
 const progress = ref(0)
 const DURATION = 2000 // 2 秒
@@ -142,9 +137,6 @@ const clearTimer = () => {
 const startTimer = () => {
   clearTimer()
   progress.value = 0
-
-  // 已经锁定就不再重新计时
-  if (locked.value) return
 
   const start = performance.now()
 
@@ -209,18 +201,28 @@ const setupHoverSource = async () => {
   if (!wrapper) return
 
   const onEnter = () => {
-    /**
-     * ⭐ 关键逻辑：
-     * 鼠标移入某个链接时，将全局 activeId 改为自己的 myId，
-     * 其它实例的 isActive 会变 false，立刻隐藏它们的卡片。
-     */
+    // 鼠标移入某个链接：先把自己设为全局激活对象
     activeId.value = myId
-
     hovering.value = true
-    // 再次进入，如果没锁定，就重新计时
-    if (!locked.value) {
-      startTimer()
+
+    /**
+     * ⭐ 核心修正：
+     * 如果这张卡已经是锁定状态（说明 progress 曾经转满过），
+     * 再次悬停时：
+     *   - 不要重置 locked
+     *   - 不要重新计时
+     *   - 直接保持进度为 100%，圆圈显示实心
+     */
+    if (locked.value) {
+      progress.value = 100
+      clearTimer()
+      return
     }
+
+    // 还没锁定：这是一次新的“计时会话”，重置进度并开始 2 秒计时
+    locked.value = false
+    progress.value = 0
+    startTimer()
   }
 
   const onLeave = () => {
@@ -294,7 +296,7 @@ onUnmounted(() => {
 }
 
 /* 暗色主题下保持和 RoleCard 一致 */
-html[data-theme="dark"] .zw-tip-card {
+html[data-theme='dark'] .zw-tip-card {
   border-color: #333;
   background: var(--vp-c-bg-soft, #0b0f19);
   color: var(--c-text, #e5e5e5);
