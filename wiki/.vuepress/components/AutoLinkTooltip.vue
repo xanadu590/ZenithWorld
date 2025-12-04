@@ -1,12 +1,16 @@
 <template>
-  <!-- 加 ref 和 is-locked class -->
+  <!-- 只由 hovering / locked 控制显示 -->
   <div
-    ref="root"
     class="zw-tip-card"
-    :class="{ 'is-locked': locked }"
+    ref="tooltipRef"
+    v-show="hovering || locked"
   >
-    <!-- 右上角进度圈 -->
-    <div class="tip-progress"></div>
+    <!-- 右上角进度圆圈 -->
+    <div
+      class="tip-progress"
+      :class="{ 'is-done': locked }"
+      :style="{ '--progress': progress + '%' }"
+    ></div>
 
     <!-- 第 1 行：标题 -->
     <div class="tip-title">
@@ -15,22 +19,26 @@
 
     <!-- 第 2 行：左图右信息 -->
     <div class="tip-top">
-      <!-- 左侧头像：从插件传来的 avatar（正文第一张图片） -->
       <div v-if="avatar" class="tip-avatar">
         < img :src="avatar" alt="avatar" loading="lazy" />
       </div>
 
       <div class="tip-basic">
-        <ul class="meta">
+        <ul class="meta limited-lines">
           <li>
             <span class="k">名称</span>
             <span class="v">{{ term }}</span>
           </li>
           <li>
             <span class="k">链接</span>
-            <!-- 简单展示路径；要做成可点击跳转可以以后再改成 RouterLink -->
             <span class="v">{{ to }}</span>
           </li>
+
+          <!-- 追加示例字段，确保有 6 行可显示，你可自行更改 -->
+          <li><span class="k">类别</span><span class="v">—</span></li>
+          <li><span class="k">地区</span><span class="v">—</span></li>
+          <li><span class="k">别名</span><span class="v">—</span></li>
+          <li><span class="k">标签</span><span class="v">—</span></li>
         </ul>
       </div>
     </div>
@@ -46,113 +54,132 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 
 const props = defineProps<{
   term: string
   to: string
   tooltip?: string
   first?: string
-  /** 自动内链插件传来的头像地址（正文第一张图片） */
   avatar?: string
 }>()
 
-// 根元素引用
-const root = ref<HTMLElement | null>(null)
-
-// 是否已经“锁定”显示
+/** 状态：当前是否在“激活区域”（链接+卡片附近） / 是否已锁定 */
+const tooltipRef = ref<HTMLElement | null>(null)
+const hovering = ref(false)
 const locked = ref(false)
 
-// 悬停计时器（3 秒）
-let hoverTimer: ReturnType<typeof setTimeout> | null = null
+/** 进度（0~100），驱动圆弧显示 */
+const progress = ref(0)
+const DURATION = 3000 // 原逻辑保持
 
-function handleHoverStart() {
-  // 已经锁定就不重复计时
-  if (locked.value) return
+let frameId: number | null = null
 
-  if (hoverTimer) {
-    clearTimeout(hoverTimer)
-    hoverTimer = null
-  }
-
-  // 悬停 3 秒后锁定
-  hoverTimer = setTimeout(() => {
-    locked.value = true
-    hoverTimer = null
-  }, 3000)
-}
-
-function handleHoverEnd() {
-  // 如果已经锁定，就不要因为移出而解锁
-  if (locked.value) return
-
-  if (hoverTimer) {
-    clearTimeout(hoverTimer)
-    hoverTimer = null
+const clearTimer = () => {
+  if (frameId !== null) {
+    cancelAnimationFrame(frameId)
+    frameId = null
   }
 }
 
-// 点击页面其它地方时，取消锁定
-function handleDocumentClick(e: MouseEvent) {
-  const rootEl = root.value
-  if (!rootEl) return
+const startTimer = () => {
+  clearTimer()
+  progress.value = 0
 
-  // wrapper 是父节点：<span class="zw-auto-link-wrap">
-  const wrap = rootEl.parentElement
-  const target = e.target as Node | null
+  if (locked.value) return
 
-  // 点在 wrapper 里面（文字、卡片） → 不解除锁定
-  if (wrap && target && wrap.contains(target)) {
-    return
+  const start = performance.now()
+
+  const step = (now: number) => {
+    if (!hovering.value && !locked.value) {
+      clearTimer()
+      progress.value = 0
+      return
+    }
+
+    const elapsed = now - start
+    const pct = Math.min(100, (elapsed / DURATION) * 100)
+    progress.value = pct
+
+    if (pct >= 100) {
+      locked.value = true
+      progress.value = 100
+      clearTimer()
+      return
+    }
+
+    frameId = requestAnimationFrame(step)
   }
 
-  // 点到外面 → 解除锁定
-  locked.value = false
+  frameId = requestAnimationFrame(step)
+}
+
+const handleDocumentClick = (e: MouseEvent) => {
+  if (!locked.value) return
+
+  const el = tooltipRef.value
+  if (el && !el.contains(e.target as Node)) {
+    locked.value = false
+    hovering.value = false
+    progress.value = 0
+    clearTimer()
+  }
+}
+
+const setupHoverSource = async () => {
+  await nextTick()
+  const el = tooltipRef.value
+  if (!el) return
+
+  const wrapper = el.closest('.zw-auto-link-wrap') as HTMLElement | null
+  if (!wrapper) return
+
+  const onEnter = () => {
+    hovering.value = true
+    if (!locked.value) startTimer()
+  }
+
+  const onLeave = () => {
+    hovering.value = false
+    if (!locked.value) {
+      clearTimer()
+      progress.value = 0
+    }
+  }
+
+  wrapper.addEventListener('mouseenter', onEnter)
+  wrapper.addEventListener('mouseleave', onLeave)
+
+  onUnmounted(() => {
+    wrapper.removeEventListener('mouseenter', onEnter)
+    wrapper.removeEventListener('mouseleave', onLeave)
+  })
 }
 
 onMounted(() => {
-  const rootEl = root.value
-  if (!rootEl) return
-
-  // wrapper：<span class="zw-auto-link-wrap">，把 hover 事件绑在它身上
-  const wrap = rootEl.parentElement
-  if (!wrap) return
-
-  wrap.addEventListener('mouseenter', handleHoverStart)
-  wrap.addEventListener('mouseleave', handleHoverEnd)
-
-  document.addEventListener('click', handleDocumentClick, true)
+  setupHoverSource()
+  document.addEventListener('click', handleDocumentClick)
 })
 
 onUnmounted(() => {
-  const rootEl = root.value
-  if (rootEl) {
-    const wrap = rootEl.parentElement
-    if (wrap) {
-      wrap.removeEventListener('mouseenter', handleHoverStart)
-      wrap.removeEventListener('mouseleave', handleHoverEnd)
-    }
-  }
-  document.removeEventListener('click', handleDocumentClick, true)
-
-  if (hoverTimer) {
-    clearTimeout(hoverTimer)
-    hoverTimer = null
-  }
+  clearTimer()
+  document.removeEventListener('click', handleDocumentClick)
 })
 </script>
 
 <style scoped>
-/* ===== 整体外框：缩小版 RoleCard 风格 ===== */
+/* ===== ★ 固定卡片大小：宽 2，高 3 ★ ===== */
 .zw-tip-card {
   position: absolute;
   left: 100%;
   top: 50%;
-  transform: translate(16px, -50%);   /* 贴在链接右侧 */
+  transform: translate(16px, -50%);
 
-  width: 260px;
-  max-width: 320px;
-  box-sizing: border-box;
+  width: 200px;   /* 宽 2 */
+  height: 300px;  /* 高 3 */
+  aspect-ratio: 2 / 3; /* 保持 2:3 比例 */
+
+  overflow: hidden; /* 内容超出隐藏 */
 
   padding: 14px;
   border-radius: 14px;
@@ -162,158 +189,144 @@ onUnmounted(() => {
   color: var(--c-text, #111);
 
   font-size: 0.8rem;
-  line-height: 1.4;
+  line-height: 1.3;
   z-index: 9999;
 
   white-space: normal;
   word-break: break-word;
-
-  display: none;   /* 默认隐藏，靠 .zw-auto-link-wrap:hover / .is-locked 控制显隐 */
-
-  /* 为了给右上角进度圈留一点空间 */
-  padding-top: 20px;
 }
 
-/* 右上角进度圈 */
-.tip-progress {
-  position: absolute;
-  right: 8px;
-  top: 8px;
-  width: 16px;
-  height: 16px;
-  border-radius: 999px;
-
-  /* 初始是一个“圆弧”：只涂两段边框 */
-  border: 2px solid transparent;
-  border-top-color: var(--c-brand, #3eaf7c);
-  border-right-color: var(--c-brand, #3eaf7c);
-
-  /* 旋转动画：显示正在“读条” */
-  animation: tip-spin 0.8s linear infinite;
-}
-
-/* 3 秒后 locked=true：变成完整圆圈，停止转动 */
-.zw-tip-card.is-locked .tip-progress {
-  border-color: var(--c-brand, #3eaf7c);
-  animation: none;
-}
-
-/* 简单旋转 keyframes */
-@keyframes tip-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* 暗色主题下保持和 RoleCard 一致 */
+/* ===== 暗黑模式 ===== */
 html[data-theme="dark"] .zw-tip-card {
   border-color: #333;
   background: var(--vp-c-bg-soft, #0b0f19);
   color: var(--c-text, #e5e5e5);
 }
 
-/* ===== 第 1 行：标题（参考 .role-card.stacked .title-top） ===== */
+/* ===== 右上角进度圆圈 ===== */
+.tip-progress {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+
+  background:
+    conic-gradient(
+      var(--vp-c-brand, #3b82f6) var(--progress, 0%),
+      transparent 0
+    );
+}
+
+.tip-progress::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: inherit;
+  background: var(--vp-c-bg-soft, var(--c-bg, #fff));
+}
+
+.tip-progress.is-done {
+  background: var(--vp-c-brand, #3b82f6);
+}
+
+/* ===== 标题 ===== */
 .tip-title {
-  margin: -2px 0 8px;
+  margin-bottom: 8px;
   font-size: 1rem;
   font-weight: 700;
-  line-height: 1.2;
   text-align: center;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* ===== 第 2 行：图片 + 基本信息 ===== */
+/* ===== 第二行：图 + 信息 ===== */
 .tip-top {
   display: flex;
+  gap: 8px;
   align-items: flex-start;
-  gap: 10px;
 }
 
-/* 左侧头像框：尺寸参考 RoleCard 的头像，略缩小一点 */
+/* 左图 */
 .tip-avatar {
   flex: none;
   width: 72px;
   height: 108px;
   border-radius: 10px;
   border: 1px solid var(--c-border, #e5e7eb);
-  background: #f2f3f5;
   overflow: hidden;
+  background: #ccc;
 }
 
 .tip-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 50%;
 }
 
-/* 右侧基本信息区域 */
-.tip-basic {
-  flex: 1;
-  min-width: 0;
+/* ===== ★ 右侧信息块：固定 6 行 + 省略号 ★ ===== */
+.limited-lines {
+  display: -webkit-box;
+  -webkit-line-clamp: 6;  /* 固定 6 行 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .meta {
   list-style: none;
   padding: 0;
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 0.8rem;
 }
 
 .meta li {
   display: flex;
-  align-items: baseline;
   gap: 4px;
   line-height: 1.2;
+  overflow: hidden;
 }
 
 .k {
   flex: none;
   font-weight: 600;
-  color: var(--c-text-light, #65758b);
-}
-
-html[data-theme="dark"] .k {
-  color: var(--c-text-light, #a8b3cf);
 }
 
 .v {
   flex: 1;
   min-width: 0;
-  color: inherit;
+
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* ===== 第 3 行：底部简介块（参考 .role-card.stacked .bottom） ===== */
+/* ===== 第三行简介 ===== */
 .tip-bottom {
   margin-top: 8px;
-  background: var(--card-bottom-bg, rgba(0, 0, 0, 0.05));
+  padding: 6px 8px;
   border-radius: 8px;
+  background: rgba(0,0,0,0.05);
 
-  padding-top:    var(--card-summary-padding-y, 6px);
-  padding-bottom: var(--card-summary-padding-y, 10px);
-  padding-left:   var(--card-summary-padding-x, 10px);
-  padding-right:  var(--card-summary-padding-x, 10px);
-
-  font-size: var(--card-summary-size, 0.85rem);
-  color: var(--card-summary-color, inherit);
-  text-align: left;
+  height: 60px; /* 固定高度，让卡片整体更像 2:3 */
+  overflow: hidden;
 }
 
 html[data-theme="dark"] .tip-bottom {
-  background: var(--card-bottom-bg-dark, rgba(255, 255, 255, 0.08));
-}
-
-.tip-label {
-  margin-right: 4px;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .tip-summary {
-  display: inline;
   margin: 0;
+  line-height: 1.3;
+
+  /* 简介三行省略 */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

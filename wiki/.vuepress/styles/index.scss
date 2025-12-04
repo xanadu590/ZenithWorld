@@ -60,13 +60,3 @@ a:visited,
 .zw-auto-link-wrap {
   position: relative;
 }
-
-/* 悬停链接时显示卡片 */
-.zw-auto-link-wrap:hover .zw-tip-card {
-  display: block;
-}
-
-/* 2）如果被“锁定”，无论有没有 hover 都显示 */
-.zw-tip-card.is-locked {
-  display: block;
-}
