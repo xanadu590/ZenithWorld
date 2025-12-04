@@ -22,7 +22,7 @@ import MeiliFilterSearch from './components/search/MeiliFilterSearch.vue'
 
 import TaxonomyList from './components/TaxonomyList.vue'
 
-import AutoLinkTip from './components/AutoLinkTip.vue'
+import AutoLinkTooltip from './components/AutoLinkTooltip.vue'
 
 export type AISetting = {
   show: boolean
@@ -118,7 +118,7 @@ export default defineClientConfig({
     app.component('MeiliFilterSearch', MeiliFilterSearch)
 
     app.component('TaxonomyList', TaxonomyList)
-    app.component('AutoLinkTip', AutoLinkTip)
+    app.component('AutoLinkTooltip', AutoLinkTooltip)
 
     // ✅ 新增：每次路由切换后上报访问
     if (router) {
