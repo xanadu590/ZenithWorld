@@ -9,6 +9,7 @@ export interface AutoLinkEntry {
   path: string;              // 路由路径，如 /docs/world/xxx.html
   filePathRelative?: string;
   tooltip?: string;          // 悬停提示文本
+  avatar?: string;           // 提示卡片用的小图（正文第一张图片）
 }
 
 /** 插件配置项 */
@@ -37,6 +38,26 @@ export interface AutoLinkerProOptions {
  */
 function escapeAttr(value: string): string {
   return value.replace(/"/g, "&quot;");
+}
+
+/**
+ * 从页面内容中提取第一张图片的 src
+ * 兼容：
+ *   - HTML: <img src="...">
+ *   - Markdown: ![alt](/path/to/img.png)
+ */
+function getFirstImageSrc(content: string): string | undefined {
+  if (!content) return undefined;
+
+  // 先找 HTML <img>
+  const imgTagMatch = content.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i);
+  if (imgTagMatch && imgTagMatch[1]) return imgTagMatch[1];
+
+  // 再找 Markdown 图片
+  const mdImgMatch = content.match(/!\[[^\]]*]\(([^)\s]+)[^)"]*\)/);
+  if (mdImgMatch && mdImgMatch[1]) return mdImgMatch[1];
+
+  return undefined;
 }
 
 /**
@@ -97,6 +118,10 @@ function createLinkifier(
       const safeTermAttr = escapeAttr(term);
       const safePath = escapeAttr(to);
 
+      // ⭐ 新增：头像（可能为空）
+      const avatarRaw = entry.avatar || "";
+      const safeAvatar = escapeAttr(avatarRaw);
+
       /**
        * 生成结构：
        *
@@ -113,7 +138,7 @@ function createLinkifier(
           `<RouterLink` +
             ` to="${safePath}"` +
             ` class="${linkClass}"` +
-            ` data-tooltip="${safeTooltip}"` + // 需要的话 CSS 还能用到
+            ` data-tooltip="${safeTooltip}"` +
           `>` +
             term +
           `</RouterLink>` +
@@ -122,6 +147,7 @@ function createLinkifier(
             ` to="${safePath}"` +
             ` tooltip="${safeTooltip}"` +
             (first ? ` first="true"` : ``) +
+            (avatarRaw ? ` avatar="${safeAvatar}"` : ``) +
           ` />` +
         `</span>`;
 
@@ -161,7 +187,8 @@ export const autoLinkerProPlugin = (
         term: string,
         pagePath: string,
         filePathRelative?: string,
-        tooltip?: string
+        tooltip?: string,
+        avatar?: string,
       ) => {
         const t = (term || "").trim();
         if (!t) return;
@@ -173,6 +200,7 @@ export const autoLinkerProPlugin = (
           path: pagePath,
           filePathRelative,
           tooltip,
+          avatar,
         });
       };
 
@@ -195,12 +223,17 @@ export const autoLinkerProPlugin = (
           ? fm.autoLinkAliases
           : [];
 
+        // ⭐ 新增：从正文中抓第一张图片
+        const content: string = (page as any).content || "";
+        const firstImage = getFirstImageSrc(content);
+
         if (title) {
           addTerm(
             title,
             pagePath,
             page.filePathRelative || undefined,
-            baseTooltip
+            baseTooltip,
+            firstImage,
           );
         }
 
@@ -209,7 +242,8 @@ export const autoLinkerProPlugin = (
             alias,
             pagePath,
             page.filePathRelative || undefined,
-            baseTooltip
+            baseTooltip,
+            firstImage,
           );
         }
       }
