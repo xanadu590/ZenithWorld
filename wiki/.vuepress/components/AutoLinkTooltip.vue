@@ -137,6 +137,7 @@ const clearTimer = () => {
 const startTimer = () => {
   clearTimer()
   progress.value = 0
+  // ⭐ 不再在这里判断 locked，锁定状态由 onEnter 重新开始时重置
 
   const start = performance.now()
 
@@ -203,25 +204,18 @@ const setupHoverSource = async () => {
   const onEnter = () => {
     // 鼠标移入某个链接：先把自己设为全局激活对象
     activeId.value = myId
+
     hovering.value = true
 
     /**
-     * ⭐ 核心修正：
-     * 如果这张卡已经是锁定状态（说明 progress 曾经转满过），
-     * 再次悬停时：
-     *   - 不要重置 locked
-     *   - 不要重新计时
-     *   - 直接保持进度为 100%，圆圈显示实心
+     * ⭐ 关键修正：
+     * 每次悬停都视为一次“新的会话”，重置锁定状态和进度，
+     * 这样之前锁过的实例不会导致后面悬停时秒锁。
      */
-    if (locked.value) {
-      progress.value = 100
-      clearTimer()
-      return
-    }
-
-    // 还没锁定：这是一次新的“计时会话”，重置进度并开始 2 秒计时
     locked.value = false
     progress.value = 0
+
+    // 直接重新开始 2 秒计时
     startTimer()
   }
 
