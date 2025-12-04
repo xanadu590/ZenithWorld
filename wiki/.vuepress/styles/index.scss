@@ -108,3 +108,12 @@ a:visited,
   /* 如果你想保留上面的线条，就不要在这里改 ::before 的 content；
      想要箭头就改成用 ::after / 额外一个元素来画箭头。这里先简单保持线条逻辑。 */
 }
+
+.zw-auto-link-wrap {
+  position: relative;
+}
+
+/* 悬停链接时显示卡片 */
+.zw-auto-link-wrap:hover .zw-tip-card {
+  display: block;
+}
