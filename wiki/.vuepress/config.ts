@@ -47,7 +47,7 @@ export default defineUserConfig({
       blacklist: ["火", "风", "水", "土", "力量", "主神"],
       maxLinksPerPage: 60,
       maxLinksPerTerm: 4,
-      debug: true,
+      debug: false,
     }),
     wikiTaxonomyPlugin()
   ],

@@ -1,36 +1,28 @@
 <template>
-  <!--
-    AutoLinkTooltip · 自动内链的悬停卡片
-    显示规则：
-    - hovering === true 或 locked === true 时显示
-    - 悬停 2 秒后 locked = true，卡片进入“长显”状态
-    - 点击页面其它任意位置（卡片外）时，如已 locked，则关闭并重置
-  -->
+  <!-- 只由 hovering / locked / isActive 控制显示 -->
   <div
     class="zw-tip-card"
     ref="tooltipRef"
-    v-show="hovering || locked"
+    v-show="(hovering || locked) && isActive"
   >
-    <!-- 右上角进度圆圈：显示 0% ~ 100% 的倒计时进度 -->
+    <!-- 右上角进度圆圈 -->
     <div
       class="tip-progress"
       :class="{ 'is-done': locked }"
       :style="{ '--progress': progress + '%' }"
     ></div>
 
-    <!-- 第 1 行：标题（使用 term 文本） -->
+    <!-- 第 1 行：标题 -->
     <div class="tip-title">
       {{ term }}
     </div>
 
-    <!-- 第 2 行：左侧头像 + 右侧基本信息 -->
+    <!-- 第 2 行：左图右信息 -->
     <div class="tip-top">
-      <!-- 左侧头像（可选） -->
       <div v-if="avatar" class="tip-avatar">
         < img :src="avatar" alt="avatar" loading="lazy" />
       </div>
 
-      <!-- 右侧信息列表：名称 / 链接 等 -->
       <div class="tip-basic">
         <ul class="meta">
           <li>
@@ -41,7 +33,6 @@
             <span class="k">链接</span>
             <span class="v">{{ to }}</span>
           </li>
-
           <!-- 下面这些是你测试用的多行，我原样保留 -->
           <li>
             <span class="k">链接</span>
@@ -63,7 +54,7 @@
       </div>
     </div>
 
-    <!-- 第 3 行：灰底简介块（可选，tooltip 有内容时显示） -->
+    <!-- 第 3 行：灰底简介块 -->
     <div v-if="tooltip" class="tip-bottom">
       <b class="tip-label">简介：</b>
       <p class="tip-summary">
@@ -74,16 +65,20 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted, nextTick, computed } from 'vue'
+
 /**
- * ==========================
- * 1. Props 定义
- * ==========================
- *
- * term    ：术语 / 名称（卡片标题 + “名称”字段）
- * to      ：目标链接地址（用于显示在“链接”字段）
- * tooltip ：简介文本（存在时显示第 3 行灰底块）
- * first   ：预留字段（当前逻辑未使用）
- * avatar  ：头像图片地址（有值时显示左侧图片区）
+ * =======================
+ * 0. 模块级共享状态（关键）
+ * =======================
+ * activeId：当前全局正在使用的卡片 id
+ * nextId：  用来给每个实例分配唯一 id
+ */
+const activeId = ref<number | null>(null)
+let nextId = 1
+
+/**
+ * 一、输入参数（保持不变）
  */
 const props = defineProps<{
   term: string
@@ -93,37 +88,31 @@ const props = defineProps<{
   avatar?: string
 }>()
 
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+/**
+ * 二、每个实例自己的 id & 可见性
+ */
+const myId = nextId++                  // 这个实例的 id
+const isActive = computed(() => activeId.value === myId)  // 只有自己是当前激活 id 时才显示
 
 /**
- * ==========================
- * 2. 状态：显示 / 悬停 / 锁定
- * ==========================
- *
- * tooltipRef：卡片 DOM 引用，用于判断点击是否发生在卡片外
- * hovering  ：当前鼠标是否处于“激活区域”（链接 + 卡片）
- * locked    ：是否已“锁定显示”
- *             - false：需 hover 才显示
- *             - true ：即使离开 hover，只要没点击页面其它位置，就一直显示
+ * 三、实例级状态（保持不变）
+ * hovering：鼠标是否在“触发区域”（链接 + 卡片附近）
+ * locked：  是否已经锁定（进度圈满一圈后，长显）
  */
 const tooltipRef = ref<HTMLElement | null>(null)
 const hovering = ref(false)
 const locked = ref(false)
 
 /**
- * ==========================
- * 3. 倒计时进度（用于右上角进度圆圈）
- * ==========================
- *
- * progress：0 ~ 100，表示 0% ~ 100% 的耗时
- * DURATION：倒计时时长（毫秒），这里是 2000ms = 2 秒
+ * 四、进度圈计时器（保持不变）
+ * progress：0 ~ 100 对应圆弧百分比
+ * DURATION：从开始到锁定的时间（毫秒）
  */
 const progress = ref(0)
 const DURATION = 2000 // 2 秒
 
 let frameId: number | null = null
 
-/** 清除 requestAnimationFrame 计时器 */
 const clearTimer = () => {
   if (frameId !== null) {
     cancelAnimationFrame(frameId)
@@ -132,22 +121,22 @@ const clearTimer = () => {
 }
 
 /**
- * 开始 2 秒倒计时：
- * - 每帧更新 progress（驱动进度圆圈）
- * - 若在倒计时过程中鼠标离开激活区域，则中途取消并重置
- * - 进度到达 100% 时，将 locked 置为 true，卡片进入“长显”状态
+ * 启动 2 秒倒计时：
+ * - 每帧更新 progress
+ * - 未锁定时鼠标离开：中途取消
+ * - 满 100%：锁定（locked = true），进度圈变实心
  */
 const startTimer = () => {
   clearTimer()
   progress.value = 0
 
-  // 已经锁定的卡片不再重复计时
+  // 已经锁定就不再重新计时
   if (locked.value) return
 
   const start = performance.now()
 
   const step = (now: number) => {
-    // 未锁定且已离开 hover 区域：中途取消进度
+    // 未锁定又不在 hover 区域时，中途取消
     if (!hovering.value && !locked.value) {
       clearTimer()
       progress.value = 0
@@ -158,8 +147,8 @@ const startTimer = () => {
     const pct = Math.min(100, (elapsed / DURATION) * 100)
     progress.value = pct
 
-    // 进度走完：锁定卡片
     if (pct >= 100) {
+      // 计时结束：锁定卡片，进入长显状态
       locked.value = true
       progress.value = 100
       clearTimer()
@@ -173,15 +162,7 @@ const startTimer = () => {
 }
 
 /**
- * ==========================
- * 4. 点击页面其它部分时的处理
- * ==========================
- *
- * 仅在 locked === true 时生效：
- * - 如果点击位置不在当前 tooltip 内部：
- *   - 解除 locked
- *   - hovering = false
- *   - 重置 progress，清除计时器
+ * 点击页面其它地方：如果当前处于锁定状态，则关闭卡片并重置
  */
 const handleDocumentClick = (e: MouseEvent) => {
   if (!locked.value) return
@@ -192,30 +173,21 @@ const handleDocumentClick = (e: MouseEvent) => {
     hovering.value = false
     progress.value = 0
     clearTimer()
+
+    // 如果当前关闭的是激活卡片，则把 activeId 也清掉
+    if (activeId.value === myId) {
+      activeId.value = null
+    }
   }
 }
 
 /**
- * ==========================
- * 5. 绑定 hover 源（触发区域）
- * ==========================
- *
- * 逻辑：
- * - 找到离 tooltip 最近的 .zw-auto-link-wrap（自动内链外层容器）
- * - 在该容器上监听 mouseenter / mouseleave
- *
- * 行为：
- * - mouseenter：
- *     hovering = true
- *     如果还没锁定，开始 2 秒倒计时
- * - mouseleave：
- *     hovering = false
- *     若未锁定，则立即隐藏并清零进度
- *     若已锁定，则保持显示（直到点击页面其它位置）
+ * 绑定 hover 源：
+ * - 找到最近的 .zw-auto-link-wrap（自动内链外层容器）
+ * - 在它上面监听 mouseenter / mouseleave
  */
 const setupHoverSource = async () => {
   await nextTick()
-
   const el = tooltipRef.value
   if (!el) return
 
@@ -223,8 +195,15 @@ const setupHoverSource = async () => {
   if (!wrapper) return
 
   const onEnter = () => {
+    /**
+     * ⭐ 关键逻辑：
+     * 鼠标移入某个链接时，将全局 activeId 改为自己的 myId，
+     * 其它实例的 isActive 会变 false，立刻隐藏自己的卡片。
+     */
+    activeId.value = myId
+
     hovering.value = true
-    // 再次进入，如果尚未锁定，则重新计时
+    // 再次进入，如果没锁定，就重新计时
     if (!locked.value) {
       startTimer()
     }
@@ -232,12 +211,12 @@ const setupHoverSource = async () => {
 
   const onLeave = () => {
     hovering.value = false
-    // 未锁定时离开：立刻隐藏 + 清零进度
+    // 未锁定时离开：立即隐藏 & 清零进度
     if (!locked.value) {
       clearTimer()
       progress.value = 0
     }
-    // 已锁定：继续保持显示，由点击页面其它区域来关闭
+    // 已锁定：保持显示，等点击页面其它区域再关闭
   }
 
   wrapper.addEventListener('mouseenter', onEnter)
@@ -250,17 +229,7 @@ const setupHoverSource = async () => {
 }
 
 /**
- * ==========================
- * 6. 生命周期：挂载 / 卸载
- * ==========================
- *
- * onMounted：
- *  - 建立与 hover 源的绑定（setupHoverSource）
- *  - 监听整个文档的 click，用于“点击空白关闭锁定卡片”
- *
- * onUnmounted：
- *  - 清理计时器
- *  - 移除 click 监听（hover 源的监听在 setupHoverSource 内部清理）
+ * 生命周期挂载 / 卸载
  */
 onMounted(() => {
   setupHoverSource()
@@ -270,83 +239,54 @@ onMounted(() => {
 onUnmounted(() => {
   clearTimer()
   document.removeEventListener('click', handleDocumentClick)
+
+  // 如果卸载的是当前激活卡片，顺便把 activeId 清掉
+  if (activeId.value === myId) {
+    activeId.value = null
+  }
 })
 </script>
 
 <style scoped>
-/**
- * ==========================
- * 1) 卡片整体容器样式
- * ==========================
- *
- * - 固定宽高：220 × 330（与 RoleCard 保持 2:3 比例）
- * - 通过 absolute + transform 贴在链接右侧中部
- * - 带圆角、边框、阴影，外观统一
- */
+/* ===== 1) 卡片容器：对齐 RoleCard 的 2:3 尺寸 & 风格 ===== */
 .zw-tip-card {
   position: absolute;
   left: 100%;
   top: 50%;
   transform: translate(16px, -50%);
 
-  /* 固定卡片尺寸：宽 220，高 330 */
+  /* ⭐ 尺寸与 RoleCard 默认一致：220 × 330，比例 2:3 */
   width: 220px;
   height: 330px;
 
   box-sizing: border-box;
-  padding: 14px;
+  padding: 14px;  /* 与 RoleCard padding 一致 */
 
   border-radius: 14px;
-  border: 2px solid var(--c-border, #6e9fff); /* 外轮廓框线：略带蓝色 */
-
+  border: 2px solid var(--c-border, #6e9fff);
   background: var(--vp-c-bg-soft, var(--c-bg, #fff));
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 12px rgba(0,0,0,.05);
   color: var(--c-text, #111);
 
-  font-size: 0.8rem;                    /* 与 RoleCard 统一的基础字号 */
-  line-height: var(--card-line-height, 1); /* 行高变量，默认 1 */
+  font-size: 0.8rem;                  /* 与 RoleCard 统一的基础字号 */
+  line-height: var(--card-line-height, 1);  /* 与 RoleCard 一致 */
 
   z-index: 9999;
 
   white-space: normal;
   word-break: break-word;
 
-  overflow: hidden; /* 不允许内部内容撑破卡片 */
+  overflow: hidden;  /* ⭐ 内容不允许撑大卡片 */
 }
 
-/* 暗色主题下的外观保持与 RoleCard 一致 */
-html[data-theme='dark'] .zw-tip-card {
+/* 暗色主题下保持和 RoleCard 一致 */
+html[data-theme="dark"] .zw-tip-card {
   border-color: #333;
   background: var(--vp-c-bg-soft, #0b0f19);
   color: var(--c-text, #e5e5e5);
 }
 
-/**
- * ==========================
- * 2) 上半部分背景色（天蓝）
- * ==========================
- *
- * - 使用 ::before 在卡片内绘制一块天蓝色背景
- * - 通过 height 控制占比（目前是 10%，可调）
- */
-.zw-tip-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;                 /* 覆盖卡片区域 */
-  height: 10%;              /* 上方高度占比（此处为整体高度的 10%） */
-  background: #c4e5ff;      /* 天蓝色 */
-  border-radius: 14px 14px 0 0;
-  z-index: -1;              /* 让内容显示在上面 */
-}
-
-/**
- * ==========================
- * 3) 右上角进度圆圈
- * ==========================
- *
- * - 使用 conic-gradient 画扇形进度
- * - 通过自定义属性 --progress（0%~100%）控制
- */
+/* ===== 2) 右上角进度圆圈（不动，只是视觉） ===== */
 .tip-progress {
   position: absolute;
   right: 6px;
@@ -362,60 +302,52 @@ html[data-theme='dark'] .zw-tip-card {
     );
 }
 
-/* 内圈遮挡，形成环形效果 */
 .tip-progress::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 3px;
   border-radius: inherit;
   background: var(--vp-c-bg-soft, var(--c-bg, #fff));
 }
 
-/* 锁定后：用实心圆表示“已完成” */
+/* 锁定后：实心圆 */
 .tip-progress.is-done {
   background: var(--vp-c-brand, #3b82f6);
 }
 
-/**
- * ==========================
- * 4) 第 1 行：标题
- * ==========================
- *
- * - 文本来自 {{ term }}
- * - 通过 margin 控制与卡片顶部 / 第二行的距离
- * - 通过 CSS 变量可全局调节字号 / 对齐方式
- */
+/* ===== 3) 第 1 行：标题 —— 对齐 RoleCard.stacked .title-top ===== */
 .tip-title {
   margin: -4px 0 8px;
-  margin-bottom: var(--card-title-gap, 6px);
-
-  font-size: var(--card-title-size, 1rem);
+  margin-bottom: var(--card-title-gap, 6px);             /* 与 RoleCard 同名变量 */
+  font-size: var(--card-title-size, 1rem);               /* 默认 1rem，可用变量全局调 */
   font-weight: 700;
   line-height: 1.2;
   text-align: var(--card-title-align, center);
-  color: #003a70;
+  color: #003a70;            /* 深蓝色字体，可调 */
 
-  /* 使标题整体居中（避免 inline-block 偏移） */
+  /* ⭐ 居中（因为用 inline-block 会偏左） */
   margin-left: 50%;
   transform: translateX(-50%);
 }
 
-/**
- * ==========================
- * 5) 第 2 行：图片 + 基本信息
- * ==========================
- *
- * .tip-top   ：水平布局容器，左图右文
- * .tip-avatar：头像盒子
- * .tip-basic ：右侧信息区域
- */
+/* 上半部分天蓝色背景 */
+.zw-tip-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;                   /* 覆盖整个卡片 */
+  height: 10%;                /* 上方带色区域高度，这里保持你原来的 10% */
+  background: #c4e5ff;        /* 你设定的天蓝色 */
+  border-radius: 14px 14px 0 0; /* 与卡片圆角融合 */
+  z-index: -1;                /* 让内容在上面 */
+}
+
+/* ===== 4) 第 2 行：图片 + 基本信息 ===== */
 .tip-top {
   display: flex;
   align-items: flex-start;
-  gap: 6px; /* 图片与文字区域的水平间距 */
+  gap: 6px;
 }
 
-/* 左侧头像框 */
 .tip-avatar {
   flex: none;
   width: 80px;
@@ -439,16 +371,7 @@ html[data-theme='dark'] .zw-tip-card {
   min-width: 0;
 }
 
-/**
- * ==========================
- * 6) 基本信息列表（名称 / 链接等）
- * ==========================
- *
- * .meta     ：整个列表的容器
- * .meta li  ：每一行 key-value
- * .k        ：左侧“键”（如“名称”“链接”）
- * .v        ：右侧“值”（会根据宽度自动省略号）
- */
+/* ===== 5) 基本信息 meta —— 完全对齐 RoleCard 的变量名 + 再加省略号 ===== */
 .meta {
   list-style: none;
   padding: 0;
@@ -456,36 +379,35 @@ html[data-theme='dark'] .zw-tip-card {
 
   display: flex;
   flex-direction: column;
-  gap: var(--card-meta-gap, 6px); /* 每两条信息之间的垂直间距 */
+  gap: var(--card-meta-gap, 6px);          /* 每两条信息之间的间距，与 RoleCard 同名变量 */
 
-  font-size: var(--card-meta-size, 0.8rem);
+  font-size: var(--card-meta-size, 0.8rem);   /* 默认 0.85rem，与 RoleCard 一致 */
   color: var(--card-meta-color, inherit);
 }
 
-/* 单行信息：行高 + 省略号效果 */
+/* 每一行信息：同时支持行高变量 + 省略号效果 */
 .meta li {
   display: flex;
   align-items: baseline;
   gap: 6px;
   line-height: var(--card-meta-line-height, 1.15);
 
-  /* 为了右侧 .v 的 ellipsis，整行不换行 + 超出隐藏 */
+  /* 为了右侧 .v 的省略号，整行不换行 + 超出隐藏 */
   overflow: hidden;
   white-space: nowrap;
 }
 
-/* 左侧“键” */
 .k {
   flex: none;
   font-weight: 600;
   color: var(--c-text-light, #65758b);
 }
 
-html[data-theme='dark'] .k {
+html[data-theme="dark"] .k {
   color: var(--c-text-light, #a8b3cf);
 }
 
-/* 右侧“值”，超出部分以 ... 结尾 */
+/* 右侧值：超出部分 ... */
 .v {
   flex: 1;
   min-width: 0;
@@ -496,19 +418,9 @@ html[data-theme='dark'] .k {
   white-space: nowrap;
 }
 
-/**
- * ==========================
- * 7) 第 3 行：灰底简介块（tooltip）
- * ==========================
- *
- * - 仅在 props.tooltip 有内容时显示
- * - 使用若干 CSS 变量控制
- *   - --card-section-gap          ：与上方第二行之间的外边距
- *   - --card-summary-gap / padding：内部上下左右内边距
- *   - --card-summary-size / color / align：字体大小 / 颜色 / 对齐
- */
+/* ===== 6) 第 3 行：底部简介块 —— 对齐 RoleCard.stacked .bottom ===== */
 .tip-bottom {
-  margin-top: var(--card-section-gap, 8px); /* 与第二行之间的距离 */
+  margin-top: var(--card-section-gap, 8px);  /* 第二行与第三行间距（与 RoleCard 同名） */
 
   background: var(
     --card-bottom-bg,
@@ -516,18 +428,17 @@ html[data-theme='dark'] .k {
   );
   border-radius: 8px;
 
-  padding-top: var(--card-summary-padding-y, var(--card-summary-gap, 8px));
+  padding-top:    var(--card-summary-padding-y, var(--card-summary-gap, 8px));
   padding-bottom: var(--card-summary-padding-y, var(--card-summary-gap, 70px));
-  padding-left: var(--card-summary-padding-x, var(--card-summary-gap, 10px));
-  padding-right: var(--card-summary-padding-x, var(--card-summary-gap, 10px));
+  padding-left:   var(--card-summary-padding-x, var(--card-summary-gap, 10px));
+  padding-right:  var(--card-summary-padding-x, var(--card-summary-gap, 10px));
 
   font-size: var(--card-summary-size, 0.85rem);
   color: var(--card-summary-color, inherit);
   text-align: var(--card-summary-align, left);
 }
 
-/* 暗色模式下简介块的背景色 */
-html[data-theme='dark'] .tip-bottom {
+html[data-theme="dark"] .tip-bottom {
   background: var(--card-bottom-bg-dark, rgba(255, 255, 255, 0.08));
 }
 
