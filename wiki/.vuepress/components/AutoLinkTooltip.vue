@@ -9,7 +9,7 @@
     <div
       class="tip-progress"
       :class="{ 'is-done': locked }"
-      :style="{ '--progress': progress + '%' }"
+      :style="{ '--progress': displayProgress + '%' }"
     ></div>
 
     <!-- 第 1 行：标题 -->
@@ -118,8 +118,12 @@ const locked = ref(false)
  */
 const progress = ref(0)
 const DURATION = 2000 // 2 秒
-
 let frameId: number | null = null
+
+/** 展示用进度：锁定时固定为 100%，避免视觉上“又转一圈” */
+const displayProgress = computed(() =>
+  locked.value ? 100 : progress.value
+)
 
 const clearTimer = () => {
   if (frameId !== null) {
@@ -137,13 +141,22 @@ const clearTimer = () => {
 const startTimer = () => {
   clearTimer()
   progress.value = 0
-  // ⭐ 不再在这里判断 locked，锁定状态由 onEnter 重新开始时重置
+
+  // 已经锁定就不再计时（保险）
+  if (locked.value) return
 
   const start = performance.now()
 
   const step = (now: number) => {
-    // 未锁定又不在 hover 区域时，中途取消
-    if (!hovering.value && !locked.value) {
+    // 如果已经锁定，强制停表 & 进度=100
+    if (locked.value) {
+      progress.value = 100
+      clearTimer()
+      return
+    }
+
+    // 未锁定 & 不在 hover 区域：中途中止
+    if (!hovering.value) {
       clearTimer()
       progress.value = 0
       return
@@ -192,36 +205,49 @@ const handleDocumentClick = (e: MouseEvent) => {
  * 绑定 hover 源：
  * - 找到最近的 .zw-auto-link-wrap（自动内链外层容器）
  * - 在它上面监听 mouseenter / mouseleave
+ *
+ * 注意：解绑逻辑在外层 onUnmounted 注册，避免 Vue 对 async setup + 生命周期的警告
  */
+let wrapperEl: HTMLElement | null = null
+let onEnter: ((e: MouseEvent) => void) | null = null
+let onLeave: ((e: MouseEvent) => void) | null = null
+
 const setupHoverSource = async () => {
   await nextTick()
   const el = tooltipRef.value
   if (!el) return
 
-  const wrapper = el.closest('.zw-auto-link-wrap') as HTMLElement | null
-  if (!wrapper) return
+  wrapperEl = el.closest('.zw-auto-link-wrap') as HTMLElement | null
+  if (!wrapperEl) return
 
-  const onEnter = () => {
-    // 鼠标移入某个链接：先把自己设为全局激活对象
-    activeId.value = myId
+  onEnter = () => {
+    // ⭐ 情况 1：当前激活的不是我（说明是换到“另一个链接”）
+    if (activeId.value !== myId) {
+      activeId.value = myId
+      hovering.value = true
+      locked.value = false      // 换链接时重新计时
+      progress.value = 0
+      startTimer()
+      return
+    }
 
+    // ⭐ 情况 2：当前激活的就是我自己
     hovering.value = true
 
-    /**
-     * ⭐ 关键修正：
-     * 每次悬停都视为一次“新的会话”，重置锁定状态和进度，
-     * 这样之前锁过的实例不会导致后面悬停时秒锁。
-     */
+    if (locked.value) {
+      // 已经锁定的自己：保持锁定，不重置、不重新计时
+      return
+    }
+
+    // ⭐ 情况 3：自己但未锁定（比如之前计时中断）
     locked.value = false
     progress.value = 0
-
-    // 直接重新开始 2 秒计时
     startTimer()
   }
 
-  const onLeave = () => {
+  onLeave = () => {
     hovering.value = false
-    // 未锁定时离开：立即隐藏 & 清零进度
+    // 未锁定时离开：立即停表 & 清零进度
     if (!locked.value) {
       clearTimer()
       progress.value = 0
@@ -229,13 +255,8 @@ const setupHoverSource = async () => {
     // 已锁定：保持显示，等点击页面其它区域再关闭
   }
 
-  wrapper.addEventListener('mouseenter', onEnter)
-  wrapper.addEventListener('mouseleave', onLeave)
-
-  onUnmounted(() => {
-    wrapper.removeEventListener('mouseenter', onEnter)
-    wrapper.removeEventListener('mouseleave', onLeave)
-  })
+  wrapperEl.addEventListener('mouseenter', onEnter)
+  wrapperEl.addEventListener('mouseleave', onLeave)
 }
 
 /**
@@ -249,6 +270,14 @@ onMounted(() => {
 onUnmounted(() => {
   clearTimer()
   document.removeEventListener('click', handleDocumentClick)
+
+  // 解绑 hover 源事件（同步注册，避免 Vue 警告）
+  if (wrapperEl && onEnter) {
+    wrapperEl.removeEventListener('mouseenter', onEnter)
+  }
+  if (wrapperEl && onLeave) {
+    wrapperEl.removeEventListener('mouseleave', onLeave)
+  }
 
   // 如果卸载的是当前激活卡片，顺便把 activeId 清掉
   if (activeId.value === myId) {
