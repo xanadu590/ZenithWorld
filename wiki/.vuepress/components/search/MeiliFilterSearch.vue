@@ -2,7 +2,9 @@
   <div class="meili-filter-search">
 
     <!-- ===========================
-         选中的标签（新增）
+         已选中的标签卡片区域
+         - 出现在搜索框上方
+         - 点击可取消选中
     ============================ -->
     <div class="mfs-selected-tags" v-if="selectedTags.length">
       <div
@@ -44,7 +46,11 @@
       </button>
     </div>
 
-    <!-- 标签筛选（改造后的按钮样式） -->
+    <!-- ===========================
+         标签筛选区域
+         - 每个标签用「方块 + 三角 + 圆点」结构
+         - 与上方已选中区域使用同一套样式
+    ============================ -->
     <div class="mfs-tags" v-if="availableTags.length">
       <span class="mfs-tags-label">标签：</span>
 
@@ -78,6 +84,7 @@
       >
         <a :href="hit.url" class="mfs-result-link">
           <div class="mfs-result-title">
+            <!-- 根据 url / type 推断类型，显示中文标签 -->
             <span v-if="inferType(hit)" class="mfs-tag">
               [{{ typeLabelMap[inferType(hit)!] || inferType(hit) }}]
             </span>
@@ -91,12 +98,13 @@
             </span>
           </div>
 
+          <!-- 摘要：优先用 random-index 的 excerpt，attachSummary 已经填到 hit.summary 里 -->
           <div class="mfs-result-summary">
             {{ hit.summary || hit.text || "（暂无摘要）" }}
           </div>
 
           <div class="mfs-result-url">{{ hit.url }}</div>
-        </a >
+        </a>
       </li>
     </ul>
   </div>
@@ -126,19 +134,19 @@ const error = ref<string | null>(null);
 const searchedOnce = ref(false);
 
 /* =========================================================
- * 分类筛选
+ * 二、分类筛选配置
  * ======================================================= */
 
 const typeOptions = [
-  { value: null, label: "全部" },
+  { value: null,        label: "全部" },
   { value: "character", label: "人物" },
-  { value: "concept", label: "概念" },
-  { value: "faction", label: "势力" },
+  { value: "concept",   label: "概念" },
+  { value: "faction",   label: "势力" },
   { value: "geography", label: "地理" },
-  { value: "history", label: "历史" },
+  { value: "history",   label: "历史" },
 ];
 
-const typeLabelMap = {
+const typeLabelMap: Record<string, string> = {
   character: "人物",
   concept: "概念",
   faction: "势力",
@@ -147,21 +155,26 @@ const typeLabelMap = {
 };
 
 /* =========================================================
- * 标签状态
+ * 三、标签状态：候选 / 已选
  * ======================================================= */
 
 const availableTags = ref<string[]>([]);
 const selectedTags = ref<string[]>([]);
 
+/** 切换某个标签选中状态（用于按钮和顶部卡片） */
 function toggleTag(tag: string) {
   const idx = selectedTags.value.indexOf(tag);
-  if (idx === -1) selectedTags.value.push(tag);
-  else selectedTags.value.splice(idx, 1);
+  if (idx === -1) {
+    selectedTags.value.push(tag);
+  } else {
+    selectedTags.value.splice(idx, 1);
+  }
+  // 每次调整标签都重新搜索
   search();
 }
 
 /* =========================================================
- * random-index
+ * 四、random-index 简介数据：用于补充 summary
  * ======================================================= */
 
 interface RandomIndexItem {
@@ -174,30 +187,35 @@ const randomIndex = ref<RandomIndexItem[]>([]);
 const randomIndexLoaded = ref(false);
 
 /* =========================================================
- * taxonomy path → tags
+ * 五、taxonomy path → tags 映射
+ *   - 用 taxonomy 插件生成的数据来反查页面标签
  * ======================================================= */
 
 const pageTagMap: Record<string, string[]> = {};
 
+/** 统一规范化路径：去掉域名、锚点、查询参数、结尾斜杠 */
 function normalizePath(raw: string | undefined | null): string {
   if (!raw) return "/";
   let p = raw.trim();
+  // 去掉协议和域名
   p = p.replace(/^https?:\/\/[^/]+/, "");
 
   const h = p.indexOf("#");
   const q = p.indexOf("?");
-  const c = h === -1 ? q : q === -1 ? h : Math.min(h, q);
-  if (c !== -1) p = p.slice(0, c);
+  const cut = h === -1 ? q : q === -1 ? h : Math.min(h, q);
+  if (cut !== -1) p = p.slice(0, cut);
 
   if (p.length > 1 && p.endsWith("/")) p = p.slice(0, -1);
-
-  return p;
+  return p || "/";
 }
 
+/** 从 taxonomyData 中建立 path → tags 映射表 */
 function buildPageTagMap() {
-  const cats = taxonomyData.categories || {};
+  const cats = (taxonomyData as any).categories || {};
   for (const key of Object.keys(cats)) {
-    for (const page of cats[key].pages) {
+    const entry = cats[key];
+    if (!entry || !Array.isArray(entry.pages)) continue;
+    for (const page of entry.pages) {
       const norm = normalizePath(page.path);
       const tags = Array.isArray(page.tags) ? page.tags : [];
       pageTagMap[norm] = tags.map((t: any) => String(t).trim());
@@ -205,44 +223,61 @@ function buildPageTagMap() {
   }
 }
 
+/** 根据 url/path 从 taxonomy 中取 tags 数组 */
 function getTagsFromTaxonomy(url?: string | null) {
-  return pageTagMap[normalizePath(url)] || [];
+  const norm = normalizePath(url);
+  return pageTagMap[norm] || [];
 }
 
+/** 是否 frontmatter:nosearch 页面 */
 function isNosearchUrl(url?: string) {
   const norm = normalizePath(url);
-  return nosearchPaths.some((p: string) => normalizePath(p) === norm);
+  return (nosearchPaths as string[]).some(
+    (p) => normalizePath(p) === norm
+  );
 }
 
 /* =========================================================
- * 搜索增强
+ * 六、搜索增强：加载 random-index + 合成 summary / tags
  * ======================================================= */
 
+/** 只加载一次 random-index.json */
 async function loadRandomIndex() {
   if (randomIndexLoaded.value) return;
   try {
     const res = await fetch("/data/random-index.json");
-    randomIndex.value = (await res.json()).pages || [];
-  } catch {}
-  randomIndexLoaded.value = true;
+    const json = await res.json();
+    randomIndex.value = Array.isArray(json.pages) ? json.pages : [];
+  } catch {
+    // 失败就静默，summary 用原始搜索结果
+  } finally {
+    randomIndexLoaded.value = true;
+  }
 }
 
+/** 为 Meili 的单条 hit 补充 summary 和 tags */
 function attachSummary(hit: any) {
-  const match = randomIndex.value.find(
-    (it) => normalizePath(it.path) === normalizePath(hit.url || hit.path)
-  );
+  const hitPathNorm = normalizePath(hit.url || hit.path);
 
+  // 1）summary：优先 random-index.excerpt
+  const match = randomIndex.value.find(
+    (it) => normalizePath(it.path) === hitPathNorm
+  );
   const summary =
     match?.excerpt?.trim() ||
     hit.summary?.trim() ||
     hit.text?.trim() ||
     "";
 
-  const tagsFromTax = getTagsFromTaxonomy(hit.url);
+  // 2）tags：优先 taxonomyData，其次用 Meili 原始字段
+  const tagsFromTax = getTagsFromTaxonomy(hit.url || hit.path);
 
   let fallbackTags: string[] = [];
-  if (Array.isArray(hit.tags)) fallbackTags = hit.tags.map((t: any) => String(t));
-  else if (typeof hit.tags === "string") fallbackTags = [hit.tags.trim()];
+  if (Array.isArray(hit.tags)) {
+    fallbackTags = hit.tags.map((t: any) => String(t).trim());
+  } else if (typeof hit.tags === "string") {
+    fallbackTags = [hit.tags.trim()];
+  }
 
   return {
     ...hit,
@@ -252,26 +287,27 @@ function attachSummary(hit: any) {
 }
 
 /* =========================================================
- * 类型判断
+ * 七、类型推断 & 分类按钮逻辑
  * ======================================================= */
 
 function inferType(hit: any): string | null {
   const url: string = hit.url || "";
   if (url.includes("/world/characters/")) return "character";
-  if (url.includes("/world/concepts/")) return "concept";
-  if (url.includes("/world/factions/")) return "faction";
-  if (url.includes("/world/geography/")) return "geography";
-  if (url.includes("/world/history/")) return "history";
+  if (url.includes("/world/concepts/"))   return "concept";
+  if (url.includes("/world/factions/"))   return "faction";
+  if (url.includes("/world/geography/"))  return "geography";
+  if (url.includes("/world/history/"))    return "history";
   return null;
 }
 
 function setType(v: string | null) {
+  // 再次点击同一分类 = 取消分类过滤
   activeType.value = v === activeType.value ? null : v;
   search();
 }
 
 /* =========================================================
- * 搜索主流程
+ * 八、搜索主流程
  * ======================================================= */
 
 async function search() {
@@ -293,50 +329,73 @@ async function search() {
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-    let hits = (await res.json()).hits || [];
+    let hits: any[] = (await res.json()).hits || [];
 
-    if (activeType.value)
-      hits = hits.filter((h: any) => inferType(h) === activeType.value);
+    // 1）按分类过滤
+    if (activeType.value) {
+      hits = hits.filter((h) => inferType(h) === activeType.value);
+    }
 
-    hits = hits.filter((h: any) => !isNosearchUrl(h.url));
+    // 2）过滤 nosearch 页面
+    hits = hits.filter((h) => !isNosearchUrl(h.url || h.path));
 
-    const seen = new Set();
-    const unique = hits.filter((h: any) => {
-      const key = (h.url || "").split("#")[0];
-      if (seen.has(key)) return false;
-      seen.add(key);
+    // 3）按“页面”去重（去掉 #锚点重复）
+    const seen = new Set<string>();
+    const unique = hits.filter((h) => {
+      const base = (h.url || "").split("#")[0];
+      if (seen.has(base)) return false;
+      seen.add(base);
       return true;
     });
 
-    let enriched = unique.map((h: any) => attachSummary(h));
+    // 4）补充 summary 与 tags
+    let enriched = unique.map((h) => attachSummary(h));
 
+    // 5）统计当前条件下所有 tag，填充标签列表
     const tagSet = new Set<string>();
     enriched.forEach((h) => {
-      if (Array.isArray(h.tags)) h.tags.forEach((t: string) => tagSet.add(t));
+      if (Array.isArray(h.tags)) {
+        h.tags.forEach((t: string) => {
+          const s = String(t || "").trim();
+          if (s) tagSet.add(s);
+        });
+      }
     });
     availableTags.value = [...tagSet].sort((a, b) =>
       a.localeCompare(b, "zh-Hans-CN")
     );
 
-    if (selectedTags.value.length)
-      enriched = enriched.filter((h) =>
-        selectedTags.value.every((t) => (h.tags || []).includes(t))
-      );
+    // 6）如果选中了标签，就做 AND 过滤
+    if (selectedTags.value.length) {
+      enriched = enriched.filter((h) => {
+        const tagArr: string[] = Array.isArray(h.tags) ? h.tags : [];
+        return selectedTags.value.every((t) => tagArr.includes(t));
+      });
+    }
 
     results.value = enriched;
   } catch (e: any) {
-    error.value = e.message;
+    error.value = e.message || String(e);
+  } finally {
+    loading.value = false;
   }
-
-  loading.value = false;
 }
 
+/* =========================================================
+ * 九、初始化：构建 tag 映射 + 首次搜索
+ * ======================================================= */
+
 buildPageTagMap();
-onMounted(() => search());
+onMounted(() => {
+  search().catch(() => {});
+});
 </script>
 
 <style scoped>
-/* 原样保留你的所有旧样式 ===================================== */
+/* =========================================================
+ * A. 搜索整体布局
+ * ======================================================= */
+
 .meili-filter-search {
   max-width: 860px;
   margin: 1.5rem auto;
@@ -346,6 +405,7 @@ onMounted(() => search());
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
 }
 
+/* 搜索框 */
 .mfs-bar {
   display: flex;
   gap: 0.5rem;
@@ -371,6 +431,7 @@ onMounted(() => search());
   color: #fff;
 }
 
+/* 分类按钮行 */
 .mfs-filters {
   display: flex;
   flex-wrap: wrap;
@@ -399,10 +460,21 @@ onMounted(() => search());
   border-color: transparent;
 }
 
-/* ============================
-   标签区域 + 新样式
-============================ */
+/* 状态提示 */
+.mfs-status {
+  font-size: 0.9rem;
+  color: var(--vp-c-text-2, #6b7280);
+  margin: 0.5rem 0;
+}
 
+/* =========================================================
+ * B. 标签卡片样式（重点）
+ *    统一控制：
+ *    - mfs-tags 区域中的按钮
+ *    - mfs-selected-tags 区域中的卡片
+ * ======================================================= */
+
+/* 标签总容器（候选） */
 .mfs-tags {
   display: flex;
   flex-wrap: wrap;
@@ -410,11 +482,13 @@ onMounted(() => search());
   gap: 0.4rem;
   margin-bottom: 0.75rem;
 }
+
 .mfs-tags-label {
   font-weight: 600;
+  margin-right: 0.25rem;
 }
 
-/* 已选标签区 */
+/* 已选标签容器（出现在搜索框上方） */
 .mfs-selected-tags {
   display: flex;
   flex-wrap: wrap;
@@ -422,45 +496,51 @@ onMounted(() => search());
   margin-bottom: 0.7rem;
 }
 
-/* 标签统一卡片结构 */
-.tag-card,
-.mfs-tag-btn {
+/* 统一：按钮 & 选中卡片的外层容器 */
+.mfs-tag-btn,
+.tag-card {
   display: inline-flex;
   align-items: center;
-  cursor: pointer;
   padding: 0;
-  background: transparent;
   border: none;
+  background: transparent;
+  cursor: pointer;
+
+  /* 下面三个变量就是你之后最常改的三个尺寸 👇 */
+  --tag-square-size: 18px;  /* 左边小方块边长（整体显得更“重”就调大） */
+  --tag-tri-width:  22px;   /* 右侧三角形的宽度（越大越“尖”越长） */
+  --tag-dot-size:   6px;    /* 中间小圆点大小（你刚才说要小一点就改这个） */
 }
 
-/* 左边矩形 */
+/* 左边矩形文字块 */
 .tag-box {
-  padding: 0.3rem 0.55rem;
+  padding: 0.25rem 0.6rem;
   background: #f3f4f6;
   border: 1px solid #d1d5db;
-  border-right: none;
+  border-right: none;                 /* 右侧交给三角形接上 */
   border-radius: 6px 0 0 6px;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   color: #374151;
   white-space: nowrap;
 }
 
-/* 右边三角形 */
+/* 右边三角形：用 clip-path 切出来的斜角 */
 .tag-triangle {
-  width: 26px;
-  height: 26px;
+  width: var(--tag-tri-width);
+  height: calc(var(--tag-square-size) + 8px); /* 三角形高度稍大一点，看起来更饱满 */
   background: #e5e7eb;
   border: 1px solid #d1d5db;
   border-left: none;
-  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  border-radius: 0 999px 999px 0;             /* 尖角那一侧稍微圆一点 */
   position: relative;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);  /* 从左到右的等腰三角形 */
 }
 
-/* 中间小圆圈 */
+/* 三角形内部的小圆点 */
 .tag-circle {
-  width: 10px;
-  height: 10px;
-  background: white;
+  width: var(--tag-dot-size);
+  height: var(--tag-dot-size);
+  background: #ffffff;
   border: 2px solid #9ca3af;
   border-radius: 50%;
   position: absolute;
@@ -469,11 +549,14 @@ onMounted(() => search());
   transform: translateY(-50%);
 }
 
-/* 激活状态 */
+/* 选中状态：
+ * - mfs-tag-btn.is-active：候选标签被选中
+ * - tag-card：顶部已选标签统一按“选中”效果展示
+ */
 .mfs-tag-btn.is-active .tag-box,
 .tag-card .tag-box {
   background: var(--vp-c-accent, #6366f1);
-  color: white;
+  color: #ffffff;
   border-color: var(--vp-c-accent, #6366f1);
 }
 
@@ -485,17 +568,13 @@ onMounted(() => search());
 
 .mfs-tag-btn.is-active .tag-circle,
 .tag-card .tag-circle {
-  background: white;
-  border-color: white;
+  background: #ffffff;
+  border-color: #ffffff;
 }
 
-/* ============================ */
-
-.mfs-status {
-  font-size: 0.9rem;
-  color: var(--vp-c-text-2, #6b7280);
-  margin: 0.5rem 0;
-}
+/* =========================================================
+ * C. 搜索结果列表
+ * ======================================================= */
 
 .mfs-results {
   list-style: none;
