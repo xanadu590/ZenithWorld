@@ -14,7 +14,7 @@
 <li>出生年月：</li>
 <li>职业：武馆教练</li>
 <li>学历：高中毕业</li>
-<li>加入过的团体：世界英雄（<span class="zw-auto-link-wrap"><RouterLink to="/docs/world/" class="zw-auto-link zw-auto-link--first" data-tooltip="World">World</RouterLink><AutoLinkTooltip term="World" to="/docs/world/" tooltip="World" first="true" /></span> Hero)，魔法少女联盟</li>
+<li>加入过的团体：世界英雄（World Hero)，魔法少女联盟</li>
 </ul>
 </div></template>
 

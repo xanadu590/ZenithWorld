@@ -14,7 +14,7 @@
 <li>出生年月：</li>
 <li>职业：网红博主|画师</li>
 <li>学历：大学毕业</li>
-<li>加入过的团体：世界英雄（<span class="zw-auto-link-wrap"><RouterLink to="/docs/world/" class="zw-auto-link zw-auto-link--first" data-tooltip="World">World</RouterLink><AutoLinkTooltip term="World" to="/docs/world/" tooltip="World" first="true" /></span> Hero)，正义者组织</li>
+<li>加入过的团体：世界英雄（World Hero)，正义者组织</li>
 </ul>
 </div></template>
 

@@ -42,6 +42,12 @@
     "hotScore": 0
   },
   {
+    "title": "十二主神",
+    "path": "/docs/world/concepts/twelveprimedeities/",
+    "lastUpdated": 1763641434000,
+    "hotScore": 0
+  },
+  {
     "title": "灵动骑士",
     "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
     "lastUpdated": 1764747651000,
@@ -102,21 +108,9 @@
     "hotScore": 0
   },
   {
-    "title": "十二主神",
-    "path": "/docs/world/concepts/twelveprimedeities/",
-    "lastUpdated": 1763641434000,
-    "hotScore": 0
-  },
-  {
     "title": "异常事物管理局",
     "path": "/docs/world/factions/official/AMA/",
     "lastUpdated": 1764747651000,
-    "hotScore": 0
-  },
-  {
-    "title": "World",
-    "path": "/docs/world/",
-    "lastUpdated": null,
     "hotScore": 0
   }
 ]
