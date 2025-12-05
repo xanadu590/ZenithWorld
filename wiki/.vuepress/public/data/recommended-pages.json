@@ -36,8 +36,8 @@
     "hotScore": 0
   },
   {
-    "title": "概念",
-    "path": "/docs/world/concepts/",
+    "title": "地理",
+    "path": "/docs/world/geography/",
     "lastUpdated": 1764926399000,
     "hotScore": 0
   },
@@ -48,26 +48,20 @@
     "hotScore": 0
   },
   {
-    "title": "地理",
-    "path": "/docs/world/geography/",
-    "lastUpdated": 1764926399000,
-    "hotScore": 0
-  },
-  {
     "title": "反派组织",
     "path": "/docs/world/factions/",
     "lastUpdated": 1764926399000,
     "hotScore": 0
   },
   {
-    "title": "危机管理机构",
-    "path": "/docs/world/characters/CCO/",
+    "title": "概念",
+    "path": "/docs/world/concepts/",
     "lastUpdated": 1764926399000,
     "hotScore": 0
   },
   {
-    "title": "神明代理",
-    "path": "/docs/world/characters/divineproxy/",
+    "title": "危机管理机构",
+    "path": "/docs/world/characters/CCO/",
     "lastUpdated": 1764926399000,
     "hotScore": 0
   },
@@ -132,26 +126,8 @@
     "hotScore": 0
   },
   {
-    "title": "异常构造",
-    "path": "/docs/world/concepts/isomer/",
-    "lastUpdated": 1764576698000,
-    "hotScore": 0
-  },
-  {
-    "title": "十二主神",
-    "path": "/docs/world/concepts/twelveprimedeities/",
-    "lastUpdated": 1763641434000,
-    "hotScore": 0
-  },
-  {
-    "title": "英雄组织",
-    "path": "/docs/world/factions/heroic/",
-    "lastUpdated": 1764926399000,
-    "hotScore": 0
-  },
-  {
-    "title": "中立组织",
-    "path": "/docs/world/factions/neutral/",
+    "title": "神明代理",
+    "path": "/docs/world/characters/divineproxy/",
     "lastUpdated": 1764926399000,
     "hotScore": 0
   },
@@ -168,9 +144,33 @@
     "hotScore": 0
   },
   {
+    "title": "中立组织",
+    "path": "/docs/world/factions/neutral/",
+    "lastUpdated": 1764926399000,
+    "hotScore": 0
+  },
+  {
+    "title": "英雄组织",
+    "path": "/docs/world/factions/heroic/",
+    "lastUpdated": 1764926399000,
+    "hotScore": 0
+  },
+  {
+    "title": "十二主神",
+    "path": "/docs/world/concepts/twelveprimedeities/",
+    "lastUpdated": 1763641434000,
+    "hotScore": 0
+  },
+  {
     "title": "异常事物管理局",
     "path": "/docs/world/factions/official/AMA/",
     "lastUpdated": 1764747651000,
+    "hotScore": 0
+  },
+  {
+    "title": "异常构造",
+    "path": "/docs/world/concepts/isomer/",
+    "lastUpdated": 1764576698000,
     "hotScore": 0
   }
 ]

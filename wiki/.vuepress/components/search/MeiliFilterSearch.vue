@@ -14,10 +14,9 @@
         @click="toggleTag(tag)"
       >
         <span class="tag-box">{{ tag }}</span>
-        <div class="triangle-wrapper">
-          <span class="tag-triangle"></span>
+        <span class="tag-triangle">
           <span class="tag-circle"></span>
-        </div>
+        </span>
       </div>
     </div>
 
