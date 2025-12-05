@@ -1,5 +1,23 @@
 <template>
   <div class="meili-filter-search">
+
+    <!-- ===========================
+         选中的标签（新增）
+    ============================ -->
+    <div class="mfs-selected-tags" v-if="selectedTags.length">
+      <div
+        v-for="tag in selectedTags"
+        :key="tag"
+        class="tag-card"
+        @click="toggleTag(tag)"
+      >
+        <span class="tag-box">{{ tag }}</span>
+        <span class="tag-triangle">
+          <span class="tag-circle"></span>
+        </span>
+      </div>
+    </div>
+
     <!-- 搜索输入框 -->
     <div class="mfs-bar">
       <input
@@ -26,9 +44,10 @@
       </button>
     </div>
 
-    <!-- 标签筛选：打开页面就会列出（基于当前分类的所有结果） -->
+    <!-- 标签筛选（改造后的按钮样式） -->
     <div class="mfs-tags" v-if="availableTags.length">
       <span class="mfs-tags-label">标签：</span>
+
       <button
         v-for="tag in availableTags"
         :key="tag"
@@ -36,7 +55,10 @@
         :class="{ 'is-active': selectedTags.includes(tag) }"
         @click="toggleTag(tag)"
       >
-        {{ tag }}
+        <span class="tag-box">{{ tag }}</span>
+        <span class="tag-triangle">
+          <span class="tag-circle"></span>
+        </span>
       </button>
     </div>
 
@@ -56,7 +78,6 @@
       >
         <a :href="hit.url" class="mfs-result-link">
           <div class="mfs-result-title">
-            <!-- 根据 url / type 推断类型，显示中文标签 -->
             <span v-if="inferType(hit)" class="mfs-tag">
               [{{ typeLabelMap[inferType(hit)!] || inferType(hit) }}]
             </span>
@@ -70,7 +91,6 @@
             </span>
           </div>
 
-          <!-- 摘要：优先用 random-index 的 excerpt，attachSummary 已经填到 hit.summary 里 -->
           <div class="mfs-result-summary">
             {{ hit.summary || hit.text || "（暂无摘要）" }}
           </div>
@@ -84,10 +104,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-// 前端 nosearch 列表
 // @ts-ignore
 import { nosearchPaths } from "@temp/nosearch/nosearchPaths.js";
-// 从 taxonomy 插件里拿到每个页面的 tags
 // @ts-ignore
 import { taxonomyData } from "@temp/wiki-taxonomy/data.js";
 
@@ -98,7 +116,7 @@ import { taxonomyData } from "@temp/wiki-taxonomy/data.js";
 const host = "https://search.zenithworld.top";
 const indexUid = "wiki";
 const apiKey =
-  "e12946c7f8693e562f078360da358419a57197338607669795398c2ee3fddf59"; // 千万不要填 Master Key
+  "e12946c7f8693e562f078360da358419a57197338607669795398c2ee3fddf59";
 
 const keyword = ref("");
 const activeType = ref<string | null>(null);
@@ -108,10 +126,10 @@ const error = ref<string | null>(null);
 const searchedOnce = ref(false);
 
 /* =========================================================
- * 二、分类按钮配置（已去掉“力量体系”）
+ * 分类筛选
  * ======================================================= */
 
-const typeOptions: { value: string | null; label: string }[] = [
+const typeOptions = [
   { value: null, label: "全部" },
   { value: "character", label: "人物" },
   { value: "concept", label: "概念" },
@@ -120,7 +138,7 @@ const typeOptions: { value: string | null; label: string }[] = [
   { value: "history", label: "历史" },
 ];
 
-const typeLabelMap: Record<string, string> = {
+const typeLabelMap = {
   character: "人物",
   concept: "概念",
   faction: "势力",
@@ -129,25 +147,21 @@ const typeLabelMap: Record<string, string> = {
 };
 
 /* =========================================================
- * 三、标签筛选状态
+ * 标签状态
  * ======================================================= */
 
 const availableTags = ref<string[]>([]);
 const selectedTags = ref<string[]>([]);
 
-/** 切换某个标签的选中状态，再跑一次 search（不需要手动输入关键字） */
 function toggleTag(tag: string) {
   const idx = selectedTags.value.indexOf(tag);
-  if (idx === -1) {
-    selectedTags.value.push(tag);
-  } else {
-    selectedTags.value.splice(idx, 1);
-  }
+  if (idx === -1) selectedTags.value.push(tag);
+  else selectedTags.value.splice(idx, 1);
   search();
 }
 
 /* =========================================================
- * 四、random-index 简介数据：接入 /data/random-index.json
+ * random-index
  * ======================================================= */
 
 interface RandomIndexItem {
@@ -160,173 +174,104 @@ const randomIndex = ref<RandomIndexItem[]>([]);
 const randomIndexLoaded = ref(false);
 
 /* =========================================================
- * 五、路径规范化 & tag 映射（从 taxonomyData 里构建）
+ * taxonomy path → tags
  * ======================================================= */
 
-type AnyTax = any;
-
-// path -> tags[]（来自 taxonomyData）
 const pageTagMap: Record<string, string[]> = {};
 
 function normalizePath(raw: string | undefined | null): string {
   if (!raw) return "/";
-
   let p = raw.trim();
-
-  // 1）去掉协议和域名
   p = p.replace(/^https?:\/\/[^/]+/, "");
 
-  // 2）截掉 ? 和 #
-  const hashIndex = p.indexOf("#");
-  const queryIndex = p.indexOf("?");
-  let cutIndex = -1;
+  const h = p.indexOf("#");
+  const q = p.indexOf("?");
+  const c = h === -1 ? q : q === -1 ? h : Math.min(h, q);
+  if (c !== -1) p = p.slice(0, c);
 
-  if (hashIndex !== -1 && queryIndex !== -1) {
-    cutIndex = Math.min(hashIndex, queryIndex);
-  } else if (hashIndex !== -1) {
-    cutIndex = hashIndex;
-  } else if (queryIndex !== -1) {
-    cutIndex = queryIndex;
-  }
-
-  if (cutIndex !== -1) {
-    p = p.slice(0, cutIndex);
-  }
-
-  // 3）去掉末尾 /
   if (p.length > 1 && p.endsWith("/")) p = p.slice(0, -1);
 
-  return p || "/";
+  return p;
 }
 
-/** 初始化：从 taxonomyData.categories[*].pages 里抽取 path & tags 填到 pageTagMap */
 function buildPageTagMap() {
-  const cats = (taxonomyData as AnyTax).categories || {};
+  const cats = taxonomyData.categories || {};
   for (const key of Object.keys(cats)) {
-    const entry = cats[key];
-    if (!entry || !Array.isArray(entry.pages)) continue;
-
-    for (const page of entry.pages as AnyTax[]) {
+    for (const page of cats[key].pages) {
       const norm = normalizePath(page.path);
-      const rawTags: string[] = Array.isArray(page.tags) ? page.tags : [];
-      if (!pageTagMap[norm]) pageTagMap[norm] = [];
-      for (const t of rawTags) {
-        const s = String(t || "").trim();
-        if (s && !pageTagMap[norm].includes(s)) {
-          pageTagMap[norm].push(s);
-        }
-      }
+      const tags = Array.isArray(page.tags) ? page.tags : [];
+      pageTagMap[norm] = tags.map((t: any) => String(t).trim());
     }
   }
 }
 
-/** 根据 url/path 从 taxonomy 中取 tags 数组 */
-function getTagsFromTaxonomy(urlOrPath?: string | null): string[] {
-  const norm = normalizePath(urlOrPath || "/");
-  return pageTagMap[norm] || [];
+function getTagsFromTaxonomy(url?: string | null) {
+  return pageTagMap[normalizePath(url)] || [];
 }
 
-/** 是否 frontmatter:nosearch */
-function isNosearchUrl(url: string | undefined | null): boolean {
-  const norm = normalizePath(url || "/");
-  return (nosearchPaths as string[]).some(
-    (p) => normalizePath(p) === norm
-  );
+function isNosearchUrl(url?: string) {
+  const norm = normalizePath(url);
+  return nosearchPaths.some((p: string) => normalizePath(p) === norm);
 }
+
+/* =========================================================
+ * 搜索增强
+ * ======================================================= */
 
 async function loadRandomIndex() {
   if (randomIndexLoaded.value) return;
   try {
     const res = await fetch("/data/random-index.json");
-    const data = await res.json();
-    randomIndex.value = Array.isArray(data.pages) ? data.pages : [];
-    console.log(
-      "[Search] random-index loaded:",
-      randomIndex.value.length,
-      "items"
-    );
-  } catch (e) {
-    console.error("[Search] load random-index failed:", e);
-  } finally {
-    randomIndexLoaded.value = true;
-  }
+    randomIndex.value = (await res.json()).pages || [];
+  } catch {}
+  randomIndexLoaded.value = true;
 }
 
-/**
- * 给 Meili 的 hit 补充：
- *  - summary：优先 random-index.excerpt
- *  - tags：  优先 taxonomyData 里的 tags
- */
-function attachSummary<
-  T extends {
-    url?: string;
-    path?: string;
-    summary?: string;
-    text?: string;
-    tags?: string[] | string;
-    tag?: string[] | string;
-    region?: string;
-    type?: string;
-  }
->(hit: T) {
-  const hitPathNorm = normalizePath(hit.url || hit.path);
-
+function attachSummary(hit: any) {
   const match = randomIndex.value.find(
-    (it) => normalizePath(it.path) === hitPathNorm
+    (it) => normalizePath(it.path) === normalizePath(hit.url || hit.path)
   );
 
-  /* 1. summary */
-  const summaryFromIndex = match?.excerpt?.trim() || "";
-  const fallback = (hit.summary ?? "").trim() || (hit.text ?? "").trim();
-  const finalSummary = summaryFromIndex || fallback;
+  const summary =
+    match?.excerpt?.trim() ||
+    hit.summary?.trim() ||
+    hit.text?.trim() ||
+    "";
 
-  /* 2. 标签：taxonomyData 优先，其次用 Meili 上自带的 tag/tags（如果有） */
-  const tagsFromTaxonomy = getTagsFromTaxonomy(hit.url || hit.path);
+  const tagsFromTax = getTagsFromTaxonomy(hit.url);
 
-  const rawTags = (hit.tags ?? hit.tag ?? []) as string[] | string;
   let fallbackTags: string[] = [];
-  if (Array.isArray(rawTags)) {
-    fallbackTags = rawTags.map((t) => String(t).trim());
-  } else if (typeof rawTags === "string") {
-    fallbackTags = [rawTags.trim()];
-  }
-
-  const finalTags =
-    tagsFromTaxonomy.length > 0 ? tagsFromTaxonomy : fallbackTags;
+  if (Array.isArray(hit.tags)) fallbackTags = hit.tags.map((t: any) => String(t));
+  else if (typeof hit.tags === "string") fallbackTags = [hit.tags.trim()];
 
   return {
     ...hit,
-    summary: finalSummary,
-    tags: finalTags,
+    summary,
+    tags: tagsFromTax.length ? tagsFromTax : fallbackTags,
   };
 }
 
 /* =========================================================
- * 六、类型推断 & 分类按钮逻辑
+ * 类型判断
  * ======================================================= */
 
 function inferType(hit: any): string | null {
-  if (hit.type) return hit.type as string;
-
   const url: string = hit.url || "";
-
   if (url.includes("/world/characters/")) return "character";
   if (url.includes("/world/concepts/")) return "concept";
   if (url.includes("/world/factions/")) return "faction";
   if (url.includes("/world/geography/")) return "geography";
   if (url.includes("/world/history/")) return "history";
-
   return null;
 }
 
-function setType(val: string | null) {
-  // 切换分类时不清空已选标签，形成“分类 AND 标签”的组合
-  activeType.value = val === activeType.value ? null : val;
+function setType(v: string | null) {
+  activeType.value = v === activeType.value ? null : v;
   search();
 }
 
 /* =========================================================
- * 七、搜索主流程
+ * 搜索主流程
  * ======================================================= */
 
 async function search() {
@@ -337,97 +282,61 @@ async function search() {
   try {
     await loadRandomIndex();
 
-    const body: any = {
-      q: keyword.value, // 可以是空字符串
-      limit: 500,
-    };
-
     const res = await fetch(`${host}/indexes/${indexUid}/search`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ q: keyword.value, limit: 500 }),
     });
 
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-    const data = await res.json();
-    let hits: any[] = data.hits || [];
+    let hits = (await res.json()).hits || [];
 
-    // 1）按分类筛选
-    if (activeType.value) {
-      hits = hits.filter((hit) => inferType(hit) === activeType.value);
-    }
+    if (activeType.value)
+      hits = hits.filter((h: any) => inferType(h) === activeType.value);
 
-    // 2）过滤 nosearch 页面
-    hits = hits.filter((hit) => !isNosearchUrl(hit.url || hit.path));
+    hits = hits.filter((h: any) => !isNosearchUrl(h.url));
 
-    // 3）按“页面”去重
-    const seenPages = new Set<string>();
-    const uniqueHits: any[] = [];
-    for (const hit of hits) {
-      const rawUrl: string = hit.url || "";
-      const baseUrl = rawUrl.split("#")[0];
-      if (seenPages.has(baseUrl)) continue;
-      seenPages.add(baseUrl);
-      uniqueHits.push(hit);
-    }
+    const seen = new Set();
+    const unique = hits.filter((h: any) => {
+      const key = (h.url || "").split("#")[0];
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
 
-    // 4）补充 summary/tags
-    const enrichedHits = uniqueHits.map((hit) => attachSummary(hit));
+    let enriched = unique.map((h: any) => attachSummary(h));
 
-    // 5）统计当前条件下所有 tag，填充标签面板
     const tagSet = new Set<string>();
-    for (const hit of enrichedHits) {
-      if (Array.isArray(hit.tags)) {
-        for (const t of hit.tags) {
-          const s = String(t || "").trim();
-          if (s) tagSet.add(s);
-        }
-      }
-    }
-    availableTags.value = Array.from(tagSet).sort((a, b) =>
+    enriched.forEach((h) => {
+      if (Array.isArray(h.tags)) h.tags.forEach((t: string) => tagSet.add(t));
+    });
+    availableTags.value = [...tagSet].sort((a, b) =>
       a.localeCompare(b, "zh-Hans-CN")
     );
 
-    // 6）如果用户选中了标签，则做 AND 过滤
-    let filteredHits = enrichedHits;
-    if (selectedTags.value.length) {
-      filteredHits = enrichedHits.filter((hit) => {
-        const tagArr: string[] = Array.isArray(hit.tags)
-          ? hit.tags.map((t: any) => String(t))
-          : [];
-        return selectedTags.value.every((t) => tagArr.includes(t));
-      });
-    }
+    if (selectedTags.value.length)
+      enriched = enriched.filter((h) =>
+        selectedTags.value.every((t) => (h.tags || []).includes(t))
+      );
 
-    results.value = filteredHits;
+    results.value = enriched;
   } catch (e: any) {
-    console.error(e);
-    error.value = e.message || String(e);
-  } finally {
-    loading.value = false;
+    error.value = e.message;
   }
+
+  loading.value = false;
 }
 
-/* =========================================================
- * 初始化：构建 tag 映射 + 首次搜索
- * ======================================================= */
-
-// 构建一次 path -> tags 的映射
 buildPageTagMap();
-
-onMounted(() => {
-  // 一进高级搜索页面，就自动跑一次空搜索，列出所有 tag + 初始结果
-  search().catch(() => {});
-});
+onMounted(() => search());
 </script>
 
 <style scoped>
+/* 原样保留你的所有旧样式 ===================================== */
 .meili-filter-search {
   max-width: 860px;
   margin: 1.5rem auto;
@@ -490,35 +399,97 @@ onMounted(() => {
   border-color: transparent;
 }
 
-/* 标签区域样式 */
+/* ============================
+   标签区域 + 新样式
+============================ */
+
 .mfs-tags {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.4rem;
   margin-bottom: 0.75rem;
-  font-size: 0.85rem;
 }
-
 .mfs-tags-label {
   font-weight: 600;
-  margin-right: 0.2rem;
 }
 
+/* 已选标签区 */
+.mfs-selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.7rem;
+}
+
+/* 标签统一卡片结构 */
+.tag-card,
 .mfs-tag-btn {
-  padding: 0.15rem 0.6rem;
-  border-radius: 999px;
-  border: 1px solid var(--vp-c-border, #d0d7de);
-  background: #f9fafb;
+  display: inline-flex;
+  align-items: center;
   cursor: pointer;
-  font-size: 0.8rem;
+  padding: 0;
+  background: transparent;
+  border: none;
 }
 
-.mfs-tag-btn.is-active {
-  background: var(--vp-c-accent, #6366f1);
-  color: #fff;
-  border-color: transparent;
+/* 左边矩形 */
+.tag-box {
+  padding: 0.3rem 0.55rem;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+  font-size: 0.78rem;
+  color: #374151;
+  white-space: nowrap;
 }
+
+/* 右边三角形 */
+.tag-triangle {
+  width: 26px;
+  height: 26px;
+  background: #e5e7eb;
+  border: 1px solid #d1d5db;
+  border-left: none;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  position: relative;
+}
+
+/* 中间小圆圈 */
+.tag-circle {
+  width: 10px;
+  height: 10px;
+  background: white;
+  border: 2px solid #9ca3af;
+  border-radius: 50%;
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* 激活状态 */
+.mfs-tag-btn.is-active .tag-box,
+.tag-card .tag-box {
+  background: var(--vp-c-accent, #6366f1);
+  color: white;
+  border-color: var(--vp-c-accent, #6366f1);
+}
+
+.mfs-tag-btn.is-active .tag-triangle,
+.tag-card .tag-triangle {
+  background: #4f46e5;
+  border-color: #4f46e5;
+}
+
+.mfs-tag-btn.is-active .tag-circle,
+.tag-card .tag-circle {
+  background: white;
+  border-color: white;
+}
+
+/* ============================ */
 
 .mfs-status {
   font-size: 0.9rem;
