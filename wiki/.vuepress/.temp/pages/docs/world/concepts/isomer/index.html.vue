@@ -4,7 +4,7 @@
 <h2 id="关于「异常构造」的详细定义" tabindex="-1"><a class="header-anchor" href="#关于「异常构造」的详细定义"><span>关于「异常构造」的详细定义</span></a></h2>
 <p>在这个世界，即便存在大量离奇事物，【异常构造】仍是其中最特殊且最危险的一类。</p>
 <h3 id="旧定义" tabindex="-1"><a class="header-anchor" href="#旧定义"><span>旧定义</span></a></h3>
-<p>在危机管理机构时期，最初的定义是：</p>
+<p>在<span class="zw-auto-link-wrap"><RouterLink to="/docs/world/characters/CCO/" class="zw-auto-link zw-auto-link--first" data-tooltip="危机管理机构">危机管理机构</RouterLink><AutoLinkTooltip term="危机管理机构" to="/docs/world/characters/CCO/" tooltip="危机管理机构" first="true" /></span>时期，最初的定义是：</p>
 <blockquote>
 <p>“以极不合理的机制运行的事物。”</p>
 </blockquote>
@@ -20,7 +20,7 @@
 <h3 id="例子" tabindex="-1"><a class="header-anchor" href="#例子"><span>例子</span></a></h3>
 <p>例如，一个能“凭空产出能源”的异常构造：它可能在内部维持一个虫洞，连接“一秒之后的未来”，从未来截取能量带回现在。这看似提供无尽能源，但维持虫洞本身、时间能量的跨越，都必须消耗宇宙本源。<br>
 此理论让人类第一次意识到：滥用异常构造会直接加速宇宙死亡。异常构造属于全宇宙级别的风险。<br>
-危机管理机构因此开始正视异常构造，最终推动了异常管理局的成立。<br>
+<span class="zw-auto-link-wrap"><RouterLink to="/docs/world/characters/CCO/" class="zw-auto-link" data-tooltip="危机管理机构">危机管理机构</RouterLink><AutoLinkTooltip term="危机管理机构" to="/docs/world/characters/CCO/" tooltip="危机管理机构" /></span>因此开始正视异常构造，最终推动了异常管理局的成立。<br>
 【异常构造】以编号称呼。</p>
 <h2 id="异常构造的分类" tabindex="-1"><a class="header-anchor" href="#异常构造的分类"><span>异常构造的分类</span></a></h2>
 <p>异常构造的编号分为两部分，“类型”和“序号”。<br>

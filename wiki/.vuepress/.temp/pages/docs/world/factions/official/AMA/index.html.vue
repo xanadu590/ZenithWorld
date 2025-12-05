@@ -3,7 +3,7 @@
 简称：AMA<br>
 成立日期：</p>
 <h2 id="历史" tabindex="-1"><a class="header-anchor" href="#历史"><span>历史</span></a></h2>
-<p>异常管理局的源头可追溯至【先知】创立的早期组织——【危机管理机构】(Crisis Control Organization，简称C.C.O.)。当【巅峰议会】正式成立后，危机管理机构内部负责关押、限制和控制超自然事物的部门被独立出来，成为【危机控制局】，职能类似超自然收容所或监狱。余下专司调查、管理与应对异常现象的人员与部门，则整编为最初的【异常管理局】(Anomaly Management Agency，简称A.M.A.)。<br>
+<p>异常管理局的源头可追溯至【先知】创立的早期组织——【<span class="zw-auto-link-wrap"><RouterLink to="/docs/world/characters/CCO/" class="zw-auto-link zw-auto-link--first" data-tooltip="危机管理机构">危机管理机构</RouterLink><AutoLinkTooltip term="危机管理机构" to="/docs/world/characters/CCO/" tooltip="危机管理机构" first="true" /></span>】(Crisis Control Organization，简称C.C.O.)。当【巅峰议会】正式成立后，<span class="zw-auto-link-wrap"><RouterLink to="/docs/world/characters/CCO/" class="zw-auto-link" data-tooltip="危机管理机构">危机管理机构</RouterLink><AutoLinkTooltip term="危机管理机构" to="/docs/world/characters/CCO/" tooltip="危机管理机构" /></span>内部负责关押、限制和控制超自然事物的部门被独立出来，成为【危机控制局】，职能类似超自然收容所或监狱。余下专司调查、管理与应对异常现象的人员与部门，则整编为最初的【异常管理局】(Anomaly Management Agency，简称A.M.A.)。<br>
 随着时间推移，异常管理局依据全球超自然事物的规模、分布与特征，将其划分为十三大类，并设立对应的十三个分局分别负责各自的领域。其总职能可概括为四项：</p>
 <ol>
 <li>预防：对尚未显现的潜在异常事物进行预测与风险防控。</li>
@@ -26,14 +26,14 @@
 <li>优先分配最新研发科技</li>
 <li>稳定薪资与长期保障</li>
 </ul>
-<p>即便有这些福利，在编调查员仍是少数。原因之一是——超凡者通常自视甚高，不愿意接受严苛组织约束；其二，许多超凡者本身就来自“传承”或“组织”，无法在身份上加入另一个官方体系；其三，在基础社会认知中，“统治阶级”本身就容易被反感，许多普通人也不愿意加入官方组织被贴标签。</p>
+<p>即便有这些福利，在编调查员仍是少数。原因之一是——超凡者通常自视甚高，不愿意接受严苛组织约束；其二，许多超凡者本身就来自“传承”或“组织”，无法在身份上加入另一个官方体系；其三，在基础社会认知中，“统治阶级”本身就容易被反感，许多普通人也不愿意加入<span class="zw-auto-link-wrap"><RouterLink to="/docs/world/factions/official/" class="zw-auto-link zw-auto-link--first" data-tooltip="官方组织">官方组织</RouterLink><AutoLinkTooltip term="官方组织" to="/docs/world/factions/official/" tooltip="官方组织" first="true" /></span>被贴标签。</p>
 <h4 id="特殊勤务异常调查员-主体" tabindex="-1"><a class="header-anchor" href="#特殊勤务异常调查员-主体"><span>特殊勤务异常调查员（主体）</span></a></h4>
 <p>简称“特勤”，占据调查员群体中绝大多数。他们与异常管理局签署限期雇佣合同，到期自动解除。如果合同到期时仍有案件未办结，可选择：以“三倍工资”申请短期延长合同，或者将案件移交其他调查员继续执行。这些雇佣性质的调查员更加自由、门槛更低，也受到超凡者群体的普遍欢迎。</p>
 <h2 id="分类体系-13类" tabindex="-1"><a class="header-anchor" href="#分类体系-13类"><span>分类体系（13类）</span></a></h2>
 <p>根据异常管理局的官方划分，超自然事物共分为十三类：</p>
 <ol>
 <li><RouteLink to="/docs/world/concepts/isomer/"><span class="zw-auto-link-wrap"><RouterLink to="/docs/world/concepts/isomer/" class="zw-auto-link zw-auto-link--first" data-tooltip="名称：异常构造 译名：Isomer 简称：异构、ISO 关于「异常构造」的详细定义 在这个世界，即便存在大量离奇事物，【异常构造】仍是其中最特殊且最危险的一类。 旧定义 在危机管理机构时期，最初的定义是： “以极不合理的机制运行的事物。” 问题在于，这个定义过于宽泛，导致许多“只是难以理解但不算异常”的现象也被划入该类。 新定义 某位博士提出了一个颠覆...">异常构造</RouterLink><AutoLinkTooltip term="异常构造" to="/docs/world/concepts/isomer/" tooltip="名称：异常构造 译名：Isomer 简称：异构、ISO 关于「异常构造」的详细定义 在这个世界，即便存在大量离奇事物，【异常构造】仍是其中最特殊且最危险的一类。 旧定义 在危机管理机构时期，最初的定义是： “以极不合理的机制运行的事物。” 问题在于，这个定义过于宽泛，导致许多“只是难以理解但不算异常”的现象也被划入该类。 新定义 某位博士提出了一个颠覆..." first="true" /></span></RouteLink></li>
-<li>历史记录</li>
+<li><span class="zw-auto-link-wrap"><RouterLink to="/docs/world/history/" class="zw-auto-link zw-auto-link--first" data-tooltip="历史">历史</RouterLink><AutoLinkTooltip term="历史" to="/docs/world/history/" tooltip="历史" first="true" /></span>记录</li>
 <li>宗教传承</li>
 <li>东方神秘</li>
 <li>西方神秘</li>

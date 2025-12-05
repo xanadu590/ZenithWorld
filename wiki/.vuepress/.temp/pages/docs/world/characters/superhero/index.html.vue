@@ -1,5 +1,5 @@
 <template><div><p>这里可以写一点团体的文字介绍。<br>
-比如巅峰议会的成立历史、议会目标、对世界格局的影响等等。</p>
+比如巅峰议会的成立<span class="zw-auto-link-wrap"><RouterLink to="/docs/world/history/" class="zw-auto-link zw-auto-link--first" data-tooltip="历史">历史</RouterLink><AutoLinkTooltip term="历史" to="/docs/world/history/" tooltip="历史" first="true" /></span>、议会目标、对世界格局的影响等等。</p>
 <p>下面也可以继续正常写 Markdown 内容：</p>
 <ul>
 <li>组织结构</li>
