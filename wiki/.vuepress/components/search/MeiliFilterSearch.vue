@@ -574,8 +574,10 @@ onMounted(() => {
 
 .mfs-tag-btn.is-active .tag-triangle,
 .tag-card .tag-triangle {
-  background: #4f46e5;
-  border-color: #4f46e5;
+  width: calc(var(--tag-square-size) + 3.56px);
+  height: calc(var(--tag-square-size) + 3.56px);
+  background: #6366f1;
+  border-color: #6366f1;
 }
 
 .mfs-tag-btn.is-active .tag-circle,
