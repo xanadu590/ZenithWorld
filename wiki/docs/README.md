@@ -47,13 +47,13 @@ highlights:
 
   - header: 角色总览
     description: 这个世界是属于少数精英的世界，他们是舞台的主角。
-    image: /image/LOGO-character.png
+    image: /images/LOGO-character.png
     bgImage: https://theme-hope-assets.vuejs.press/bg/2-light.svg
     bgImageDark: https://theme-hope-assets.vuejs.press/bg/2-dark.svg  
     
   - header: 势力分布
     description: 如果说超级英雄们是舞台的主角，那么一个个势力、一个个城市就是舞台。
-    image: /image/LOGO-influence.png
+    image: /images/LOGO-influence.png
     bgImage: https://theme-hope-assets.vuejs.press/bg/9-light.svg
     bgImageDark: https://theme-hope-assets.vuejs.press/bg/9-dark.svg
 
@@ -63,8 +63,8 @@ highlights:
     bgImage: https://theme-hope-assets.vuejs.press/bg/5-light.svg
     bgImageDark: https://theme-hope-assets.vuejs.press/bg/5-dark.svg
 
-  - header: 世界专有
-    description: 这个世界有一些专有的事物，可以在这里查看。
+  - header: 世界地理
+    description: 世界被世界政府所统一，所以行政区划也有所变化。
     image: /image/LOGO-influence.png
     bgImage: https://theme-hope-assets.vuejs.press/bg/1-light.svg
     bgImageDark: https://theme-hope-assets.vuejs.press/bg/1-dark.svg
