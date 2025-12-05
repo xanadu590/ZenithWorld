@@ -14,9 +14,10 @@
         @click="toggleTag(tag)"
       >
         <span class="tag-box">{{ tag }}</span>
-        <span class="tag-triangle">
+        <div class="triangle-wrapper">
+          <span class="tag-triangle"></span>
           <span class="tag-circle"></span>
-        </span>
+        </div>
       </div>
     </div>
 
@@ -508,13 +509,12 @@ onMounted(() => {
 
   /* 下面三个变量就是你之后最常改的三个尺寸 👇 */
   --tag-square-size: 18px;  /* 左边小方块边长（整体显得更“重”就调大） */
-  --tag-tri-width:  22px;   /* 右侧三角形的宽度（越大越“尖”越长） */
-  --tag-dot-size:   6px;    /* 中间小圆点大小（你刚才说要小一点就改这个） */
+  --tag-dot-size:   4px;    /* 中间小圆点大小（你刚才说要小一点就改这个） */
 }
 
 /* 左边矩形文字块 */
 .tag-box {
-  padding: 0.25rem 0.6rem;
+  padding: 0.2rem 0.15rem 0.3rem 0.4rem;
   background: #f3f4f6;
   border: 1px solid #d1d5db;
   border-right: none;                 /* 右侧交给三角形接上 */
@@ -524,16 +524,29 @@ onMounted(() => {
   white-space: nowrap;
 }
 
-/* 右边三角形：用 clip-path 切出来的斜角 */
 .tag-triangle {
-  width: var(--tag-tri-width);
-  height: calc(var(--tag-square-size) + 8px); /* 三角形高度稍大一点，看起来更饱满 */
-  background: #e5e7eb;
+  /* 尺寸随变量 */
+  width: calc(var(--tag-square-size) + 3.56px);
+  height: calc(var(--tag-square-size) + 3.56px);
+
+  /* 基础背景 */
+  background: #f3f4f6;
   border: 1px solid #d1d5db;
-  border-left: none;
-  border-radius: 0 999px 999px 0;             /* 尖角那一侧稍微圆一点 */
+  border-radius: 6px;              /* ★ 控制圆角大小（你可以随便调） */
+
+  /* 旋转成菱形 */
+  transform-origin: center; /* 很重要：以中心为原点压扁 */
+  transform:  scaleX(0.8) rotate(45deg);
+  margin-left: -12px;
+
+  /* 裁掉左半边 → 变成右指向的三角形 */
+  clip-path: polygon(
+    0% 0%,
+    100% 100%,
+    100% 0%
+  );
+
   position: relative;
-  clip-path: polygon(0 0, 100% 50%, 0 100%);  /* 从左到右的等腰三角形 */
 }
 
 /* 三角形内部的小圆点 */
@@ -541,11 +554,11 @@ onMounted(() => {
   width: var(--tag-dot-size);
   height: var(--tag-dot-size);
   background: #ffffff;
-  border: 2px solid #9ca3af;
+  border: 1px solid #9ca3af;
   border-radius: 50%;
   position: absolute;
-  right: 4px;
-  top: 50%;
+  right: 2px;
+  top: 25%;
   transform: translateY(-50%);
 }
 

@@ -36,12 +36,6 @@
     "hotScore": 0
   },
   {
-    "title": "地理",
-    "path": "/docs/world/geography/",
-    "lastUpdated": 1764926399000,
-    "hotScore": 0
-  },
-  {
     "title": "概念",
     "path": "/docs/world/concepts/",
     "lastUpdated": 1764926399000,
@@ -54,6 +48,12 @@
     "hotScore": 0
   },
   {
+    "title": "地理",
+    "path": "/docs/world/geography/",
+    "lastUpdated": 1764926399000,
+    "hotScore": 0
+  },
+  {
     "title": "反派组织",
     "path": "/docs/world/factions/",
     "lastUpdated": 1764926399000,
@@ -62,6 +62,12 @@
   {
     "title": "危机管理机构",
     "path": "/docs/world/characters/CCO/",
+    "lastUpdated": 1764926399000,
+    "hotScore": 0
+  },
+  {
+    "title": "神明代理",
+    "path": "/docs/world/characters/divineproxy/",
     "lastUpdated": 1764926399000,
     "hotScore": 0
   },
@@ -126,12 +132,6 @@
     "hotScore": 0
   },
   {
-    "title": "神明代理",
-    "path": "/docs/world/characters/divineproxy/",
-    "lastUpdated": 1764926399000,
-    "hotScore": 0
-  },
-  {
     "title": "异常构造",
     "path": "/docs/world/concepts/isomer/",
     "lastUpdated": 1764576698000,
@@ -144,8 +144,8 @@
     "hotScore": 0
   },
   {
-    "title": "官方组织",
-    "path": "/docs/world/factions/official/",
+    "title": "英雄组织",
+    "path": "/docs/world/factions/heroic/",
     "lastUpdated": 1764926399000,
     "hotScore": 0
   },
@@ -156,8 +156,8 @@
     "hotScore": 0
   },
   {
-    "title": "英雄组织",
-    "path": "/docs/world/factions/heroic/",
+    "title": "官方组织",
+    "path": "/docs/world/factions/official/",
     "lastUpdated": 1764926399000,
     "hotScore": 0
   },
