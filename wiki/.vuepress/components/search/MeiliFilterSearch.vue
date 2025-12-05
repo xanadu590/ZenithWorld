@@ -50,12 +50,13 @@
          标签筛选区域
          - 每个标签用「方块 + 三角 + 圆点」结构
          - 与上方已选中区域使用同一套样式
+         - ✅ 已选中的标签会从这里消失
     ============================ -->
     <div class="mfs-tags" v-if="availableTags.length">
       <span class="mfs-tags-label">标签：</span>
 
       <button
-        v-for="tag in availableTags"
+        v-for="tag in visibleTags"
         :key="tag"
         class="mfs-tag-btn"
         :class="{ 'is-active': selectedTags.includes(tag) }"
@@ -111,7 +112,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 // @ts-ignore
 import { nosearchPaths } from "@temp/nosearch/nosearchPaths.js";
 // @ts-ignore
@@ -160,6 +161,11 @@ const typeLabelMap: Record<string, string> = {
 
 const availableTags = ref<string[]>([]);
 const selectedTags = ref<string[]>([]);
+
+/** ✅ 用于下方标签按钮，只显示“未选中”的标签 */
+const visibleTags = computed(() =>
+  availableTags.value.filter(tag => !selectedTags.value.includes(tag))
+);
 
 /** 切换某个标签选中状态（用于按钮和顶部卡片） */
 function toggleTag(tag: string) {
@@ -567,6 +573,7 @@ onMounted(() => {
  */
 .mfs-tag-btn.is-active .tag-box,
 .tag-card .tag-box {
+  padding: 0.317rem 0.15rem 0.3rem 0.4rem;
   background: var(--vp-c-accent, #6366f1);
   color: #ffffff;
   border-color: var(--vp-c-accent, #6366f1);
@@ -574,8 +581,6 @@ onMounted(() => {
 
 .mfs-tag-btn.is-active .tag-triangle,
 .tag-card .tag-triangle {
-  width: calc(var(--tag-square-size) + 3.56px);
-  height: calc(var(--tag-square-size) + 3.56px);
   background: #6366f1;
   border-color: #6366f1;
 }
