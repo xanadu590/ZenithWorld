@@ -36,12 +36,6 @@
     "hotScore": 0
   },
   {
-    "title": "概念",
-    "path": "/docs/world/concepts/",
-    "lastUpdated": 1764926399000,
-    "hotScore": 0
-  },
-  {
     "title": "地理",
     "path": "/docs/world/geography/",
     "lastUpdated": 1764926399000,
@@ -50,6 +44,12 @@
   {
     "title": "反派组织",
     "path": "/docs/world/factions/",
+    "lastUpdated": 1764926399000,
+    "hotScore": 0
+  },
+  {
+    "title": "概念",
+    "path": "/docs/world/concepts/",
     "lastUpdated": 1764926399000,
     "hotScore": 0
   },
@@ -72,21 +72,9 @@
     "hotScore": 0
   },
   {
-    "title": "异常构造",
-    "path": "/docs/world/concepts/isomer/",
-    "lastUpdated": 1764576698000,
-    "hotScore": 0
-  },
-  {
-    "title": "英雄组织",
-    "path": "/docs/world/factions/heroic/",
-    "lastUpdated": 1764926399000,
-    "hotScore": 0
-  },
-  {
     "title": "灵动骑士",
     "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
-    "lastUpdated": 1764997307000,
+    "lastUpdated": 1764997378000,
     "hotScore": 0
   },
   {
@@ -144,9 +132,9 @@
     "hotScore": 0
   },
   {
-    "title": "十二主神",
-    "path": "/docs/world/concepts/twelveprimedeities/",
-    "lastUpdated": 1763641434000,
+    "title": "英雄组织",
+    "path": "/docs/world/factions/heroic/",
+    "lastUpdated": 1764926399000,
     "hotScore": 0
   },
   {
@@ -165,6 +153,18 @@
     "title": "其他组织",
     "path": "/docs/world/factions/others/",
     "lastUpdated": 1764926399000,
+    "hotScore": 0
+  },
+  {
+    "title": "异常构造",
+    "path": "/docs/world/concepts/isomer/",
+    "lastUpdated": 1764576698000,
+    "hotScore": 0
+  },
+  {
+    "title": "十二主神",
+    "path": "/docs/world/concepts/twelveprimedeities/",
+    "lastUpdated": 1763641434000,
     "hotScore": 0
   },
   {

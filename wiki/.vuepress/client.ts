@@ -20,6 +20,8 @@ import TwikooComment from './components/TwikooComment.vue'
 import TeamLineupLayout from './layouts/TeamLineupLayout.vue'
 import MeiliFilterSearch from './components/search/MeiliFilterSearch.vue'
 
+import MeiliFilterControls from './components/search/MeiliFilterControls.vue'
+
 import TaxonomyList from './components/TaxonomyList.vue'
 
 import AutoLinkTooltip from './components/AutoLinkTooltip.vue'
@@ -116,6 +118,7 @@ export default defineClientConfig({
     app.component('NavbarMenuHotPages', NavbarMenuHotPages)
     app.component('TwikooComment', TwikooComment)
     app.component('MeiliFilterSearch', MeiliFilterSearch)
+    app.component('MeiliFilterControls', MeiliFilterControls)
 
     app.component('TaxonomyList', TaxonomyList)
     app.component('AutoLinkTooltip', AutoLinkTooltip)
