@@ -1,8 +1,8 @@
 <template>
   <div>
-    <!-- 顶部搜索条：输入框 + 重置 + 搜索 -->
+    <!-- 顶部搜索条：输入框 + 搜索 -->
     <div class="mfs-bar">
-      <!-- 输入区域，用来承载“标签 + 输入框 + 重置按钮 + 下拉建议” -->
+      <!-- 输入区域：承载输入胶囊 + 重置按钮 + 下拉建议 -->
       <div class="mfs-input-area">
         <!-- 多标签输入胶囊 -->
         <div class="mfs-input-wrapper">
@@ -88,11 +88,11 @@
       </button>
     </div>
 
-    <!-- 标签区域：只显示一行，通过上下箭头翻页 -->
+    <!-- 标签区域：一行 + 左右翻页箭头 + 页码显示 -->
     <div class="mfs-tags" v-if="availableTags.length">
       <span class="mfs-tags-label">标签：</span>
 
-      <!-- 上一页（向上箭头） -->
+      <!-- 左侧上一页箭头 -->
       <button
         class="mfs-tags-nav"
         :disabled="!hasPrevPage"
@@ -102,10 +102,10 @@
         ▲
       </button>
 
-      <!-- 当前这一页的标签（一行，不滚动） -->
-      <div class="mfs-tags-row">
+      <!-- 中间这一页的标签（一行） -->
+      <div class="mfs-tags-row" ref="tagsRowRef">
         <button
-          v-for="tag in pagedVisibleTags"
+          v-for="tag in currentPageTags"
           :key="tag"
           class="mfs-tag-btn"
           :class="{ 'is-active': selectedTags.includes(tag) }"
@@ -118,7 +118,12 @@
         </button>
       </div>
 
-      <!-- 下一页（向下箭头） -->
+      <!-- 页码显示：第 x / y 页 -->
+      <span class="mfs-tags-pageinfo">
+         {{ currentPageNumber }} / {{ totalPages }} 
+      </span>
+
+      <!-- 右侧下一页箭头 -->
       <button
         class="mfs-tags-nav"
         :disabled="!hasNextPage"
@@ -128,11 +133,32 @@
         ▼
       </button>
     </div>
+
+    <!-- 隐藏的测量容器：用来计算分页（不显示在页面上） -->
+    <div ref="measureRowRef" class="mfs-tags-measure">
+      <button
+        v-for="tag in visibleTags"
+        :key="tag"
+        class="mfs-tag-measure"
+      >
+        <span class="tag-box">
+          {{ tag }}
+          <span class="tag-circle"></span>
+        </span>
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from "vue";
+import {
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  computed,
+  watch,
+  nextTick,
+} from "vue";
 
 /** ==== props ==== */
 const props = defineProps<{
@@ -269,39 +295,124 @@ function applySuggestion(word: string) {
   showSuggestBox.value = false;
 }
 
-/* ================== 标签一行 + 上下翻页 ================== */
+/* ================== 标签完整分页逻辑 ================== */
 
-const TAGS_PER_PAGE = 7; // 每一行最多显示多少个标签，可以按需要改
-const tagPage = ref(0);
+/** 实际显示标签的一行容器 */
+const tagsRowRef = ref<HTMLElement | null>(null);
+/** 隐藏的测量容器：里面渲染所有 visibleTags，用来计算宽度 */
+const measureRowRef = ref<HTMLElement | null>(null);
 
-const totalPages = computed(() =>
-  Math.max(1, Math.ceil(props.visibleTags.length / TAGS_PER_PAGE))
-);
+/** 分好页的标签数组，例如 [ ['A','B'], ['C','D','E'], ... ] */
+const pages = ref<string[][]>([]);
+/** 当前页索引 */
+const pageIndex = ref(0);
 
-const pagedVisibleTags = computed(() => {
-  const start = tagPage.value * TAGS_PER_PAGE;
-  const end = start + TAGS_PER_PAGE;
-  return props.visibleTags.slice(start, end);
+/** 当前这一页的标签 */
+const currentPageTags = computed(() => {
+  return pages.value[pageIndex.value] || [];
 });
 
-const hasPrevPage = computed(() => tagPage.value > 0);
-const hasNextPage = computed(() => tagPage.value < totalPages.value - 1);
+/** 页数 / 当前页（用于显示“第 x / y 页”） */
+const totalPages = computed(() => (pages.value.length ? pages.value.length : 1));
+const currentPageNumber = computed(() =>
+  pages.value.length ? pageIndex.value + 1 : 1
+);
+
+/** 是否有上一页 / 下一页 */
+const hasPrevPage = computed(() => pageIndex.value > 0);
+const hasNextPage = computed(
+  () => pageIndex.value < pages.value.length - 1
+);
 
 function prevPage() {
-  if (hasPrevPage.value) tagPage.value -= 1;
+  if (hasPrevPage.value) pageIndex.value -= 1;
 }
 
 function nextPage() {
-  if (hasNextPage.value) tagPage.value += 1;
+  if (hasNextPage.value) pageIndex.value += 1;
 }
 
-/* 当可见标签集合变化时，自动把页码重置到第一页 */
+/**
+ * 重新根据容器宽度 + 每个标签的宽度来划分页：
+ * - 不截断标签
+ * - 让每页刚好塞满一行（最后一页可能比较短）
+ */
+async function rebuildPages() {
+  await nextTick();
+
+  const row = tagsRowRef.value;
+  const measure = measureRowRef.value;
+  if (!row || !measure) {
+    pages.value = [props.visibleTags.slice()];
+    pageIndex.value = 0;
+    return;
+  }
+
+  const maxWidth = row.clientWidth || row.offsetWidth;
+  if (!maxWidth) {
+    pages.value = [props.visibleTags.slice()];
+    pageIndex.value = 0;
+    return;
+  }
+
+  const children = Array.from(measure.children) as HTMLElement[];
+
+  const result: string[][] = [];
+  let current: string[] = [];
+  let currentWidth = 0;
+
+  const GAP = 8; // 标签间距（px），要和 .mfs-tags-row 的 gap 接近
+
+  children.forEach((el, idx) => {
+    const tag = props.visibleTags[idx];
+    if (!tag) return;
+
+    const w = el.offsetWidth;
+    if (!w) return;
+
+    const extra = current.length ? GAP : 0;
+
+    if (current.length && currentWidth + extra + w > maxWidth) {
+      result.push(current);
+      current = [tag];
+      currentWidth = w;
+    } else {
+      current.push(tag);
+      currentWidth += extra + w;
+    }
+  });
+
+  if (current.length) result.push(current);
+  if (!result.length) result.push([]);
+
+  pages.value = result;
+  if (pageIndex.value >= result.length) {
+    pageIndex.value = result.length - 1;
+  }
+}
+
+/** 当可见标签集合变化时，重置到第一页并重新分页 */
 watch(
   () => props.visibleTags,
   () => {
-    tagPage.value = 0;
-  }
+    pageIndex.value = 0;
+    rebuildPages();
+  },
+  { deep: true }
 );
+
+function handleResize() {
+  rebuildPages();
+}
+
+onMounted(() => {
+  rebuildPages();
+  window.addEventListener("resize", handleResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", handleResize);
+});
 </script>
 
 <style scoped>
@@ -344,7 +455,7 @@ watch(
   font-size: 0.95rem;
 }
 
-/* 搜索按钮 */
+/* 主搜索按钮 */
 .mfs-btn {
   padding: 0.4rem 0.9rem;
   border-radius: 999px;
@@ -356,7 +467,7 @@ watch(
   color: #fff;
 }
 
-/* 重置图标：嵌在输入框右侧 */
+/* 内嵌重置图标：嵌在输入框右侧 */
 .mfs-reset-icon {
   position: absolute;
   right: 0.75rem;
@@ -441,39 +552,20 @@ watch(
   border-color: transparent;
 }
 
-/* 标签区域：一行 + 右侧固定垂直箭头 */
+/* 标签区域：一行 + 左右翻页箭头 + 页码 */
 .mfs-tags {
   display: flex;
   align-items: center;
-  width: 100%;          /* 占满整行 */
+  gap: 0.4rem;
   margin-bottom: 0.75rem;
   font-size: 0.9rem;
 }
 
 .mfs-tags-label {
   font-weight: 600;
-  margin-right: 0.4rem;
 }
 
-/* 当前这一行的标签容器：不滚动，只是一行 */
-.mfs-tags-row {
-  flex: 1;              /* 吃掉中间所有空间 */
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-/* 右侧固定垂直箭头组 */
-.mfs-tags-nav-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  margin-left: auto;    /* 把箭头组推到最右边 */
-}
-
-/* 上/下箭头按钮 */
+/* 左右箭头按钮 */
 .mfs-tags-nav {
   width: 1.5rem;
   height: 1.5rem;
@@ -487,6 +579,7 @@ watch(
   align-items: center;
   justify-content: center;
   padding: 0;
+  flex-shrink: 0;
 }
 
 .mfs-tags-nav:disabled {
@@ -494,9 +587,26 @@ watch(
   cursor: default;
 }
 
+/* 中间这一行的标签容器 */
+.mfs-tags-row {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  overflow: hidden; /* 一行展示，真正的分页靠 JS 控制 */
+}
+
+/* 页码文字 */
+.mfs-tags-pageinfo {
+  font-size: 0.8rem;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
 /* 标签按钮 + 已选标签卡片 共用样式 */
 .mfs-tag-btn,
-.tag-card {
+.tag-card,
+.mfs-tag-measure {
   display: inline-flex;
   align-items: center;
   padding: 0;
@@ -505,6 +615,7 @@ watch(
   cursor: pointer;
   font-size: 0.9rem;
   --tag-dot-size: 0.33em;
+  flex-shrink: 0;
 }
 
 .tag-box {
@@ -544,5 +655,14 @@ watch(
 .tag-card .tag-circle {
   background: #ffffff;
   border-color: #ffffff;
+}
+
+/* 隐藏的测量容器：不占布局，只用于计算宽度 */
+.mfs-tags-measure {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  height: 0;
+  overflow: hidden;
 }
 </style>

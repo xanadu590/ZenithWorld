@@ -88,37 +88,74 @@
       </div>
     </div>
 
-    <!-- 有结果时：正常列表 -->
+    <!-- 有结果时：折叠 / 展开结果列表 -->
     <ul class="mfs-results" v-else-if="results.length">
       <li
         v-for="hit in results"
-        :key="hit.id || hit.objectID || hit.url"
+        :key="hitKey(hit)"
         class="mfs-result-item"
+        :class="{ 'is-open': isExpanded(hit) }"
       >
+        <!-- 整卡片仍然可以点击跳转 -->
         <a :href="hit.url" class="mfs-result-link">
-          <div class="mfs-result-title">
-            <!-- 根据 URL 推断类型，在标题前加上 [人物]/[势力] 这样的标记 -->
-            <span v-if="inferType(hit)" class="mfs-tag">
-              [{{ typeLabelMap[inferType(hit)!] || inferType(hit) }}]
-            </span>
-            {{ hit.title || hit.hierarchy_lvl1 || hit.hierarchy_lvl0 || "(无标题)" }}
+          <!-- 头部：标题 + 展开按钮 -->
+          <div class="mfs-result-head">
+            <div class="mfs-result-title">
+              <!-- 根据 URL 推断类型，在标题前加上 [人物]/[势力] 这样的标记 -->
+              <span v-if="inferType(hit)" class="mfs-tag">
+                [{{ typeLabelMap[inferType(hit)!] || inferType(hit) }}]
+              </span>
+              {{ hit.title || hit.hierarchy_lvl1 || hit.hierarchy_lvl0 || "(无标题)" }}
+            </div>
+
+            <button
+              type="button"
+              class="mfs-toggle-btn"
+              @click.stop="toggleHit(hit)"
+            >
+              {{ isExpanded(hit) ? "收起详情" : "展开详情" }}
+            </button>
           </div>
 
-          <!-- 结果的补充信息：区域 + 标签 -->
-          <div class="mfs-result-meta">
-            <span v-if="hit.region">区域：{{ hit.region }}</span>
-            <span v-if="hit.tags?.length">
-              · 标签：{{ hit.tags.join(" / ") }}
-            </span>
+          <!-- 折叠态：只显示一行摘要 -->
+          <div
+            v-if="!isExpanded(hit)"
+            class="mfs-result-summary mfs-result-summary--collapsed"
+          >
+            {{ shortSummary(hit.summary || hit.text || "（暂无摘要）") }}
           </div>
 
-          <!-- 结果摘要：由 random-index / Meili 字段拼出来 -->
-          <div class="mfs-result-summary">
-            {{ hit.summary || hit.text || "（暂无摘要）" }}
-          </div>
+          <!-- 展开态：详细内容（这块你之后可以随便改布局） -->
+          <div v-else class="mfs-result-detail">
+            <!-- 摘要全文 -->
+            <div class="mfs-result-summary-full">
+              {{ hit.summary || hit.text || "（暂无摘要）" }}
+            </div>
 
-          <!-- 显示原始 URL，方便确认跳转位置 -->
-          <div class="mfs-result-url">{{ hit.url }}</div>
+            <!-- meta 信息：类型 / 区域 / 标签 / 更新时间 / 访问量 -->
+            <div class="mfs-result-meta-line">
+              <span v-if="inferType(hit)">
+                类型：{{ typeLabelMap[inferType(hit)!] || inferType(hit) }}
+              </span>
+              <span v-if="hit.region">
+                · 区域：{{ hit.region }}
+              </span>
+              <span v-if="hit.tags?.length">
+                · 标签：{{ hit.tags.join(" / ") }}
+              </span>
+              <span v-if="hit.updatedAt">
+                · 更新：{{ new Date(hit.updatedAt).toLocaleDateString() }}
+              </span>
+              <span v-if="hit.viewCount">
+                · 访问：{{ hit.viewCount }} 次
+              </span>
+            </div>
+
+            <!-- 原始 URL -->
+            <div class="mfs-result-url">
+              {{ hit.url }}
+            </div>
+          </div>
         </a >
       </li>
     </ul>
@@ -211,6 +248,38 @@ onMounted(async () => {
     randLoading.value = false;
   }
 });
+
+/* ========= 折叠 / 展开：每条搜索结果独立状态 ========= */
+
+/** 哪些结果是“已展开”的：保存它们的 key */
+const expandedKeys = ref<string[]>([]);
+
+/** 统一计算一条结果的唯一 key */
+function hitKey(hit: any): string {
+  return hit.id || hit.objectID || hit.url || JSON.stringify(hit);
+}
+
+/** 当前这条是否展开 */
+function isExpanded(hit: any): boolean {
+  const key = hitKey(hit);
+  return expandedKeys.value.includes(key);
+}
+
+/** 切换展开 / 收起 */
+function toggleHit(hit: any) {
+  const key = hitKey(hit);
+  const list = expandedKeys.value;
+  const idx = list.indexOf(key);
+  expandedKeys.value =
+    idx === -1 ? [...list, key] : list.filter((k) => k !== key);
+}
+
+/** 折叠态显示用的短摘要：默认 60 字，可以按需调 */
+function shortSummary(text: string, maxLen = 60): string {
+  const t = (text || "").trim();
+  if (t.length <= maxLen) return t;
+  return t.slice(0, maxLen) + "…";
+}
 </script>
 
 <style scoped>
@@ -231,9 +300,6 @@ onMounted(async () => {
   background: var(--vp-bg, #fff);
   padding-bottom: 0.5rem;
   margin-bottom: 0.75rem;
-
-  /* 关键：让 ::before 能相对定位 */
-  position: sticky;
 }
 
 /* 🔥 让搜索栏“往上长出一块空白”盖住上方露出的内容 */
@@ -392,10 +458,32 @@ onMounted(async () => {
   background: rgba(99, 102, 241, 0.02);
 }
 
-/* 结果标题行 */
+/* 结果卡片头部：标题 + 展开按钮一行 */
+.mfs-result-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* 结果标题行本体 */
 .mfs-result-title {
   font-weight: 600;
-  margin-bottom: 0.2rem;
+}
+
+/* 展开按钮 */
+.mfs-toggle-btn {
+  border: 1px solid var(--vp-c-border, #d0d7de);
+  background: #f9fafb;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  padding: 0.2rem 0.7rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.mfs-toggle-btn:hover {
+  background: #e5e7eb;
 }
 
 /* 标题前面的类型标签 [人物]/[概念] */
@@ -409,23 +497,37 @@ onMounted(async () => {
   font-size: 0.75rem;
 }
 
-/* 区域 + 标签等元信息 */
-.mfs-result-meta {
+/* 折叠态摘要：单行 + 省略号 */
+.mfs-result-summary--collapsed {
+  max-height: 1.4em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 展开态整体块 */
+.mfs-result-detail {
+  margin-top: 0.25rem;
+}
+
+/* 展开态 meta 信息一行 */
+.mfs-result-meta-line {
+  margin-top: 0.2rem;
   font-size: 0.8rem;
   color: var(--vp-c-text-2, #9ca3af);
-  margin-bottom: 0.25rem;
 }
 
-/* 摘要文本 */
-.mfs-result-summary {
+/* 展开态全文摘要 */
+.mfs-result-summary-full {
   font-size: 0.85rem;
   color: var(--vp-c-text-1, #4b5563);
-  margin-bottom: 0.3rem;
+  margin-top: 0.2rem;
 }
 
-/* URL 展示行 */
+/* 公共 URL 行样式 */
 .mfs-result-url {
   font-size: 0.75rem;
   color: var(--vp-c-text-3, #9ca3af);
+  margin-top: 0.25rem;
 }
 </style>
