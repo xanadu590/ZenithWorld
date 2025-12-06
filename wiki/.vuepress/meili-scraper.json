@@ -54,6 +54,11 @@
       "text",
       "lang"
     ],
-    "filterableAttributes": ["lang"]
+    "filterableAttributes": ["lang"],
+    
+    "sortableAttributes": [
+      "updatedAt",
+      "viewCount"
+    ]
   }
 }

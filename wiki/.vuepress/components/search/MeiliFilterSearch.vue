@@ -21,6 +21,35 @@
       @reset-filters="resetFilters"
     />
 
+    <!-- 排序方式选择：相关度 / 最新更新 / 最多访问 -->
+    <div class="mfs-sort">
+      <span class="mfs-sort-label">排序：</span>
+
+      <button
+        class="mfs-sort-btn"
+        :class="{ 'is-active': sortMode === 'relevance' }"
+        @click="setSort('relevance')"
+      >
+        相关度
+      </button>
+
+      <button
+        class="mfs-sort-btn"
+        :class="{ 'is-active': sortMode === 'updatedAt' }"
+        @click="setSort('updatedAt')"
+      >
+        最新更新
+      </button>
+
+      <button
+        class="mfs-sort-btn"
+        :class="{ 'is-active': sortMode === 'viewCount' }"
+        @click="setSort('viewCount')"
+      >
+        最多访问
+      </button>
+    </div>
+
     <!-- 搜索状态提示 -->
     <div class="mfs-status" v-if="loading">正在搜索……</div>
     <div class="mfs-status" v-else-if="error">出错了：{{ error }}</div>
@@ -96,6 +125,9 @@ const results = ref<any[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
 const searchedOnce = ref(false);
+
+/** 排序方式：relevance / updatedAt / viewCount */
+const sortMode = ref<"relevance" | "updatedAt" | "viewCount">("relevance");
 
 /* =========================================================
  * 二、分类筛选配置
@@ -301,6 +333,13 @@ function setType(v: string | null) {
   search();
 }
 
+/** 切换排序方式，并立即重新搜索 */
+function setSort(mode: "relevance" | "updatedAt" | "viewCount") {
+  if (sortMode.value === mode) return;
+  sortMode.value = mode;
+  search();
+}
+
 /* =========================================================
  * 八、主搜索流程
  *    - 调用 MeiliSearch
@@ -316,6 +355,19 @@ async function search() {
     // 确保 random-index 已经加载
     await loadRandomIndex();
 
+    // 根据排序方式构造请求 body
+    const body: any = {
+      q: keyword.value,
+      limit: 500,
+    };
+
+    if (sortMode.value === "updatedAt") {
+      body.sort = ["updatedAt:desc"];
+    } else if (sortMode.value === "viewCount") {
+      body.sort = ["viewCount:desc"];
+    }
+    // relevance 下不传 sort，让 Meili 用默认 ranking
+
     // 调用 MeiliSearch 的 search API
     const res = await fetch(`${host}/indexes/${indexUid}/search`, {
       method: "POST",
@@ -323,7 +375,7 @@ async function search() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
-      body: JSON.stringify({ q: keyword.value, limit: 500 }),
+      body: JSON.stringify(body),
     });
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -418,6 +470,37 @@ onBeforeUnmount(() => {
   border-radius: 1rem;
   background: var(--vp-bg, #fff);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+}
+
+/* 排序区域 */
+.mfs-sort {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.25rem 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--vp-c-text-2, #6b7280);
+}
+
+.mfs-sort-label {
+  font-weight: 600;
+}
+
+/* 排序按钮 */
+.mfs-sort-btn {
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--vp-c-border, #d0d7de);
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.mfs-sort-btn.is-active {
+  background: var(--vp-c-accent, #6366f1);
+  color: #fff;
+  border-color: transparent;
 }
 
 /* 搜索状态提示文字 */

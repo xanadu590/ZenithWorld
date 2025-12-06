@@ -98,7 +98,7 @@
     {
       "title": "天灾",
       "path": "/docs/world/characters/superhero/character-Scourge.html",
-      "excerpt": "天灾 基本信息 <LeadBlock quote=\"啊哈哈！我很强的……干嘛！不要那样看着我！\" / 姓名：尹守 性别：男 英雄名：天灾（Scourge 昵称：后宫男 年龄：26 种族：人类 出生年月：2004年5月20日 职业：偶像经纪人"
+      "excerpt": "天灾 <LeadBlock quote=\"啊哈哈！我很强的……干嘛！不要那样看着我！\" / 姓名：尹守 性别：男 英雄名：天灾（Scourge 昵称：后宫男 年龄：26 种族：人类 出生年月：2004年5月20日 职业：偶像经纪人 学历：大"
     },
     {
       "title": "天灾",
@@ -141,14 +141,14 @@
       "excerpt": "我在这里随便写一句：测试目标A会不会被自动加链接。"
     },
     {
-      "title": "异常事物管理局",
-      "path": "/docs/world/factions/official/AMA/",
-      "excerpt": "名称：异常事物管理局\n译名：Anomaly Management Agency\n简称：AMA\n成立日期： 历史\n异常管理局的源头可追溯至【先知】创立的早期组织——【危机管理机构】Crisis Control Organization，简称C"
-    },
-    {
       "title": "十二主神",
       "path": "/docs/world/concepts/twelveprimedeities/",
       "excerpt": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。"
+    },
+    {
+      "title": "异常事物管理局",
+      "path": "/docs/world/factions/official/AMA/",
+      "excerpt": "名称：异常事物管理局\n译名：Anomaly Management Agency\n简称：AMA\n成立日期： 历史\n异常管理局的源头可追溯至【先知】创立的早期组织——【危机管理机构】Crisis Control Organization，简称C"
     }
   ]
 }
