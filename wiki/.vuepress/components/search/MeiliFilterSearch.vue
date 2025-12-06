@@ -223,17 +223,29 @@ onMounted(async () => {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
 }
 
-/* ✅ 顶部“搜索 + 排序”固定区域 */
+/* 让搜索栏 + 分类 + 标签固定在顶部 */
 .mfs-header-sticky {
   position: sticky;
-  /* 根据你的导航栏高度微调这个值 */
-  top: 3.5rem;
+  top: var(--nav-height, 4rem); /* 保持贴在导航栏下方 */
   z-index: 20;
   background: var(--vp-bg, #fff);
   padding-bottom: 0.5rem;
-  margin-bottom: 0.5rem;
-  /* 底部加一点阴影，滚动时有悬浮感 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
+  margin-bottom: 0.75rem;
+
+  /* 关键：让 ::before 能相对定位 */
+  position: sticky;
+}
+
+/* 🔥 让搜索栏“往上长出一块空白”盖住上方露出的内容 */
+.mfs-header-sticky::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1rem;            /* 想往上延伸多少就调这里，例如 -1.2rem */
+  height: 1rem;          /* 空白条高度，与上面的 top 配套 */
+  background: var(--vp-bg, #fff);  /* 与页面背景色一致 */
+  pointer-events: none;  /* 避免遮挡鼠标事件 */
 }
 
 /* 排序区域 */

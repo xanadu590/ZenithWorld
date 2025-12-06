@@ -1,12 +1,12 @@
 <template>
   <div>
-    <!-- 顶部搜索条：左边输入胶囊，右边搜索按钮 -->
+    <!-- 顶部搜索条：输入框 + 重置 + 搜索 -->
     <div class="mfs-bar">
-      <!-- 输入区域外层：作为下拉框和重置按钮的定位父元素 -->
+      <!-- 输入区域，用来承载“标签 + 输入框 + 重置按钮 + 下拉建议” -->
       <div class="mfs-input-area">
-        <!-- 真正的“输入胶囊”：只负责显示标签 + 输入框 -->
+        <!-- 多标签输入胶囊 -->
         <div class="mfs-input-wrapper">
-          <!-- 已选标签 -->
+          <!-- 已选标签：显示在输入框内部，点击即可取消选中 -->
           <div
             v-for="tag in selectedTags"
             :key="tag"
@@ -19,7 +19,7 @@
             </span>
           </div>
 
-          <!-- 关键字输入框 -->
+          <!-- 关键字输入框（受控组件） -->
           <input
             :value="keyword"
             class="mfs-input"
@@ -30,6 +30,18 @@
             @focus="onFocus"
             @blur="onBlur"
           />
+
+          <!-- 内嵌在输入框右侧的重置按钮（箭头咬尾） -->
+          <button
+            v-if="hasAnyFilter"
+            type="button"
+            class="mfs-reset-icon"
+            title="清除所有条件"
+            @mousedown.prevent
+            @click="$emit('reset-filters')"
+          >
+            ⟳
+          </button>
         </div>
 
         <!-- 自动补全 + 搜索历史下拉框 -->
@@ -37,7 +49,7 @@
           v-if="showSuggestBox && (suggestions.length || searchHistory.length)"
           class="mfs-suggest-box"
         >
-          <!-- 官方联想词 -->
+          <!-- 联想词 -->
           <li
             v-for="s in suggestions"
             :key="'sg-' + s"
@@ -46,7 +58,7 @@
           >
             🔍 {{ s }}
           </li>
-          <!-- 搜索历史 -->
+          <!-- 历史记录 -->
           <li
             v-for="h in searchHistory"
             :key="'his-' + h"
@@ -55,33 +67,14 @@
           >
             🕘 {{ h }}
           </li>
-
-          <!-- 清空历史 -->
-          <li
-            v-if="searchHistory.length"
-            class="mfs-history-clear"
-            @mousedown.prevent="clearHistory"
-          >
-            清除所有历史记录
-          </li>
         </ul>
-
-        <!-- 🔁 放在搜索框内部右侧的小圆形重置按钮 -->
-        <button
-          v-if="hasAnyFilter"
-          class="mfs-reset-icon-btn"
-          @click="$emit('reset-filters')"
-          title="清空筛选条件"
-        >
-          ⟳
-        </button>
       </div>
 
       <!-- 右侧主搜索按钮 -->
       <button class="mfs-btn" @click="onClickSearch">搜索</button>
     </div>
 
-    <!-- 分类按钮区域 -->
+    <!-- 分类按钮区域：全部 / 人物 / 概念 / 势力 / 地理 / 历史 -->
     <div class="mfs-filters">
       <span class="mfs-filters-label">分类：</span>
       <button
@@ -95,28 +88,51 @@
       </button>
     </div>
 
-    <!-- 标签筛选区域 -->
+    <!-- 标签区域：只显示一行，通过上下箭头翻页 -->
     <div class="mfs-tags" v-if="availableTags.length">
       <span class="mfs-tags-label">标签：</span>
 
+      <!-- 上一页（向上箭头） -->
       <button
-        v-for="tag in visibleTags"
-        :key="tag"
-        class="mfs-tag-btn"
-        :class="{ 'is-active': selectedTags.includes(tag) }"
-        @click="$emit('toggle-tag', tag)"
+        class="mfs-tags-nav"
+        :disabled="!hasPrevPage"
+        @click="prevPage"
+        title="上一组标签"
       >
-        <span class="tag-box">
-          {{ tag }}
-          <span class="tag-circle"></span>
-        </span>
+        ▲
+      </button>
+
+      <!-- 当前这一页的标签（一行，不滚动） -->
+      <div class="mfs-tags-row">
+        <button
+          v-for="tag in pagedVisibleTags"
+          :key="tag"
+          class="mfs-tag-btn"
+          :class="{ 'is-active': selectedTags.includes(tag) }"
+          @click="$emit('toggle-tag', tag)"
+        >
+          <span class="tag-box">
+            {{ tag }}
+            <span class="tag-circle"></span>
+          </span>
+        </button>
+      </div>
+
+      <!-- 下一页（向下箭头） -->
+      <button
+        class="mfs-tags-nav"
+        :disabled="!hasNextPage"
+        @click="nextPage"
+        title="下一组标签"
+      >
+        ▼
       </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 
 /** ==== props ==== */
 const props = defineProps<{
@@ -138,18 +154,12 @@ const emit = defineEmits<{
   (e: "reset-filters"): void;
 }>();
 
-/* =========================================================
- * MeiliSearch 连接信息
- * ======================================================= */
+/* ================== MeiliSearch 自动补全 ================== */
 
 const SEARCH_HOST = "https://search.zenithworld.top";
 const SEARCH_INDEX = "wiki";
 const SEARCH_API_KEY =
   "e12946c7f8693e562f078360da358419a57197338607669795398c2ee3fddf59";
-
-/* =========================================================
- * 自动补全 + 搜索历史
- * ======================================================= */
 
 const suggestions = ref<string[]>([]);
 const searchHistory = ref<string[]>([]);
@@ -166,7 +176,6 @@ onMounted(() => {
   }
 });
 
-/** 保存历史（去重 + 最多 10 条） */
 function saveHistory(word: string) {
   const kw = word.trim();
   if (!kw) return;
@@ -178,21 +187,10 @@ function saveHistory(word: string) {
   try {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
   } catch {
-    /* 忽略 */
+    /* ignore */
   }
 }
 
-/** 清空所有历史记录 */
-function clearHistory() {
-  searchHistory.value = [];
-  try {
-    localStorage.removeItem(HISTORY_KEY);
-  } catch {
-    /* 忽略 */
-  }
-}
-
-/** 调用 MeiliSearch 做自动补全 */
 async function fetchSuggestions(q: string) {
   const kw = q.trim();
   if (!kw) {
@@ -201,21 +199,18 @@ async function fetchSuggestions(q: string) {
   }
 
   try {
-    const res = await fetch(
-      `${SEARCH_HOST}/indexes/${SEARCH_INDEX}/search`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${SEARCH_API_KEY}`,
-        },
-        body: JSON.stringify({
-          q: kw,
-          limit: 8,
-          attributesToRetrieve: ["title", "hierarchy_lvl1", "hierarchy_lvl0"],
-        }),
-      }
-    );
+    const res = await fetch(`${SEARCH_HOST}/indexes/${SEARCH_INDEX}/search`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${SEARCH_API_KEY}`,
+      },
+      body: JSON.stringify({
+        q: kw,
+        limit: 8,
+        attributesToRetrieve: ["title", "hierarchy_lvl1", "hierarchy_lvl0"],
+      }),
+    });
 
     if (!res.ok) {
       suggestions.value = [];
@@ -238,14 +233,12 @@ async function fetchSuggestions(q: string) {
   }
 }
 
-/** 输入变化 */
 function onInput(val: string) {
   emit("update:keyword", val);
   fetchSuggestions(val);
   showSuggestBox.value = true;
 }
 
-/** focus 时展开下拉 */
 function onFocus() {
   showSuggestBox.value = true;
   if (props.keyword?.trim()) {
@@ -253,14 +246,12 @@ function onFocus() {
   }
 }
 
-/** blur 时稍微延迟关闭，让点击有时间触发 */
 function onBlur() {
   setTimeout(() => {
     showSuggestBox.value = false;
   }, 150);
 }
 
-/** 点击“搜索”按钮或回车 */
 function onClickSearch() {
   if (props.keyword) saveHistory(props.keyword);
   emit("search");
@@ -271,13 +262,46 @@ function onEnter() {
   onClickSearch();
 }
 
-/** 选择建议词 / 历史词 */
 function applySuggestion(word: string) {
   emit("update:keyword", word);
   saveHistory(word);
   emit("search");
   showSuggestBox.value = false;
 }
+
+/* ================== 标签一行 + 上下翻页 ================== */
+
+const TAGS_PER_PAGE = 7; // 每一行最多显示多少个标签，可以按需要改
+const tagPage = ref(0);
+
+const totalPages = computed(() =>
+  Math.max(1, Math.ceil(props.visibleTags.length / TAGS_PER_PAGE))
+);
+
+const pagedVisibleTags = computed(() => {
+  const start = tagPage.value * TAGS_PER_PAGE;
+  const end = start + TAGS_PER_PAGE;
+  return props.visibleTags.slice(start, end);
+});
+
+const hasPrevPage = computed(() => tagPage.value > 0);
+const hasNextPage = computed(() => tagPage.value < totalPages.value - 1);
+
+function prevPage() {
+  if (hasPrevPage.value) tagPage.value -= 1;
+}
+
+function nextPage() {
+  if (hasNextPage.value) tagPage.value += 1;
+}
+
+/* 当可见标签集合变化时，自动把页码重置到第一页 */
+watch(
+  () => props.visibleTags,
+  () => {
+    tagPage.value = 0;
+  }
+);
 </script>
 
 <style scoped>
@@ -288,13 +312,13 @@ function applySuggestion(word: string) {
   margin-bottom: 0.75rem;
 }
 
-/* 输入区域：作为 dropdown 和 重置按钮 的定位父元素 */
+/* 输入区域：承载输入胶囊 + 重置按钮 + 下拉建议 */
 .mfs-input-area {
   position: relative;
   flex: 1;
 }
 
-/* 胶囊输入容器 */
+/* 输入胶囊：标签 + 输入框 */
 .mfs-input-wrapper {
   flex: 1;
   display: flex;
@@ -302,11 +326,10 @@ function applySuggestion(word: string) {
   align-items: center;
   gap: 0.25rem;
   padding: 0.2rem 0.5rem;
-  padding-right: 2.4rem; /* ⭐ 右侧预留空间给重置按钮 */
+  padding-right: 2rem; /* 给右侧重置按钮留位置 */
   border-radius: 999px;
   border: 1px solid var(--vp-c-border, #d0d7de);
   background: #fff;
-
   max-height: 4.5rem;
   overflow-y: auto;
 }
@@ -333,7 +356,28 @@ function applySuggestion(word: string) {
   color: #fff;
 }
 
-/* 下拉框外观 */
+/* 重置图标：嵌在输入框右侧 */
+.mfs-reset-icon {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1;
+  padding: 0;
+  color: #9ca3af;
+  transition: transform 0.18s ease, color 0.18s ease;
+}
+
+.mfs-reset-icon:hover {
+  color: #4b5563;
+  transform: translateY(-50%) scale(1.15) rotate(45deg);
+}
+
+/* 自动补全下拉框 */
 .mfs-suggest-box {
   position: absolute;
   left: 0;
@@ -368,58 +412,7 @@ function applySuggestion(word: string) {
   background: #f3f4f6;
 }
 
-/* 清空历史 */
-.mfs-history-clear {
-  padding: 0.45rem 0.7rem;
-  font-size: 0.8rem;
-  color: #ef4444;
-  border-top: 1px solid #f3f4f6;
-  cursor: pointer;
-}
-
-.mfs-history-clear:hover {
-  background: #fef2f2;
-}
-
-/* 搜索框内部的“重置图标”按钮（无边框无背景） */
-.mfs-reset-icon-btn {
-  position: absolute;
-  right: 0.65rem;
-  top: 50%;
-  transform: translateY(-50%);
-  
-  width: 20px;
-  height: 20px;
-
-  border: none;
-  background: none;
-  padding: 0;
-
-  cursor: pointer;
-  font-size: 16px;
-  color: #9ca3af;
-
-  line-height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  /* 平滑动画（旋转 + 缩放） */
-  transition: transform 0.25s ease, color 0.2s ease;
-}
-
-/* 悬停：稍稍放大并旋转 45 度 */
-.mfs-reset-icon-btn:hover {
-  transform: translateY(-50%) scale(1.25) rotate(45deg);
-  color: #4b5563;
-}
-
-/* 按下时稍微缩小，保持手感 */
-.mfs-reset-icon-btn:active {
-  transform: translateY(-50%) scale(0.9);
-}
-
-/* 分类区域 */
+/* 分类按钮区域 */
 .mfs-filters {
   display: flex;
   flex-wrap: wrap;
@@ -448,24 +441,60 @@ function applySuggestion(word: string) {
   border-color: transparent;
 }
 
-/* 标签区域 */
+/* 标签区域：一行 + 右侧固定垂直箭头 */
 .mfs-tags {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 0.4rem;
+  align-items: center;
+  width: 100%;          /* 占满整行 */
   margin-bottom: 0.75rem;
-
-  max-height: calc(1.8rem * 3);
-  overflow-y: auto;
-  padding-right: 0.3rem;
+  font-size: 0.9rem;
 }
 
 .mfs-tags-label {
   font-weight: 600;
-  margin-right: 0.25rem;
+  margin-right: 0.4rem;
 }
 
+/* 当前这一行的标签容器：不滚动，只是一行 */
+.mfs-tags-row {
+  flex: 1;              /* 吃掉中间所有空间 */
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* 右侧固定垂直箭头组 */
+.mfs-tags-nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-left: auto;    /* 把箭头组推到最右边 */
+}
+
+/* 上/下箭头按钮 */
+.mfs-tags-nav {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--vp-c-border, #d0d7de);
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.8rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.mfs-tags-nav:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* 标签按钮 + 已选标签卡片 共用样式 */
 .mfs-tag-btn,
 .tag-card {
   display: inline-flex;
@@ -474,7 +503,6 @@ function applySuggestion(word: string) {
   border: none;
   background: transparent;
   cursor: pointer;
-
   font-size: 0.9rem;
   --tag-dot-size: 0.33em;
 }
@@ -503,7 +531,7 @@ function applySuggestion(word: string) {
   top: 0.25em;
 }
 
-/* 已选标签 & 激活标签高亮 */
+/* 高亮：已选标签 + 输入框上方的选中卡片 */
 .mfs-tag-btn.is-active .tag-box,
 .tag-card .tag-box {
   font-size: 1.1em;
