@@ -506,12 +506,14 @@ onMounted(() => {
 .mfs-tag-btn,
 .tag-card {
   display: inline-flex;
-  align-items: center;
+  align-items: stretch;
   padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
 
+  font-size: 0.9rem
+  ;
   /* 下面三个变量就是你之后最常改的三个尺寸 👇 */
   --tag-square-size: 18px;  /* 左边小方块边长（整体显得更“重”就调大） */
   --tag-dot-size:   4px;    /* 中间小圆点大小（你刚才说要小一点就改这个） */
@@ -574,9 +576,9 @@ onMounted(() => {
 .mfs-tag-btn.is-active .tag-box,
 .tag-card .tag-box {
   padding: 0.317rem 0.15rem 0.3rem 0.4rem;
-  background: var(--vp-c-accent, #6366f1);
+  background: #6366f1;
   color: #ffffff;
-  border-color: var(--vp-c-accent, #6366f1);
+  border-color: #6366f1;
 }
 
 .mfs-tag-btn.is-active .tag-triangle,
