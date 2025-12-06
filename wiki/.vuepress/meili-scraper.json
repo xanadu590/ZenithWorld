@@ -11,6 +11,8 @@
       "default_value": "Wiki"
     },
 
+    "lvl1": "main h1, [vp-content] h1, article h1, .theme-hope-content h1",
+
     "text": "main p, main li, [vp-content] p, [vp-content] li",
 
     "lang": {
