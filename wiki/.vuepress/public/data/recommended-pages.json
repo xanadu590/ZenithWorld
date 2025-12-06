@@ -36,14 +36,20 @@
     "hotScore": 0
   },
   {
-    "title": "反派组织",
-    "path": "/docs/world/factions/",
+    "title": "概念",
+    "path": "/docs/world/concepts/",
     "lastUpdated": 1764926399000,
     "hotScore": 0
   },
   {
-    "title": "概念",
-    "path": "/docs/world/concepts/",
+    "title": "地理",
+    "path": "/docs/world/geography/",
+    "lastUpdated": 1764926399000,
+    "hotScore": 0
+  },
+  {
+    "title": "反派组织",
+    "path": "/docs/world/factions/",
     "lastUpdated": 1764926399000,
     "hotScore": 0
   },
@@ -60,12 +66,6 @@
     "hotScore": 0
   },
   {
-    "title": "地理",
-    "path": "/docs/world/geography/",
-    "lastUpdated": 1764926399000,
-    "hotScore": 0
-  },
-  {
     "title": "神明代理",
     "path": "/docs/world/characters/divineproxy/",
     "lastUpdated": 1764926399000,
@@ -74,43 +74,43 @@
   {
     "title": "灵动骑士",
     "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
-    "lastUpdated": 1764997378000,
+    "lastUpdated": 1765011693000,
     "hotScore": 0
   },
   {
     "title": "赤听",
     "path": "/docs/world/characters/superhero/character-HearTone.html",
-    "lastUpdated": 1764747651000,
+    "lastUpdated": 1765011693000,
     "hotScore": 0
   },
   {
     "title": "幻绘星",
     "path": "/docs/world/characters/superhero/character-Illustra.html",
-    "lastUpdated": 1764747651000,
+    "lastUpdated": 1765011693000,
     "hotScore": 0
   },
   {
     "title": "月五",
     "path": "/docs/world/characters/superhero/character-M-A-Y.html",
-    "lastUpdated": 1764747651000,
+    "lastUpdated": 1765011693000,
     "hotScore": 0
   },
   {
     "title": "天灾",
     "path": "/docs/world/characters/superhero/character-Scourge.html",
-    "lastUpdated": 1764771824000,
+    "lastUpdated": 1765011693000,
     "hotScore": 0
   },
   {
     "title": "警钟",
     "path": "/docs/world/characters/superhero/character-StrikeClock.html",
-    "lastUpdated": 1764747651000,
+    "lastUpdated": 1765011693000,
     "hotScore": 0
   },
   {
     "title": "巫师希望",
     "path": "/docs/world/characters/superhero/character-WizardHope.html",
-    "lastUpdated": 1764747651000,
+    "lastUpdated": 1765011693000,
     "hotScore": 0
   },
   {
@@ -122,13 +122,25 @@
   {
     "title": "测试目标A",
     "path": "/docs/world/characters/superhero/test-a.html",
-    "lastUpdated": 1764745209000,
+    "lastUpdated": 1765011693000,
     "hotScore": 0
   },
   {
     "title": "测试 B",
     "path": "/docs/world/characters/superhero/test-b.html",
     "lastUpdated": 1764637525000,
+    "hotScore": 0
+  },
+  {
+    "title": "异常构造",
+    "path": "/docs/world/concepts/isomer/",
+    "lastUpdated": 1764576698000,
+    "hotScore": 0
+  },
+  {
+    "title": "十二主神",
+    "path": "/docs/world/concepts/twelveprimedeities/",
+    "lastUpdated": 1763641434000,
     "hotScore": 0
   },
   {
@@ -153,18 +165,6 @@
     "title": "其他组织",
     "path": "/docs/world/factions/others/",
     "lastUpdated": 1764926399000,
-    "hotScore": 0
-  },
-  {
-    "title": "异常构造",
-    "path": "/docs/world/concepts/isomer/",
-    "lastUpdated": 1764576698000,
-    "hotScore": 0
-  },
-  {
-    "title": "十二主神",
-    "path": "/docs/world/concepts/twelveprimedeities/",
-    "lastUpdated": 1763641434000,
     "hotScore": 0
   },
   {

@@ -64,7 +64,7 @@
 </div>
 <RandomCard /><ul>
 <li><RouteLink to="/docs/world/characters/superhero/character-EtherealKnight.html"><span class="zw-auto-link-wrap"><RouterLink to="/docs/world/characters/superhero/character-EtherealKnight.html" class="zw-auto-link zw-auto-link--first" data-tooltip="意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！">灵动骑士</RouterLink><AutoLinkTooltip term="灵动骑士" to="/docs/world/characters/superhero/character-EtherealKnight.html" tooltip="意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！" first="true" avatar="/images/EtherealKnightCombatSuit.jpg" /></span></RouteLink></li>
-<li><RouteLink to="/docs/world/characters/superhero/character-Scourge.html"><span class="zw-auto-link-wrap"><RouterLink to="/docs/world/characters/superhero/character-Scourge.html" class="zw-auto-link zw-auto-link--first" data-tooltip="基本信息">天灾</RouterLink><AutoLinkTooltip term="天灾" to="/docs/world/characters/superhero/character-Scourge.html" tooltip="基本信息" first="true" /></span></RouteLink></li>
+<li><RouteLink to="/docs/world/characters/superhero/character-Scourge.html"><span class="zw-auto-link-wrap"><RouterLink to="/docs/world/characters/superhero/character-Scourge.html" class="zw-auto-link zw-auto-link--first" data-tooltip="天灾 基本信息">天灾</RouterLink><AutoLinkTooltip term="天灾" to="/docs/world/characters/superhero/character-Scourge.html" tooltip="天灾 基本信息" first="true" /></span></RouteLink></li>
 <li><RouteLink to="/docs/world/characters/superhero/character-HearTone.html">HearTone</RouteLink></li>
 <li><RouteLink to="/docs/world/characters/superhero/character-M-A-Y.html">M·A·Y</RouteLink></li>
 <li><RouteLink to="/docs/world/characters/superhero/character-Illustra.html">character-Illustra</RouteLink></li>
