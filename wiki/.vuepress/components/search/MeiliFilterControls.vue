@@ -65,15 +65,6 @@
           >
             🕘 {{ h }}
           </li>
-          <!-- ✅ 新增：一键清空所有搜索历史 -->
-          <li
-            v-if="searchHistory.length"
-            key="clear-history"
-            style="padding:0.4rem 0.7rem;cursor:pointer;font-size:0.8rem;color:#ef4444;border-top:1px solid #e5e7eb;text-align:right;"
-            @mousedown.prevent="clearHistory"
-          >
-            清除所有搜索历史
-          </li>
         </ul>
       </div>
 
@@ -196,16 +187,6 @@ function saveHistory(word: string) {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
   } catch {
     /* 忽略持久化失败 */
-  }
-}
-
-/** ✅ 新增：一键清空所有搜索历史 */
-function clearHistory() {
-  searchHistory.value = [];
-  try {
-    localStorage.removeItem(HISTORY_KEY);
-  } catch {
-    /* 忽略失败 */
   }
 }
 
