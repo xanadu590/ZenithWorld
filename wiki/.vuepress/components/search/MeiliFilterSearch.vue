@@ -58,7 +58,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
-import MeiliFilterControls from "./MeiliFilterControls.vue";
 // @ts-ignore
 import { nosearchPaths } from "@temp/nosearch/nosearchPaths.js";
 // @ts-ignore
