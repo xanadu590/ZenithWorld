@@ -1,48 +1,51 @@
 <template>
   <div class="meili-filter-search">
-    <!-- 顶部控制区：搜索输入 + 分类 + 标签 -->
-    <MeiliFilterControls
-      :keyword="keyword"
-      :selected-tags="selectedTags"
-      :type-options="typeOptions"
-      :active-type="activeType"
-      :available-tags="availableTags"
-      :visible-tags="visibleTags"
-      :has-any-filter="hasAnyFilter"
-      @update:keyword="handleUpdateKeyword"
-      @search="search"
-      @toggle-tag="toggleTag"
-      @set-type="setType"
-      @reset-filters="resetFilters"
-    />
+    <!-- ✅ 顶部固定区域：搜索输入 + 分类 + 标签 + 排序 -->
+    <div class="mfs-header-sticky">
+      <!-- 顶部控制区：搜索输入 + 分类 + 标签 -->
+      <MeiliFilterControls
+        :keyword="keyword"
+        :selected-tags="selectedTags"
+        :type-options="typeOptions"
+        :active-type="activeType"
+        :available-tags="availableTags"
+        :visible-tags="visibleTags"
+        :has-any-filter="hasAnyFilter"
+        @update:keyword="handleUpdateKeyword"
+        @search="search"
+        @toggle-tag="toggleTag"
+        @set-type="setType"
+        @reset-filters="resetFilters"
+      />
 
-    <!-- 排序方式选择：相关度 / 最新更新 / 最多访问（真实访问量） -->
-    <div class="mfs-sort">
-      <span class="mfs-sort-label">排序：</span>
+      <!-- 排序方式选择：相关度 / 最新更新 / 最多访问（真实访问量） -->
+      <div class="mfs-sort">
+        <span class="mfs-sort-label">排序：</span>
 
-      <button
-        class="mfs-sort-btn"
-        :class="{ 'is-active': sortMode === 'relevance' }"
-        @click="setSort('relevance')"
-      >
-        相关度
-      </button>
+        <button
+          class="mfs-sort-btn"
+          :class="{ 'is-active': sortMode === 'relevance' }"
+          @click="setSort('relevance')"
+        >
+          相关度
+        </button>
 
-      <button
-        class="mfs-sort-btn"
-        :class="{ 'is-active': sortMode === 'updatedAt' }"
-        @click="setSort('updatedAt')"
-      >
-        最新更新
-      </button>
+        <button
+          class="mfs-sort-btn"
+          :class="{ 'is-active': sortMode === 'updatedAt' }"
+          @click="setSort('updatedAt')"
+        >
+          最新更新
+        </button>
 
-      <button
-        class="mfs-sort-btn"
-        :class="{ 'is-active': sortMode === 'viewCount' }"
-        @click="setSort('viewCount')"
-      >
-        最多访问
-      </button>
+        <button
+          class="mfs-sort-btn"
+          :class="{ 'is-active': sortMode === 'viewCount' }"
+          @click="setSort('viewCount')"
+        >
+          最多访问
+        </button>
+      </div>
     </div>
 
     <!-- 搜索状态提示 -->
@@ -218,6 +221,19 @@ onMounted(async () => {
   border-radius: 1rem;
   background: var(--vp-bg, #fff);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+}
+
+/* ✅ 顶部“搜索 + 排序”固定区域 */
+.mfs-header-sticky {
+  position: sticky;
+  /* 根据你的导航栏高度微调这个值 */
+  top: 3.5rem;
+  z-index: 20;
+  background: var(--vp-bg, #fff);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  /* 底部加一点阴影，滚动时有悬浮感 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
 }
 
 /* 排序区域 */
