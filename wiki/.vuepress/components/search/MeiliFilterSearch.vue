@@ -1,34 +1,31 @@
 <template>
   <div class="meili-filter-search">
-
-    <!-- ===========================
-         已选中的标签卡片区域
-         - 出现在搜索框上方
-         - 点击可取消选中
-    ============================ -->
-    <div class="mfs-selected-tags" v-if="selectedTags.length">
-      <div
-        v-for="tag in selectedTags"
-        :key="tag"
-        class="tag-card"
-        @click="toggleTag(tag)"
-      >
-        <span class="tag-box">{{ tag }}</span>
-        <span class="tag-triangle">
-          <span class="tag-circle"></span>
-        </span>
-      </div>
-    </div>
-
-    <!-- 搜索输入框 -->
+    <!-- 搜索输入框 + 已选标签都在同一圆角框里 -->
     <div class="mfs-bar">
-      <input
-        v-model="keyword"
-        class="mfs-input"
-        type="search"
-        placeholder="搜索角色 / 概念 / 势力 / 地理 / 历史……"
-        @keyup.enter="search"
-      />
+      <div class="mfs-input-wrapper">
+        <!-- 已选标签：显示在搜索框里，点击取消 -->
+        <div
+          v-for="tag in selectedTags"
+          :key="tag"
+          class="tag-card"
+          @click="toggleTag(tag)"
+        >
+          <span class="tag-box">
+            {{ tag }}
+            <span class="tag-circle"></span>
+          </span>
+        </div>
+
+        <!-- 关键字输入 -->
+        <input
+          v-model="keyword"
+          class="mfs-input"
+          type="search"
+          placeholder="搜索角色 / 概念 / 势力 / 地理 / 历史……"
+          @keyup.enter="search"
+        />
+      </div>
+
       <button class="mfs-btn" @click="search">搜索</button>
     </div>
 
@@ -46,12 +43,7 @@
       </button>
     </div>
 
-    <!-- ===========================
-         标签筛选区域
-         - 每个标签用「方块 + 三角 + 圆点」结构
-         - 与上方已选中区域使用同一套样式
-         - ✅ 已选中的标签会从这里消失
-    ============================ -->
+    <!-- 标签筛选区域：只显示“未选中”的标签 -->
     <div class="mfs-tags" v-if="availableTags.length">
       <span class="mfs-tags-label">标签：</span>
 
@@ -62,8 +54,8 @@
         :class="{ 'is-active': selectedTags.includes(tag) }"
         @click="toggleTag(tag)"
       >
-        <span class="tag-box">{{ tag }}</span>
-        <span class="tag-triangle">
+        <span class="tag-box">
+          {{ tag }}
           <span class="tag-circle"></span>
         </span>
       </button>
@@ -85,7 +77,6 @@
       >
         <a :href="hit.url" class="mfs-result-link">
           <div class="mfs-result-title">
-            <!-- 根据 url / type 推断类型，显示中文标签 -->
             <span v-if="inferType(hit)" class="mfs-tag">
               [{{ typeLabelMap[inferType(hit)!] || inferType(hit) }}]
             </span>
@@ -99,13 +90,12 @@
             </span>
           </div>
 
-          <!-- 摘要：优先用 random-index 的 excerpt，attachSummary 已经填到 hit.summary 里 -->
           <div class="mfs-result-summary">
             {{ hit.summary || hit.text || "（暂无摘要）" }}
           </div>
 
           <div class="mfs-result-url">{{ hit.url }}</div>
-        </a>
+        </a >
       </li>
     </ul>
   </div>
@@ -162,7 +152,7 @@ const typeLabelMap: Record<string, string> = {
 const availableTags = ref<string[]>([]);
 const selectedTags = ref<string[]>([]);
 
-/** ✅ 用于下方标签按钮，只显示“未选中”的标签 */
+/** 用于下方标签按钮，只显示“未选中”的标签 */
 const visibleTags = computed(() =>
   availableTags.value.filter(tag => !selectedTags.value.includes(tag))
 );
@@ -192,9 +182,22 @@ interface RandomIndexItem {
 const randomIndex = ref<RandomIndexItem[]>([]);
 const randomIndexLoaded = ref(false);
 
+/** 只加载一次 random-index.json */
+async function loadRandomIndex() {
+  if (randomIndexLoaded.value) return;
+  try {
+    const res = await fetch("/data/random-index.json");
+    const json = await res.json();
+    randomIndex.value = Array.isArray(json.pages) ? json.pages : [];
+  } catch {
+    // 失败就静默，summary 用原始搜索结果
+  } finally {
+    randomIndexLoaded.value = true;
+  }
+}
+
 /* =========================================================
  * 五、taxonomy path → tags 映射
- *   - 用 taxonomy 插件生成的数据来反查页面标签
  * ======================================================= */
 
 const pageTagMap: Record<string, string[]> = {};
@@ -246,20 +249,6 @@ function isNosearchUrl(url?: string) {
 /* =========================================================
  * 六、搜索增强：加载 random-index + 合成 summary / tags
  * ======================================================= */
-
-/** 只加载一次 random-index.json */
-async function loadRandomIndex() {
-  if (randomIndexLoaded.value) return;
-  try {
-    const res = await fetch("/data/random-index.json");
-    const json = await res.json();
-    randomIndex.value = Array.isArray(json.pages) ? json.pages : [];
-  } catch {
-    // 失败就静默，summary 用原始搜索结果
-  } finally {
-    randomIndexLoaded.value = true;
-  }
-}
 
 /** 为 Meili 的单条 hit 补充 summary 和 tags */
 function attachSummary(hit: any) {
@@ -411,21 +400,37 @@ onMounted(() => {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
 }
 
-/* 搜索框 */
+/* 搜索框 + 选中标签在同一圆角框里 */
 .mfs-bar {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
 }
 
-.mfs-input {
+/* 外层圆角框 */
+.mfs-input-wrapper {
   flex: 1;
-  padding: 0.5rem 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.5rem;
   border-radius: 999px;
   border: 1px solid var(--vp-c-border, #d0d7de);
+  background: #fff;
+}
+
+/* 真正的输入框 */
+.mfs-input {
+  flex: 1;
+  min-width: 6rem;
+  padding: 0.25rem 0.2rem;
+  border: none;
+  outline: none;
   font-size: 0.95rem;
 }
 
+/* 搜索按钮 */
 .mfs-btn {
   padding: 0.4rem 0.9rem;
   border-radius: 999px;
@@ -474,13 +479,9 @@ onMounted(() => {
 }
 
 /* =========================================================
- * B. 标签卡片样式（重点）
- *    统一控制：
- *    - mfs-tags 区域中的按钮
- *    - mfs-selected-tags 区域中的卡片
+ * B. 标签卡片样式（药丸 + 右上角小圆点）
  * ======================================================= */
 
-/* 标签总容器（候选） */
 .mfs-tags {
   display: flex;
   flex-wrap: wrap;
@@ -494,96 +495,52 @@ onMounted(() => {
   margin-right: 0.25rem;
 }
 
-/* 已选标签容器（出现在搜索框上方） */
-.mfs-selected-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-bottom: 0.7rem;
-}
-
 /* 统一：按钮 & 选中卡片的外层容器 */
 .mfs-tag-btn,
 .tag-card {
   display: inline-flex;
-  align-items: stretch;
+  align-items: center;
   padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
 
-  font-size: 0.9rem
-  ;
-  /* 下面三个变量就是你之后最常改的三个尺寸 👇 */
-  --tag-square-size: 18px;  /* 左边小方块边长（整体显得更“重”就调大） */
-  --tag-dot-size:   4px;    /* 中间小圆点大小（你刚才说要小一点就改这个） */
+  font-size: 0.9rem;
+  --tag-dot-size: 0.33em;     /* ◎ 小圆点直径，占文字高度的比例 */
 }
 
-/* 左边矩形文字块 */
+/* 标签矩形 */
 .tag-box {
-  padding: 0.2rem 0.15rem 0.3rem 0.4rem;
+  position: relative;
+  padding: 0.2em 0.9em 0.2em 0.4em;
   background: #f3f4f6;
   border: 1px solid #d1d5db;
-  border-right: none;                 /* 右侧交给三角形接上 */
-  border-radius: 6px 0 0 6px;
-  font-size: 0.8rem;
+  border-radius: 6px;
+  font-size: 1em;
   color: #374151;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
 }
 
-.tag-triangle {
-  /* 尺寸随变量 */
-  width: calc(var(--tag-square-size) + 3.56px);
-  height: calc(var(--tag-square-size) + 3.56px);
-
-  /* 基础背景 */
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;              /* ★ 控制圆角大小（你可以随便调） */
-
-  /* 旋转成菱形 */
-  transform-origin: center; /* 很重要：以中心为原点压扁 */
-  transform:  scaleX(0.8) rotate(45deg);
-  margin-left: -12px;
-
-  /* 裁掉左半边 → 变成右指向的三角形 */
-  clip-path: polygon(
-    0% 0%,
-    100% 100%,
-    100% 0%
-  );
-
-  position: relative;
-}
-
-/* 三角形内部的小圆点 */
+/* 右上角小圆点 */
 .tag-circle {
   width: var(--tag-dot-size);
   height: var(--tag-dot-size);
   background: #ffffff;
-  border: 1px solid #9ca3af;
+  border: 0.5px solid #9ca3af;
   border-radius: 50%;
   position: absolute;
-  right: 2px;
-  top: 25%;
-  transform: translateY(-50%);
+  right: 0.2em;
+  top: 0.25em;
 }
 
-/* 选中状态：
- * - mfs-tag-btn.is-active：候选标签被选中
- * - tag-card：顶部已选标签统一按“选中”效果展示
- */
+/* 选中状态：上方卡片 + 下方按钮统一样式 */
 .mfs-tag-btn.is-active .tag-box,
 .tag-card .tag-box {
-  padding: 0.317rem 0.15rem 0.3rem 0.4rem;
+  font-size: 1.1em;
   background: #6366f1;
   color: #ffffff;
-  border-color: #6366f1;
-}
-
-.mfs-tag-btn.is-active .tag-triangle,
-.tag-card .tag-triangle {
-  background: #6366f1;
   border-color: #6366f1;
 }
 
