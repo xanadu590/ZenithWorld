@@ -28,7 +28,6 @@
           placeholder="搜索角色 / 概念 / 势力 / 地理 / 历史……"
           @input="$emit('update:keyword', ($event.target as HTMLInputElement).value)"
           @keyup.enter="$emit('search')"
-          @keyup.esc="$emit('reset-filters')"   
         />
       </div>
 

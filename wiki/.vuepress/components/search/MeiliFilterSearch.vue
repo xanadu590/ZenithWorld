@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 // 由 VuePress 生成的临时文件：标记哪些页面不参与搜索
 // @ts-ignore
 import { nosearchPaths } from "@temp/nosearch/nosearchPaths.js";
@@ -382,12 +382,31 @@ async function search() {
 }
 
 /* =========================================================
- * 九、初始化：构建标签映射 + 默认执行一次搜索
+ * 九、初始化 + 全局 ESC 快捷键
+ *    - 初始化：构建标签映射 + 默认执行一次搜索
+ *    - 全局：在 window 上监听 Esc，按下时重置所有筛选
  * ======================================================= */
 
 buildPageTagMap();
+
 onMounted(() => {
+  // 首次进来默认搜索一次，填充结果 + 标签候选
   search().catch(() => {});
+});
+
+// 全局 Esc 快捷键：无论是否聚焦在输入框，只要按 Esc 就重置所有条件
+function handleEsc(e: KeyboardEvent) {
+  if (e.key === "Escape") {
+    resetFilters();
+  }
+}
+
+onMounted(() => {
+  window.addEventListener("keydown", handleEsc);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", handleEsc);
 });
 </script>
 
