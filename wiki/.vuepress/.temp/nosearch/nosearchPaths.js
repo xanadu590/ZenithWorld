@@ -4,15 +4,15 @@ export const nosearchPaths = [
   "/docs/hotpages.html",
   "/docs/",
   "/docs/world/characters/",
+  "/docs/world/history/",
   "/docs/world/geography/",
   "/docs/world/concepts/",
-  "/docs/world/history/",
   "/docs/world/factions/",
   "/docs/world/characters/CCO/",
-  "/docs/world/characters/superhero/",
   "/docs/world/characters/divineproxy/",
-  "/docs/world/factions/heroic/",
+  "/docs/world/characters/superhero/",
   "/docs/world/factions/neutral/",
-  "/docs/world/factions/official/",
-  "/docs/world/factions/others/"
+  "/docs/world/factions/heroic/",
+  "/docs/world/factions/others/",
+  "/docs/world/factions/official/"
 ];

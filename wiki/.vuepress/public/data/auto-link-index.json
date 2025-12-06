@@ -79,6 +79,12 @@
     "tooltip": ""
   },
   {
+    "term": "神明代理",
+    "path": "/docs/world/characters/divineproxy/",
+    "filePathRelative": "docs/world/characters/divineproxy/README.md",
+    "tooltip": "新神在人间为自己选择的代理人。"
+  },
+  {
     "term": "灵动骑士",
     "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
     "filePathRelative": "docs/world/characters/superhero/character-EtherealKnight.md",
@@ -118,18 +124,6 @@
     "tooltip": "我在这里随便写一句：测试目标A会不会被自动加链接。"
   },
   {
-    "term": "神明代理",
-    "path": "/docs/world/characters/divineproxy/",
-    "filePathRelative": "docs/world/characters/divineproxy/README.md",
-    "tooltip": "新神在人间为自己选择的代理人。"
-  },
-  {
-    "term": "英雄组织",
-    "path": "/docs/world/factions/heroic/",
-    "filePathRelative": "docs/world/factions/heroic/README.md",
-    "tooltip": ""
-  },
-  {
     "term": "异常构造",
     "path": "/docs/world/concepts/isomer/",
     "filePathRelative": "docs/world/concepts/isomer/README.md",
@@ -148,15 +142,21 @@
     "tooltip": ""
   },
   {
-    "term": "官方组织",
-    "path": "/docs/world/factions/official/",
-    "filePathRelative": "docs/world/factions/official/README.md",
+    "term": "英雄组织",
+    "path": "/docs/world/factions/heroic/",
+    "filePathRelative": "docs/world/factions/heroic/README.md",
     "tooltip": ""
   },
   {
     "term": "其他组织",
     "path": "/docs/world/factions/others/",
     "filePathRelative": "docs/world/factions/others/README.md",
+    "tooltip": ""
+  },
+  {
+    "term": "官方组织",
+    "path": "/docs/world/factions/official/",
+    "filePathRelative": "docs/world/factions/official/README.md",
     "tooltip": ""
   },
   {
@@ -172,6 +172,12 @@
     "tooltip": "基本信息"
   },
   {
+    "term": "历史",
+    "path": "/docs/world/history/",
+    "filePathRelative": "docs/world/history/README.md",
+    "tooltip": ""
+  },
+  {
     "term": "地理",
     "path": "/docs/world/geography/",
     "filePathRelative": "docs/world/geography/README.md",
@@ -181,12 +187,6 @@
     "term": "概念",
     "path": "/docs/world/concepts/",
     "filePathRelative": "docs/world/concepts/README.md",
-    "tooltip": ""
-  },
-  {
-    "term": "历史",
-    "path": "/docs/world/history/",
-    "filePathRelative": "docs/world/history/README.md",
     "tooltip": ""
   },
   {

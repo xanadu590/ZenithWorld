@@ -11,13 +11,6 @@
       "default_value": "Wiki"
     },
 
-    "lvl1": "main h1, [vp-content] h1, article h1, .theme-hope-content h1",
-    "lvl2": "main h2, [vp-content] h2, article h2, .theme-hope-content h2",
-    "lvl3": "main h3, [vp-content] h3, article h3, .theme-hope-content h3",
-    "lvl4": "main h4, [vp-content] h4, article h4, .theme-hope-content h4",
-    "lvl5": "main h5, [vp-content] h5, article h5, .theme-hope-content h5",
-    "lvl6": "main h6, [vp-content] h6, article h6, .theme-hope-content h6",
-
     "text": "main p, main li, [vp-content] p, [vp-content] li",
 
     "lang": {
