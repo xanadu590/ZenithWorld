@@ -2,7 +2,7 @@
 <AIMedia src="/images/EtherealKnightCombSuit.jpg" caption="战斗状态"/>
 <AIMedia src="/images/EtherealKnightEvedayWear.jpg" caption="常服"/>
 </div>
-<h1 id="基本信息" tabindex="-1"><a class="header-anchor" href="#基本信息"><span>基本信息</span></a></h1>
+<h2 id="基本信息" tabindex="-1"><a class="header-anchor" href="#基本信息"><span>基本信息</span></a></h2>
 <hr>
 <LeadBlock quote="瓦尔德！开庭！行于汝应当审判！罪于汝该当裁决！" /><ul>
 <li>姓名：梅小满</li>

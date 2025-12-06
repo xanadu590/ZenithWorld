@@ -12,7 +12,7 @@ isOriginal: true
 <AIMedia src="/images/EtherealKnightEvedayWear.jpg" caption="常服"/>
 </div>
 
-# 基本信息
+# 巫师希望
 ---
 <LeadBlock quote="生活也许很艰难，但是有家人和朋友在一起，我就有勇气面对。" />
 

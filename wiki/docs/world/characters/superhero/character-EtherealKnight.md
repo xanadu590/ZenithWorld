@@ -70,7 +70,7 @@ summary: 意外获得能够变身成游戏人物能力的美少女，行侠仗�
 ![宇文南城001 =180x](/images/EtherealKnightCombatSuit.jpg)
 
 
-# 基本信息
+## 基本信息
 ---
 <LeadBlock quote="绝世的容貌，高洁的灵魂，无缺的完人……咳咳，好吧，这句确实有点过了。" />
 

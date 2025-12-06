@@ -2,7 +2,7 @@
 <AIMedia src="/images/EtherealKnightCombSuit.jpg" caption="战斗状态"/>
 <AIMedia src="/images/EtherealKnightEvedayWear.jpg" caption="常服"/>
 </div>
-<h1 id="基本信息" tabindex="-1"><a class="header-anchor" href="#基本信息"><span>基本信息</span></a></h1>
+<h1 id="警钟" tabindex="-1"><a class="header-anchor" href="#警钟"><span>警钟</span></a></h1>
 <hr>
 <LeadBlock quote="嗯，对于成为救世主这件事，我并不是自愿的，只是……那些无法自救的人，不应被抛弃。" /><ul>
 <li>姓名：钟立明</li>

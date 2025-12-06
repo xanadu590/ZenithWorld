@@ -15,7 +15,7 @@ isOriginal: true
 <AIMedia src="/images/EtherealKnightEvedayWear.jpg" caption="常服"/>
 </div>
 
-# 基本信息
+## 基本信息
 ---
 <LeadBlock quote="我确实说过不会对女人出手……但我的意思并不是让你把我变成女人！你这混账神明，快把我变回去！" />
 

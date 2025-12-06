@@ -13,7 +13,7 @@ isOriginal: true
 <AIMedia src="/images/EtherealKnightEvedayWear.jpg" caption="常服"/>
 </div>
 
-# 基本信息
+## 基本信息
 ---
 <LeadBlock quote="啊啊！烦死了烦死了！我爸根的真的不想出来营业啊！" />
 

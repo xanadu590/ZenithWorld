@@ -12,7 +12,7 @@ isOriginal: true
 <AIMedia src="/images/EtherealKnightEvedayWear.jpg" caption="常服"/>
 </div>
 
-# 基本信息
+# 警钟
 ---
 <LeadBlock quote="嗯，对于成为救世主这件事，我并不是自愿的，只是……那些无法自救的人，不应被抛弃。" />
 

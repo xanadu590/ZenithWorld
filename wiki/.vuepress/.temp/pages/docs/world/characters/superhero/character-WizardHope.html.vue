@@ -2,7 +2,7 @@
 <AIMedia src="/images/EtherealKnightCombSuit.jpg" caption="战斗状态"/>
 <AIMedia src="/images/EtherealKnightEvedayWear.jpg" caption="常服"/>
 </div>
-<h1 id="基本信息" tabindex="-1"><a class="header-anchor" href="#基本信息"><span>基本信息</span></a></h1>
+<h1 id="巫师希望" tabindex="-1"><a class="header-anchor" href="#巫师希望"><span>巫师希望</span></a></h1>
 <hr>
 <LeadBlock quote="生活也许很艰难，但是有家人和朋友在一起，我就有勇气面对。" /><ul>
 <li>姓名：hope</li>

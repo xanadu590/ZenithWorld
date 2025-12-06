@@ -13,7 +13,7 @@ isOriginal: true
 <AIMedia src="/images/EtherealKnightEvedayWear.jpg" caption="常服"/>
 </div>
 
-# 基本信息
+## 基本信息
 ---
 <LeadBlock quote="瓦尔德！开庭！行于汝应当审判！罪于汝该当裁决！" />
 

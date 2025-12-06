@@ -3,7 +3,7 @@
 <AIMedia src="/images/EtherealKnightEverydayWear.jpg" caption="常服"/>
 </div>
 <figure><img src="/images/EtherealKnightCombatSuit.jpg" alt="宇文南城001" width="180" tabindex="0" loading="lazy"><figcaption>宇文南城001</figcaption></figure>
-<h1 id="基本信息" tabindex="-1"><a class="header-anchor" href="#基本信息"><span>基本信息</span></a></h1>
+<h2 id="基本信息" tabindex="-1"><a class="header-anchor" href="#基本信息"><span>基本信息</span></a></h2>
 <hr>
 <LeadBlock quote="绝世的容貌，高洁的灵魂，无缺的完人……咳咳，好吧，这句确实有点过了。" /><ul>
 <li>姓名：宇文南城</li>
@@ -77,7 +77,7 @@
 <li>朋友：舒雪，韩英宇，姬泽</li>
 <li>恋人：卞体羽</li>
 <li>家人：无</li>
-<li>战友：肖银池，兰音悦，柯丹，韩笑雨中，连珐紫，伊美素，<span class="zw-auto-link-wrap"><RouterLink to="/docs/world/characters/superhero/character-Scourge.html" class="zw-auto-link zw-auto-link--first" data-tooltip="基本信息">天灾</RouterLink><AutoLinkTooltip term="天灾" to="/docs/world/characters/superhero/character-Scourge.html" tooltip="基本信息" first="true" /></span></li>
+<li>战友：肖银池，兰音悦，柯丹，韩笑雨中，连珐紫，伊美素，天灾</li>
 <li>宿敌：金华谑（金王子）</li>
 </ul>
 <blockquote>

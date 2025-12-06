@@ -2,7 +2,7 @@
 <AIMedia src="/images/EtherealKnightCombSuit.jpg" caption="战斗状态"/>
 <AIMedia src="/images/EtherealKnightEvedayWear.jpg" caption="常服"/>
 </div>
-<h1 id="基本信息" tabindex="-1"><a class="header-anchor" href="#基本信息"><span>基本信息</span></a></h1>
+<h2 id="基本信息" tabindex="-1"><a class="header-anchor" href="#基本信息"><span>基本信息</span></a></h2>
 <hr>
 <LeadBlock quote="我确实说过不会对女人出手……但我的意思并不是让你把我变成女人！你这混账神明，快把我变回去！" /><ul>
 <li>姓名：方知足</li>
