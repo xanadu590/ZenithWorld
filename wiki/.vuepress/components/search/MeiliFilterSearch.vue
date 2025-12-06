@@ -26,6 +26,15 @@
         />
       </div>
 
+      <!-- 功能 1：一键重置筛选条件 -->
+      <button
+        v-if="hasAnyFilter"
+        class="mfs-reset-btn"
+        @click="resetFilters"
+      >
+        重置
+      </button>
+
       <button class="mfs-btn" @click="search">搜索</button>
     </div>
 
@@ -157,6 +166,13 @@ const visibleTags = computed(() =>
   availableTags.value.filter(tag => !selectedTags.value.includes(tag))
 );
 
+/** 是否有任何筛选（用于显示 / 隐藏重置按钮） */
+const hasAnyFilter = computed(() =>
+  keyword.value.trim() !== "" ||
+  activeType.value !== null ||
+  selectedTags.value.length > 0
+);
+
 /** 切换某个标签选中状态（用于按钮和顶部卡片） */
 function toggleTag(tag: string) {
   const idx = selectedTags.value.indexOf(tag);
@@ -166,6 +182,14 @@ function toggleTag(tag: string) {
     selectedTags.value.splice(idx, 1);
   }
   // 每次调整标签都重新搜索
+  search();
+}
+
+/** 功能 1：一键重置所有条件 */
+function resetFilters() {
+  keyword.value = "";
+  activeType.value = null;
+  selectedTags.value = [];
   search();
 }
 
@@ -407,7 +431,8 @@ onMounted(() => {
   margin-bottom: 0.75rem;
 }
 
-/* 外层圆角框 */
+/* 外层圆角框
+ * 功能 2：max-height + overflow-y 实现“标签太多时可滚动” */
 .mfs-input-wrapper {
   flex: 1;
   display: flex;
@@ -418,6 +443,9 @@ onMounted(() => {
   border-radius: 999px;
   border: 1px solid var(--vp-c-border, #d0d7de);
   background: #fff;
+
+  max-height: 4.5rem;    /* 允许两三行标签 */
+  overflow-y: auto;      /* 超出时出现竖向滚动条 */
 }
 
 /* 真正的输入框 */
@@ -440,6 +468,18 @@ onMounted(() => {
   white-space: nowrap;
   background: var(--vp-c-accent, #6366f1);
   color: #fff;
+}
+
+/* 功能 1：重置按钮（弱一点的灰色样式） */
+.mfs-reset-btn {
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  cursor: pointer;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  color: #4b5563;
 }
 
 /* 分类按钮行 */
