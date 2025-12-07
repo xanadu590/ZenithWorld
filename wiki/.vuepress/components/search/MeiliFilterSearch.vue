@@ -69,7 +69,6 @@
 <script setup lang="ts">
 import MeiliFilterControls from "./MeiliFilterControls.vue";
 import SearchEmptyState from "./SearchEmptyState.vue";
-import SearchResultsList from "./SearchResultsList.vue";
 import { useWikiSearch } from "./useWikiSearch.js";
 
 const {

@@ -43,7 +43,6 @@
 
 <script setup lang="ts">
 import SearchInputArea from "./SearchInputArea.vue";
-import TagPager from "./TagPager.vue";
 
 const props = defineProps<{
   keyword: string;

@@ -1,4 +1,3 @@
-<!-- .vuepress/components/search/controls/SearchInputArea.vue -->
 <template>
   <div class="mfs-input-area">
     <!-- 输入胶囊：已选标签 + input -->
@@ -24,7 +23,6 @@
         placeholder="搜索角色 / 概念 / 势力 / 地理 / 历史……"
         @input="onInput(($event.target as HTMLInputElement).value)"
         @keyup.enter="onEnter"
-        @keyup.esc="onEsc"
         @focus="onFocus"
         @blur="onBlur"
       />
@@ -83,7 +81,7 @@ const emit = defineEmits<{
   (e: "reset-filters"): void;
 }>();
 
-/* ==== Meili 自动补全逻辑 ==== */
+/* ================== MeiliSearch 自动补全 ================== */
 
 const SEARCH_HOST = "https://search.zenithworld.top";
 const SEARCH_INDEX = "wiki";
@@ -174,13 +172,6 @@ function onEnter() {
   showSuggestBox.value = false;
 }
 
-function onEsc() {
-  // ⚠️ 这里仅清空关键字，不动标签和分类
-  emit("update:keyword", "");
-  // 如果你想按 Esc 时也重新触发一次“空关键字”的搜索，可以解开这一行：
-  // emit("search");
-}
-
 function onFocus() {
   showSuggestBox.value = true;
   if (props.keyword?.trim()) {
@@ -203,15 +194,6 @@ function applySuggestion(word: string) {
 </script>
 
 <style scoped>
-/* 这里的样式基本可以直接从你原来的 MeiliFilterControls 复制：
-   - .mfs-input-area
-   - .mfs-input-wrapper
-   - .mfs-input
-   - .mfs-reset-icon
-   - .mfs-suggest-box
-   - .mfs-suggest-item / .mfs-history-item
-   - .tag-card / .tag-box / .tag-circle
-*/
 /* 输入区域：承载输入胶囊 + 重置按钮 + 下拉建议 */
 .mfs-input-area {
   position: relative;
@@ -301,9 +283,7 @@ function applySuggestion(word: string) {
 }
 
 /* 标签按钮 + 已选标签卡片 共用样式 */
-.mfs-tag-btn,
-.tag-card,
-.mfs-tag-measure {
+.tag-card {
   display: inline-flex;
   align-items: center;
   padding: 0;
@@ -339,8 +319,7 @@ function applySuggestion(word: string) {
   top: 0.25em;
 }
 
-/* 高亮：已选标签 + 输入框上方的选中卡片 */
-.mfs-tag-btn.is-active .tag-box,
+/* 高亮：输入框上方的选中卡片 */
 .tag-card .tag-box {
   font-size: 1.1em;
   background: #6366f1;
@@ -348,7 +327,6 @@ function applySuggestion(word: string) {
   border-color: #6366f1;
 }
 
-.mfs-tag-btn.is-active .tag-circle,
 .tag-card .tag-circle {
   background: #ffffff;
   border-color: #ffffff;
