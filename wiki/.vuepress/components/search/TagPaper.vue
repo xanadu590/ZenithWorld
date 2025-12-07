@@ -1,8 +1,10 @@
+<!-- docs/.vuepress/components/search/TagPager.vue -->
 <template>
+  <!-- 标签区域：一行 + 左右翻页箭头 + 页码 -->
   <div class="mfs-tags" v-if="availableTags.length">
     <span class="mfs-tags-label">标签：</span>
 
-    <!-- 左侧上一页 -->
+    <!-- 左侧上一页箭头 -->
     <button
       class="mfs-tags-nav"
       :disabled="!hasPrevPage"
@@ -12,7 +14,7 @@
       ▲
     </button>
 
-    <!-- 中间当前页标签 -->
+    <!-- 中间这一页的标签（一行） -->
     <div class="mfs-tags-row" ref="tagsRowRef">
       <button
         v-for="tag in currentPageTags"
@@ -28,12 +30,12 @@
       </button>
     </div>
 
-    <!-- 页码 -->
+    <!-- 页码显示：第 x / y 页 -->
     <span class="mfs-tags-pageinfo">
       {{ currentPageNumber }} / {{ totalPages }}
     </span>
 
-    <!-- 右侧下一页 -->
+    <!-- 右侧下一页箭头 -->
     <button
       class="mfs-tags-nav"
       :disabled="!hasNextPage"
@@ -42,20 +44,20 @@
     >
       ▼
     </button>
+  </div>
 
-    <!-- 隐藏测量容器 -->
-    <div ref="measureRowRef" class="mfs-tags-measure">
-      <button
-        v-for="tag in visibleTags"
-        :key="tag"
-        class="mfs-tag-measure"
-      >
-        <span class="tag-box">
-          {{ tag }}
-          <span class="tag-circle"></span>
-        </span>
-      </button>
-    </div>
+  <!-- 隐藏的测量容器：用来计算分页（不显示在页面上） -->
+  <div ref="measureRowRef" class="mfs-tags-measure">
+    <button
+      v-for="tag in visibleTags"
+      :key="tag"
+      class="mfs-tag-measure"
+    >
+      <span class="tag-box">
+        {{ tag }}
+        <span class="tag-circle"></span>
+      </span>
+    </button>
   </div>
 </template>
 
@@ -79,21 +81,28 @@ const emit = defineEmits<{
   (e: "toggle-tag", tag: string): void;
 }>();
 
+/** 实际显示标签的一行容器 */
 const tagsRowRef = ref<HTMLElement | null>(null);
+/** 隐藏的测量容器：里面渲染所有 visibleTags，用来计算宽度 */
 const measureRowRef = ref<HTMLElement | null>(null);
 
+/** 分好页的标签数组，例如 [ ['A','B'], ['C','D','E'], ... ] */
 const pages = ref<string[][]>([]);
+/** 当前页索引 */
 const pageIndex = ref(0);
 
+/** 当前这一页的标签 */
 const currentPageTags = computed(() => {
   return pages.value[pageIndex.value] || [];
 });
 
+/** 页数 / 当前页（用于显示“第 x / y 页”） */
 const totalPages = computed(() => (pages.value.length ? pages.value.length : 1));
 const currentPageNumber = computed(() =>
   pages.value.length ? pageIndex.value + 1 : 1
 );
 
+/** 是否有上一页 / 下一页 */
 const hasPrevPage = computed(() => pageIndex.value > 0);
 const hasNextPage = computed(
   () => pageIndex.value < pages.value.length - 1
@@ -107,6 +116,11 @@ function nextPage() {
   if (hasNextPage.value) pageIndex.value += 1;
 }
 
+/**
+ * 重新根据容器宽度 + 每个标签的宽度来划分页：
+ * - 不截断标签
+ * - 让每页刚好塞满一行（最后一页可能比较短）
+ */
 async function rebuildPages() {
   await nextTick();
 
@@ -131,7 +145,7 @@ async function rebuildPages() {
   let current: string[] = [];
   let currentWidth = 0;
 
-  const GAP = 8;
+  const GAP = 8; // 标签间距（px），要和 .mfs-tags-row 的 gap 接近
 
   children.forEach((el, idx) => {
     const tag = props.visibleTags[idx];
@@ -161,6 +175,7 @@ async function rebuildPages() {
   }
 }
 
+/** 当可见标签集合变化时，重置到第一页并重新分页 */
 watch(
   () => props.visibleTags,
   () => {
@@ -236,7 +251,7 @@ onBeforeUnmount(() => {
   white-space: nowrap;
 }
 
-/* 标签按钮和测量用按钮 */
+/* 标签按钮 + 测量标签样式 */
 .mfs-tag-btn,
 .mfs-tag-measure {
   display: inline-flex;

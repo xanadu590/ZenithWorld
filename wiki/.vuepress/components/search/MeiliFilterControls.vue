@@ -1,9 +1,10 @@
+<!-- docs/.vuepress/components/search/MeiliFilterControls.vue -->
 <template>
   <div>
-    <!-- 顶部搜索条：输入 + 搜索按钮 -->
+    <!-- 顶部搜索条：输入框 + 搜索 -->
     <div class="mfs-bar">
-      <!-- 左侧输入区域 -->
-      <SearchInputArea
+      <!-- 左侧输入区域（SearchInputBox） -->
+      <SearchInputBox
         :keyword="keyword"
         :selected-tags="selectedTags"
         :has-any-filter="hasAnyFilter"
@@ -13,11 +14,11 @@
         @reset-filters="$emit('reset-filters')"
       />
 
-      <!-- 右侧搜索按钮 -->
+      <!-- 右侧主搜索按钮 -->
       <button class="mfs-btn" @click="$emit('search')">搜索</button>
     </div>
 
-    <!-- 分类按钮区域 -->
+    <!-- 分类按钮区域：全部 / 人物 / 概念 / 势力 / 地理 / 历史 -->
     <div class="mfs-filters">
       <span class="mfs-filters-label">分类：</span>
       <button
@@ -42,7 +43,8 @@
 </template>
 
 <script setup lang="ts">
-import SearchInputArea from "./SearchInputArea.vue";
+import SearchInputBox from "./SearchInputBox.vue";
+import TagPager from "./TagPager.vue";
 
 const props = defineProps<{
   keyword: string;

@@ -20,7 +20,7 @@ import TwikooComment from './components/TwikooComment.vue'
 import TeamLineupLayout from './layouts/TeamLineupLayout.vue'
 import MeiliFilterSearch from './components/search/MeiliFilterSearch.vue'
 import SearchEmptyState from './components/search/SearchEmptyState.vue'
-import SearchInputArea from './components/search/SearchInputArea.vue'
+import SearchInputBox from './components/search/SearchInputBox.vue'
 import SearchResultsList from './components/search/SearchResultsList.vue'
 import TagPaper from './components/search/TagPaper.vue'
 
@@ -129,7 +129,7 @@ export default defineClientConfig({
     app.component('MeiliFilterSearch', MeiliFilterSearch)
     app.component('MeiliFilterControls', MeiliFilterControls)
     app.component('SearchEmptyState', SearchEmptyState)
-    app.component('SearchInputArea', SearchInputArea)
+    app.component('SearchInputBox', SearchInputBox)
     app.component('SearchResultsList', SearchResultsList)
     app.component('TagPaper', TagPaper)
 

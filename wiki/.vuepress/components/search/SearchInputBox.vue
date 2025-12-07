@@ -1,8 +1,10 @@
+<!-- docs/.vuepress/components/search/SearchInputBox.vue -->
 <template>
+  <!-- 输入区域：承载输入胶囊 + 重置按钮 + 下拉建议 -->
   <div class="mfs-input-area">
-    <!-- 输入胶囊：已选标签 + input -->
+    <!-- 多标签输入胶囊 -->
     <div class="mfs-input-wrapper">
-      <!-- 已选标签 -->
+      <!-- 已选标签：显示在输入框内部，点击即可取消选中 -->
       <div
         v-for="tag in selectedTags"
         :key="tag"
@@ -15,19 +17,19 @@
         </span>
       </div>
 
-      <!-- 关键字输入 -->
+      <!-- 关键字输入框（受控组件） -->
       <input
         :value="keyword"
         class="mfs-input"
         type="search"
         placeholder="搜索角色 / 概念 / 势力 / 地理 / 历史……"
-        @input="onInput(($event.target as HTMLInputElement).value)"
+        @input="onInput"
         @keyup.enter="onEnter"
         @focus="onFocus"
         @blur="onBlur"
       />
 
-      <!-- 内嵌重置按钮 -->
+      <!-- 内嵌在输入框右侧的重置按钮（箭头咬尾） -->
       <button
         v-if="hasAnyFilter"
         type="button"
@@ -40,11 +42,12 @@
       </button>
     </div>
 
-    <!-- 自动补全 + 历史 -->
+    <!-- 自动补全 + 搜索历史下拉框 -->
     <ul
       v-if="showSuggestBox && (suggestions.length || searchHistory.length)"
       class="mfs-suggest-box"
     >
+      <!-- 联想词 -->
       <li
         v-for="s in suggestions"
         :key="'sg-' + s"
@@ -53,6 +56,7 @@
       >
         🔍 {{ s }}
       </li>
+      <!-- 历史记录 -->
       <li
         v-for="h in searchHistory"
         :key="'his-' + h"
@@ -68,12 +72,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 
+/** ==== props ==== */
 const props = defineProps<{
   keyword: string;
   selectedTags: string[];
   hasAnyFilter: boolean;
 }>();
 
+/** ==== emits ==== */
 const emit = defineEmits<{
   (e: "update:keyword", value: string): void;
   (e: "search"): void;
@@ -149,8 +155,7 @@ async function fetchSuggestions(q: string) {
 
     suggestions.value = hits
       .map(
-        (h: any) =>
-          h.title || h.hierarchy_lvl1 || h.hierarchy_lvl0 || ""
+        (h: any) => h.title || h.hierarchy_lvl1 || h.hierarchy_lvl0 || ""
       )
       .filter((s: string) => s && typeof s === "string")
       .filter((s: string, idx: number, arr: string[]) => arr.indexOf(s) === idx)
@@ -160,16 +165,12 @@ async function fetchSuggestions(q: string) {
   }
 }
 
-function onInput(val: string) {
+function onInput(e: Event) {
+  const target = e.target as HTMLInputElement | null;
+  const val = target?.value ?? "";
   emit("update:keyword", val);
   fetchSuggestions(val);
   showSuggestBox.value = true;
-}
-
-function onEnter() {
-  if (props.keyword) saveHistory(props.keyword);
-  emit("search");
-  showSuggestBox.value = false;
 }
 
 function onFocus() {
@@ -183,6 +184,12 @@ function onBlur() {
   setTimeout(() => {
     showSuggestBox.value = false;
   }, 150);
+}
+
+function onEnter() {
+  if (props.keyword) saveHistory(props.keyword);
+  emit("search");
+  showSuggestBox.value = false;
 }
 
 function applySuggestion(word: string) {
