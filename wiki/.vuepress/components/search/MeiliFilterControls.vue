@@ -44,6 +44,7 @@
 
 <script setup lang="ts">
 import SearchInputBox from "./SearchInputBox.vue";
+// @ts-ignore
 import TagPager from "./TagPager.vue";
 
 const props = defineProps<{
