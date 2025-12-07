@@ -110,6 +110,9 @@ const showSuggestBox = ref(false);
 
 const HISTORY_KEY = "zw-meili-search-history";
 
+/** 记录上一次输入框的值，用来判断“从非空变成空” */
+const lastValue = ref<string>(props.keyword || "");
+
 onMounted(() => {
   try {
     const raw = localStorage.getItem(HISTORY_KEY);
@@ -184,12 +187,27 @@ async function fetchSuggestions(q: string) {
   }
 }
 
+/**
+ * 输入变化：
+ * - 更新关键字
+ * - 拉取联想词
+ * - 如果“从非空 → 空”，自动触发一次 search
+ *   （等价于点击输入框系统自带的 × 清空）
+ */
 function onInput(e: Event) {
   const target = e.target as HTMLInputElement | null;
   const val = target?.value ?? "";
+
   emit("update:keyword", val);
   fetchSuggestions(val);
   showSuggestBox.value = true;
+
+  const prev = lastValue.value;
+  lastValue.value = val;
+
+  if (prev.trim() && !val.trim()) {
+    emit("search");
+  }
 }
 
 function onFocus() {

@@ -1,3 +1,4 @@
+<!-- docs/.vuepress/components/search/SearchResultsList.vue -->
 <template>
   <ul class="mfs-results" v-if="results.length">
     <li
@@ -10,10 +11,15 @@
         <!-- 头部：标题 + 展开按钮 -->
         <div class="mfs-result-head">
           <div class="mfs-result-title">
+            <!-- 类型标签 -->
             <span v-if="inferType(hit)" class="mfs-tag">
               [{{ typeLabelMap[inferType(hit)!] || inferType(hit) }}]
             </span>
-            {{ hit.title || hit.hierarchy_lvl1 || hit.hierarchy_lvl0 || "(无标题)" }}
+            <!-- ✅ 标题高亮 -->
+            <span
+              class="mfs-result-title-text"
+              v-html="highlight(hit.title || hit.hierarchy_lvl1 || hit.hierarchy_lvl0 || '(无标题)')"
+            ></span>
           </div>
 
           <button
@@ -25,19 +31,19 @@
           </button>
         </div>
 
-        <!-- 折叠态 -->
+        <!-- 折叠态：一行摘要，高亮 + 截断 -->
         <div
           v-if="!isExpanded(hit)"
           class="mfs-result-summary mfs-result-summary--collapsed"
-        >
-          {{ shortSummary(hit.summary || hit.text || "（暂无摘要）") }}
-        </div>
+          v-html="highlight(shortSummary(hit.summary || hit.text || '（暂无摘要）'))"
+        ></div>
 
-        <!-- 展开态 -->
+        <!-- 展开态：完整摘要 + meta -->
         <div v-else class="mfs-result-detail">
-          <div class="mfs-result-summary-full">
-            {{ hit.summary || hit.text || "（暂无摘要）" }}
-          </div>
+          <div
+            class="mfs-result-summary-full"
+            v-html="highlight(hit.summary || hit.text || '（暂无摘要）')"
+          ></div>
 
           <div class="mfs-result-meta-line">
             <span v-if="inferType(hit)">
@@ -61,7 +67,7 @@
             {{ hit.url }}
           </div>
         </div>
-      </a >
+      </a>
     </li>
   </ul>
 </template>
@@ -73,6 +79,7 @@ const props = defineProps<{
   results: any[];
   typeLabelMap: Record<string, string>;
   inferType: (hit: any) => string | null;
+  keyword: string; // ✅ 用于高亮的关键字
 }>();
 
 const expandedKeys = ref<string[]>([]);
@@ -98,6 +105,34 @@ function shortSummary(text: string, maxLen = 60): string {
   const t = (text || "").trim();
   if (t.length <= maxLen) return t;
   return t.slice(0, maxLen) + "…";
+}
+
+/* ========= 关键字高亮 ========= */
+
+function escapeRegExp(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * 用 <mark> 包住匹配到的关键字：
+ * - 忽略大小写
+ * - keyword 为空时直接返回原文
+ */
+function highlight(text: string): string {
+  const kw = (props.keyword || "").trim();
+  if (!kw) return text || "";
+
+  try {
+    const pattern = escapeRegExp(kw);
+    const re = new RegExp(pattern, "gi");
+    return (text || "").replace(
+      re,
+      (match) => `<mark class="mfs-hl">${match}</mark>`
+    );
+  } catch {
+    // 正则构造失败就直接返回原文
+    return text || "";
+  }
 }
 </script>
 
@@ -201,5 +236,12 @@ function shortSummary(text: string, maxLen = 60): string {
   font-size: 0.75rem;
   color: var(--vp-c-text-3, #9ca3af);
   margin-top: 0.25rem;
+}
+
+/* ✅ 高亮 mark 样式（用 v-html 渲染，所以用 v-deep） */
+::v-deep(.mfs-hl) {
+  background: rgba(250, 204, 21, 0.4); /* 柔一点的黄底 */
+  padding: 0 2px;
+  border-radius: 2px;
 }
 </style>

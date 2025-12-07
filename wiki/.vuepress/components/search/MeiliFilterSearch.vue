@@ -70,6 +70,7 @@
       :results="results"
       :type-label-map="typeLabelMap"
       :infer-type="inferType"
+      :keyword="keyword"   
     />
   </div>
 </template>
@@ -121,8 +122,8 @@ const {
   top: var(--nav-height, 4rem); /* 保持贴在导航栏下方 */
   z-index: 20;
   background: var(--vp-bg, #fff);
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.75rem;
+  padding-bottom: 0.25rem;
+  margin-bottom: 0.2rem;
 }
 
 /* 🔥 让搜索栏“往上长出一块空白”盖住上方露出的内容 */
