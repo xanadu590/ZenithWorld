@@ -198,6 +198,20 @@ function applySuggestion(word: string) {
   emit("search");
   showSuggestBox.value = false;
 }
+
+/**
+ * 给父组件用的：把当前 keyword 写入搜索历史。
+ * （用于“右侧搜索按钮”那条路径）
+ */
+function saveCurrentKeywordToHistory() {
+  if (props.keyword) {
+    saveHistory(props.keyword);
+  }
+}
+
+defineExpose({
+  saveCurrentKeywordToHistory,
+});
 </script>
 
 <style scoped>
