@@ -19,6 +19,15 @@ import NavbarMenuHotPages from './components/navbar/NavbarMenuHotPages.vue'
 import TwikooComment from './components/TwikooComment.vue'
 import TeamLineupLayout from './layouts/TeamLineupLayout.vue'
 import MeiliFilterSearch from './components/search/MeiliFilterSearch.vue'
+import SearchEmptyState from './components/search/SearchEmptyState.vue'
+import SearchInputArea from './components/search/SearchInputArea.vue'
+import SearchResultsList from './components/search/SearchResultsList.vue'
+import TagPaper from './components/search/TagPaper.vue'
+
+
+
+
+
 
 import MeiliFilterControls from './components/search/MeiliFilterControls.vue'
 
@@ -119,6 +128,18 @@ export default defineClientConfig({
     app.component('TwikooComment', TwikooComment)
     app.component('MeiliFilterSearch', MeiliFilterSearch)
     app.component('MeiliFilterControls', MeiliFilterControls)
+    app.component('SearchEmptyState', SearchEmptyState)
+    app.component('SearchInputArea', SearchInputArea)
+    app.component('SearchResultsList', SearchResultsList)
+    app.component('TagPaper', TagPaper)
+
+
+
+
+
+
+
+
 
     app.component('TaxonomyList', TaxonomyList)
     app.component('AutoLinkTooltip', AutoLinkTooltip)
