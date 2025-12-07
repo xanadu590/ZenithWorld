@@ -34,21 +34,12 @@
         {{ opt.label }}
       </button>
     </div>
-
-    <!-- 标签区域：一行 + 左右翻页箭头 + 页码显示 -->
-    <TagPager
-      :available-tags="availableTags"
-      :visible-tags="visibleTags"
-      :selected-tags="selectedTags"
-      @toggle-tag="(tag) => $emit('toggle-tag', tag)"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
 import SearchInputBox from "./SearchInputBox.vue";
-import TagPager from "./TagPager.vue";
 
 type TypeOption = { value: string | null; label: string };
 
@@ -57,8 +48,6 @@ const props = defineProps<{
   selectedTags: string[];
   typeOptions: TypeOption[];
   activeType: string | null;
-  availableTags: string[];
-  visibleTags: string[];
   hasAnyFilter: boolean;
 }>();
 

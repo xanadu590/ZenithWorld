@@ -1,14 +1,14 @@
+<!-- docs/.vuepress/components/search/MeiliFilterSearch.vue -->
 <template>
   <div class="meili-filter-search">
-    <!-- ✅ 顶部固定区域：搜索输入 + 分类 + 标签 + 排序 -->
+    <!-- ✅ 顶部固定区域：搜索输入 + 分类 + 排序 + 标签 -->
     <div class="mfs-header-sticky">
+      <!-- 搜索输入 + 分类 -->
       <MeiliFilterControls
         :keyword="keyword"
         :selected-tags="selectedTags"
         :type-options="typeOptions"
         :active-type="activeType"
-        :available-tags="availableTags"
-        :visible-tags="visibleTags"
         :has-any-filter="hasAnyFilter"
         @update:keyword="handleUpdateKeyword"
         @search="search"
@@ -45,6 +45,14 @@
           最多访问
         </button>
       </div>
+
+      <!-- 标签行：挪到排序行下面 -->
+      <TagPager
+        :available-tags="availableTags"
+        :visible-tags="visibleTags"
+        :selected-tags="selectedTags"
+        @toggle-tag="toggleTag"
+      />
     </div>
 
     <!-- 搜索状态提示 -->
@@ -68,6 +76,10 @@
 
 <script setup lang="ts">
 import { useWikiSearch } from "./useWikiSearch.js";
+import MeiliFilterControls from "./MeiliFilterControls.vue";
+import TagPager from "./TagPager.vue";
+import SearchEmptyState from "./SearchEmptyState.vue";
+import SearchResultsList from "./SearchResultsList.vue";
 
 const {
   keyword,
@@ -103,7 +115,7 @@ const {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
 }
 
-/* 让搜索栏 + 分类 + 标签固定在顶部 */
+/* 让搜索栏 + 分类 + 排序 + 标签 固定在顶部 */
 .mfs-header-sticky {
   position: sticky;
   top: var(--nav-height, 4rem); /* 保持贴在导航栏下方 */
