@@ -22,7 +22,7 @@ import MeiliFilterSearch from './components/search/MeiliFilterSearch.vue'
 import SearchEmptyState from './components/search/SearchEmptyState.vue'
 import SearchInputBox from './components/search/SearchInputBox.vue'
 import SearchResultsList from './components/search/SearchResultsList.vue'
-import TagPaper from './components/search/TagPaper.vue'
+import TagPager from './components/search/TagPager.vue'
 
 
 
@@ -131,7 +131,7 @@ export default defineClientConfig({
     app.component('SearchEmptyState', SearchEmptyState)
     app.component('SearchInputBox', SearchInputBox)
     app.component('SearchResultsList', SearchResultsList)
-    app.component('TagPaper', TagPaper)
+    app.component('TagPager', TagPager)
 
 
 
