@@ -131,8 +131,7 @@ const {
   align-items: center;
   gap: 0.4rem;
   margin: 0.25rem 0 0.5rem;
-  font-size: 0.85rem;
-  color: var(--vp-c-text-2, #6b7280);
+  font-size: 0.9rem;
 }
 
 .mfs-sort-label {

@@ -3,19 +3,22 @@
   <div>
     <!-- 顶部搜索条：输入框 + 搜索 -->
     <div class="mfs-bar">
-      <!-- 左侧输入区域（SearchInputBox） -->
+      <!-- 左侧：搜索输入框（含自动补全 + 搜索历史） -->
       <SearchInputBox
+        ref="inputRef"
         :keyword="keyword"
         :selected-tags="selectedTags"
         :has-any-filter="hasAnyFilter"
-        @update:keyword="$emit('update:keyword', $event)"
+        @update:keyword="(val) => $emit('update:keyword', val)"
         @search="$emit('search')"
-        @toggle-tag="$emit('toggle-tag', $event)"
+        @toggle-tag="(tag) => $emit('toggle-tag', tag)"
         @reset-filters="$emit('reset-filters')"
       />
 
       <!-- 右侧主搜索按钮 -->
-      <button class="mfs-btn" @click="$emit('search')">搜索</button>
+      <button class="mfs-btn" @click="handleClickSearch">
+        搜索
+      </button>
     </div>
 
     <!-- 分类按钮区域：全部 / 人物 / 概念 / 势力 / 地理 / 历史 -->
@@ -32,22 +35,27 @@
       </button>
     </div>
 
-    <!-- 标签分页区域 -->
+    <!-- 标签区域：一行 + 左右翻页箭头 + 页码显示 -->
     <TagPager
       :available-tags="availableTags"
       :visible-tags="visibleTags"
       :selected-tags="selectedTags"
-      @toggle-tag="$emit('toggle-tag', $event)"
+      @toggle-tag="(tag) => $emit('toggle-tag', tag)"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
+import SearchInputBox from "./SearchInputBox.vue";
+import TagPager from "./TagPager.vue";
+
+type TypeOption = { value: string | null; label: string };
 
 const props = defineProps<{
   keyword: string;
   selectedTags: string[];
-  typeOptions: { value: string | null; label: string }[];
+  typeOptions: TypeOption[];
   activeType: string | null;
   availableTags: string[];
   visibleTags: string[];
@@ -61,6 +69,19 @@ const emit = defineEmits<{
   (e: "set-type", value: string | null): void;
   (e: "reset-filters"): void;
 }>();
+
+/**
+ * 通过 ref 拿到 SearchInputBox 实例，
+ * 调用它暴露出来的 saveCurrentKeywordToHistory()
+ */
+const inputRef = ref<InstanceType<typeof SearchInputBox> | null>(null);
+
+function handleClickSearch() {
+  // 先把当前关键字写入历史
+  inputRef.value?.saveCurrentKeywordToHistory?.();
+  // 再真正触发搜索
+  emit("search");
+}
 </script>
 
 <style scoped>
@@ -69,18 +90,6 @@ const emit = defineEmits<{
   display: flex;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
-}
-
-/* 主搜索按钮 */
-.mfs-btn {
-  padding: 0.4rem 0.9rem;
-  border-radius: 999px;
-  border: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  white-space: nowrap;
-  background: var(--vp-c-accent, #6366f1);
-  color: #fff;
 }
 
 /* 分类按钮区域 */
@@ -110,5 +119,17 @@ const emit = defineEmits<{
   background: var(--vp-c-accent, #6366f1);
   color: #fff;
   border-color: transparent;
+}
+
+/* 主搜索按钮 */
+.mfs-btn {
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  background: var(--vp-c-accent, #6366f1);
+  color: #fff;
 }
 </style>

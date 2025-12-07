@@ -56,6 +56,7 @@
       >
         🔍 {{ s }}
       </li>
+
       <!-- 历史记录 -->
       <li
         v-for="h in searchHistory"
@@ -64,6 +65,15 @@
         @mousedown.prevent="applySuggestion(h)"
       >
         🕘 {{ h }}
+      </li>
+
+      <!-- 清除历史按钮 -->
+      <li
+        v-if="searchHistory.length"
+        class="mfs-history-clear"
+        @mousedown.prevent="clearHistory"
+      >
+        🗑 清除搜索历史
       </li>
     </ul>
   </div>
@@ -119,6 +129,15 @@ function saveHistory(word: string) {
   searchHistory.value = next;
   try {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+  } catch {
+    /* ignore */
+  }
+}
+
+function clearHistory() {
+  searchHistory.value = [];
+  try {
+    localStorage.removeItem(HISTORY_KEY);
   } catch {
     /* ignore */
   }
@@ -200,8 +219,8 @@ function applySuggestion(word: string) {
 }
 
 /**
- * 给父组件用的：把当前 keyword 写入搜索历史。
- * （用于“右侧搜索按钮”那条路径）
+ * 暴露给父组件的方法：
+ * 让父组件在“点击搜索按钮”时也能把当前关键字写入历史
  */
 function saveCurrentKeywordToHistory() {
   if (props.keyword) {
@@ -301,6 +320,20 @@ defineExpose({
 .mfs-suggest-item:hover,
 .mfs-history-item:hover {
   background: #f3f4f6;
+}
+
+/* 清除历史按钮样式 */
+.mfs-history-clear {
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #dc2626;
+  border-top: 1px solid #f3f4f6;
+  text-align: center;
+}
+
+.mfs-history-clear:hover {
+  background: #fee2e2;
 }
 
 /* 标签按钮 + 已选标签卡片 共用样式 */
