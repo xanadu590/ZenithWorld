@@ -85,30 +85,6 @@
     "tooltip": "新神在人间为自己选择的代理人。"
   },
   {
-    "term": "英雄组织",
-    "path": "/docs/world/factions/heroic/",
-    "filePathRelative": "docs/world/factions/heroic/README.md",
-    "tooltip": ""
-  },
-  {
-    "term": "官方组织",
-    "path": "/docs/world/factions/official/",
-    "filePathRelative": "docs/world/factions/official/README.md",
-    "tooltip": ""
-  },
-  {
-    "term": "中立组织",
-    "path": "/docs/world/factions/neutral/",
-    "filePathRelative": "docs/world/factions/neutral/README.md",
-    "tooltip": ""
-  },
-  {
-    "term": "其他组织",
-    "path": "/docs/world/factions/others/",
-    "filePathRelative": "docs/world/factions/others/README.md",
-    "tooltip": ""
-  },
-  {
     "term": "异常构造",
     "path": "/docs/world/concepts/isomer/",
     "filePathRelative": "docs/world/concepts/isomer/README.md",
@@ -160,6 +136,30 @@
     "tooltip": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。 十二主神 － 天神/全能神/主神 － 太阳神/光明神 － 月神/黑夜神 － 战争之神 － 大地神/母神/生命神 － 风暴神/雷神 － 爱神/美神 － 十二主神的由来 十二主神并不是严格遵守十二这个数字，实际上，并没有完全遵守十二这个数字..."
   },
   {
+    "term": "英雄组织",
+    "path": "/docs/world/factions/heroic/",
+    "filePathRelative": "docs/world/factions/heroic/README.md",
+    "tooltip": ""
+  },
+  {
+    "term": "中立组织",
+    "path": "/docs/world/factions/neutral/",
+    "filePathRelative": "docs/world/factions/neutral/README.md",
+    "tooltip": ""
+  },
+  {
+    "term": "其他组织",
+    "path": "/docs/world/factions/others/",
+    "filePathRelative": "docs/world/factions/others/README.md",
+    "tooltip": ""
+  },
+  {
+    "term": "官方组织",
+    "path": "/docs/world/factions/official/",
+    "filePathRelative": "docs/world/factions/official/README.md",
+    "tooltip": ""
+  },
+  {
     "term": "关系卡",
     "path": "/docs/RoleCard.html",
     "filePathRelative": "docs/RoleCard.md",
@@ -172,6 +172,12 @@
     "tooltip": "基本信息"
   },
   {
+    "term": "概念",
+    "path": "/docs/world/concepts/",
+    "filePathRelative": "docs/world/concepts/README.md",
+    "tooltip": ""
+  },
+  {
     "term": "地理",
     "path": "/docs/world/geography/",
     "filePathRelative": "docs/world/geography/README.md",
@@ -181,12 +187,6 @@
     "term": "历史",
     "path": "/docs/world/history/",
     "filePathRelative": "docs/world/history/README.md",
-    "tooltip": ""
-  },
-  {
-    "term": "概念",
-    "path": "/docs/world/concepts/",
-    "filePathRelative": "docs/world/concepts/README.md",
     "tooltip": ""
   },
   {
