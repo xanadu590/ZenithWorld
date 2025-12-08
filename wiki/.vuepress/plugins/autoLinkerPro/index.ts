@@ -34,6 +34,28 @@ export interface AutoLinkerProOptions {
 }
 
 /**
+ * ========================
+ * 反向引用存储（倒排表）
+ * ========================
+ * termPagePath(toPath) ← fromPagePath[]
+ */
+type LinkGraph = Map<string, Set<string>>;
+const linkGraph: LinkGraph = new Map();
+
+/** 记录一次反向引用：fromPath 页面里提到了 toPath 页面 */
+function recordBacklink(fromPath: string, toPath: string) {
+  if (!fromPath || !toPath) return;
+  if (fromPath === toPath) return; // 自己引用自己就先忽略
+
+  let set = linkGraph.get(toPath);
+  if (!set) {
+    set = new Set<string>();
+    linkGraph.set(toPath, set);
+  }
+  set.add(fromPath);
+}
+
+/**
  * 简单转义属性里的双引号，避免破坏模板
  */
 function escapeAttr(value: string): string {
@@ -379,6 +401,10 @@ export const autoLinkerProPlugin = (
             );
 
             if (res.added > 0) {
+              // ⭐ 新增：一旦本页成功为某个 entry 插入了链接，
+              // 就记录一次反向引用：page.path -> entry.path
+              recordBacklink(page.path, entry.path);
+
               totalInserted += res.added;
               modified = res.text;
               changed = true;
@@ -411,6 +437,54 @@ export const autoLinkerProPlugin = (
             );
           }
         }
+      }
+    },
+
+    /**
+     * 构建完成后，把 linkGraph 写成 /backlinks/index.json
+     */
+    async onGenerated(app) {
+      // 把 Map<toPath, Set<fromPath>> 转成普通对象
+      const json: Record<
+        string,
+        { path: string; title: string }[]
+      > = {};
+
+      linkGraph.forEach((fromSet, targetPath) => {
+        const items: { path: string; title: string }[] = [];
+
+        fromSet.forEach((fromPath) => {
+          const page = app.pages.find((p) => p.path === fromPath);
+          items.push({
+            path: fromPath,
+            title:
+              page?.title ||
+              (page?.frontmatter as any)?.title ||
+              fromPath,
+          });
+        });
+
+        // 按标题排序，可选
+        items.sort((a, b) => a.title.localeCompare(b.title, "zh-Hans"));
+
+        json[targetPath] = items;
+      });
+
+      const outDir = vpPath.resolve(app.dir.dest(), "backlinks");
+      await fs.promises.mkdir(outDir, { recursive: true });
+      const outFile = vpPath.resolve(outDir, "index.json");
+      await fs.promises.writeFile(
+        outFile,
+        JSON.stringify(json, null, 2),
+        "utf-8",
+      );
+
+      if (Object.keys(json).length) {
+        console.log(
+          `[autoLinkerPro] backlinks index generated: ${Object.keys(json).length} pages`
+        );
+      } else {
+        console.log("[autoLinkerPro] backlinks index generated: empty");
       }
     },
   };
