@@ -100,7 +100,7 @@
 */
 
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { useRandomPool, type RandomItem } from '../composables/useRandomPool'
+import { useRandomPool, type RandomItem } from '../composables/useRandomPool.js'
 
 /* 公开属性：可控制条数 / 是否吸顶 / 是否靠右固定 */
 const props = withDefaults(

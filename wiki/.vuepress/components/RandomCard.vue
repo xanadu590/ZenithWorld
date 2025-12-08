@@ -76,7 +76,7 @@
 */
 
 import { ref, onMounted } from 'vue'
-import { useRandomPool } from '../composables/useRandomPool'
+import { useRandomPool } from '../composables/useRandomPool.js'
 
 /* 从随机池拿到：加载函数、抽样函数、跳转链接解析（自动加 base） */
 const { load, sample, resolveLink } = useRandomPool()
