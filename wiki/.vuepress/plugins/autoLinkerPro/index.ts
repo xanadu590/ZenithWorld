@@ -151,9 +151,6 @@ function createLinkifier(
        *   <RouterLink ...>term</RouterLink>
        *   <AutoLinkTooltip ... />
        * </span>
-       *
-       * - RouterLink 负责可见文字 + 下划线动画（你已有的 CSS 可以继续用）
-       * - AutoLinkTooltip 是你定义的 Vue 组件，负责渲染右侧提示卡片（可以包含图片）
        */
       const fragment =
         `<span class="zw-auto-link-wrap">` +
@@ -290,7 +287,7 @@ export const autoLinkerProPlugin = (
         console.log("[autoLinkerPro] index json written:", outFile);
       }
 
-      // 3. 修改 .temp/pages/*.html.vue
+      // 3. 修改 .temp/pages/*.html.vue，同时填充 linkGraph（反向引用）
       for (const page of app.pages) {
         const fm: any = page.frontmatter || {};
         const autoLink = fm.autoLink;
@@ -401,8 +398,7 @@ export const autoLinkerProPlugin = (
             );
 
             if (res.added > 0) {
-              // ⭐ 新增：一旦本页成功为某个 entry 插入了链接，
-              // 就记录一次反向引用：page.path -> entry.path
+              // ⭐ 记录反向引用：当前 page 引用了 entry.path
               recordBacklink(page.path, entry.path);
 
               totalInserted += res.added;
@@ -438,14 +434,12 @@ export const autoLinkerProPlugin = (
           }
         }
       }
-    },
 
-    /**
-     * 构建完成后，把 linkGraph 写成 /backlinks/index.json
-     */
-    async onGenerated(app) {
-      // 把 Map<toPath, Set<fromPath>> 转成普通对象
-      const json: Record<
+      /**
+       * 4. 根据 linkGraph 输出反向引用 JSON 到 public/backlinks/index.json
+       *    这样 dev / build 都能通过 /backlinks/index.json 访问
+       */
+      const backlinksJson: Record<
         string,
         { path: string; title: string }[]
       > = {};
@@ -467,21 +461,27 @@ export const autoLinkerProPlugin = (
         // 按标题排序，可选
         items.sort((a, b) => a.title.localeCompare(b.title, "zh-Hans"));
 
-        json[targetPath] = items;
+        backlinksJson[targetPath] = items;
       });
 
-      const outDir = vpPath.resolve(app.dir.dest(), "backlinks");
-      await fs.promises.mkdir(outDir, { recursive: true });
-      const outFile = vpPath.resolve(outDir, "index.json");
+      const backlinksOutFile = vpPath.resolve(
+        app.dir.public(),
+        "backlinks/index.json"
+      );
+      await fs.promises.mkdir(vpPath.dirname(backlinksOutFile), {
+        recursive: true,
+      });
       await fs.promises.writeFile(
-        outFile,
-        JSON.stringify(json, null, 2),
-        "utf-8",
+        backlinksOutFile,
+        JSON.stringify(backlinksJson, null, 2),
+        "utf-8"
       );
 
-      if (Object.keys(json).length) {
+      if (Object.keys(backlinksJson).length) {
         console.log(
-          `[autoLinkerPro] backlinks index generated: ${Object.keys(json).length} pages`
+          `[autoLinkerPro] backlinks index generated: ${Object.keys(
+            backlinksJson
+          ).length} pages`
         );
       } else {
         console.log("[autoLinkerPro] backlinks index generated: empty");

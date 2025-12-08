@@ -36,6 +36,12 @@
     "hotScore": 0
   },
   {
+    "title": "历史",
+    "path": "/docs/world/history/",
+    "lastUpdated": 1764926399000,
+    "hotScore": 0
+  },
+  {
     "title": "概念",
     "path": "/docs/world/concepts/",
     "lastUpdated": 1764926399000,
@@ -51,18 +57,6 @@
     "title": "地理",
     "path": "/docs/world/geography/",
     "lastUpdated": 1764926399000,
-    "hotScore": 0
-  },
-  {
-    "title": "历史",
-    "path": "/docs/world/history/",
-    "lastUpdated": 1764926399000,
-    "hotScore": 0
-  },
-  {
-    "title": "异常构造",
-    "path": "/docs/world/concepts/isomer/",
-    "lastUpdated": 1764576698000,
     "hotScore": 0
   },
   {
@@ -138,9 +132,21 @@
     "hotScore": 0
   },
   {
+    "title": "异常构造",
+    "path": "/docs/world/concepts/isomer/",
+    "lastUpdated": 1764576698000,
+    "hotScore": 0
+  },
+  {
     "title": "十二主神",
     "path": "/docs/world/concepts/twelveprimedeities/",
     "lastUpdated": 1763641434000,
+    "hotScore": 0
+  },
+  {
+    "title": "官方组织",
+    "path": "/docs/world/factions/official/",
+    "lastUpdated": 1764926399000,
     "hotScore": 0
   },
   {
@@ -152,12 +158,6 @@
   {
     "title": "其他组织",
     "path": "/docs/world/factions/others/",
-    "lastUpdated": 1764926399000,
-    "hotScore": 0
-  },
-  {
-    "title": "官方组织",
-    "path": "/docs/world/factions/official/",
     "lastUpdated": 1764926399000,
     "hotScore": 0
   },
