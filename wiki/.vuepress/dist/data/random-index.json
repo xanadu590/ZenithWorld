@@ -1,0 +1,154 @@
+{
+  "pages": [
+    {
+      "title": "高级搜索",
+      "path": "/docs/advanced-search.html",
+      "excerpt": "这里是巅峰世界百科的 高级搜索。你可以根据「人物 / 城市 / 组织 / 概念」等分类来筛选结果。 <MeiliFilterSearch /"
+    },
+    {
+      "title": "人物关系图谱",
+      "path": "/docs/characterline.html",
+      "excerpt": "人物关系图谱 <ClientOnly <RelationGraph :height=\"420\" :nodes=\" { id: 'ek', label: '灵动骑士', url: '/docs/world/characters/superhe"
+    },
+    {
+      "title": "推荐文章",
+      "path": "/docs/hotpages.html",
+      "excerpt": "<HotPages title=\"🔥 热门文章\" :limit=\"20\" / <RecentPages title=\"🕓 最近更新\" :limit=\"20\" /"
+    },
+    {
+      "title": "关系卡",
+      "path": "/docs/RoleCard.html",
+      "excerpt": "<div class=\"rolegrid\" <RoleCard stacked title=\"灵动骑士\" avatar=\"/images/EtherealKnight/CombatSuit.jpg\" :abilities=\"'风元素强化'\""
+    },
+    {
+      "title": "世界大事年表",
+      "path": "/docs/timeline.html",
+      "excerpt": "<WorldTimeline :items=\" { date: '2000年', title: '世纪末战争', detail: '五大势力首次交锋，世界秩序崩塌。\\n 123' }, { date: '2020年', title: '巅峰"
+    },
+    {
+      "title": "世界地图",
+      "path": "/docs/worldmap.html",
+      "excerpt": "<MapJump src=\"/images/worldmap.jpg\" ratio=\"16/9\" :regions=\" { id: 1, title: '中域群体', to: '/docs/world/characters/superher"
+    },
+    {
+      "title": "神明代理",
+      "path": "/docs/world/characters/divineproxy/",
+      "excerpt": "新神在人间为自己选择的代理人。"
+    },
+    {
+      "title": "灵动骑士",
+      "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
+      "excerpt": "意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！"
+    },
+    {
+      "title": "灵动骑士",
+      "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
+      "excerpt": "“绝世的容貌，高洁的灵魂，无缺的完人……咳咳，好吧，这句确实有点过了。”"
+    },
+    {
+      "title": "灵动骑士",
+      "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
+      "excerpt": "“也许这份容貌……并不是赐福。”"
+    },
+    {
+      "title": "灵动骑士",
+      "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
+      "excerpt": "“你说的这些，我一个字，都听不懂！”"
+    },
+    {
+      "title": "灵动骑士",
+      "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
+      "excerpt": "“冰附魔接凯利河之鹰羽接魔力连击接斗志昂扬接剑己相随接利莫格剑芒接落雨三尺青锋！最后一击！梅尔美伦的跳斩！”"
+    },
+    {
+      "title": "灵动骑士",
+      "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
+      "excerpt": "“光之所在，即是吾之归途。”"
+    },
+    {
+      "title": "赤听",
+      "path": "/docs/world/characters/superhero/character-HearTone.html",
+      "excerpt": "<div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\"/images/EtherealKnigh"
+    },
+    {
+      "title": "赤听",
+      "path": "/docs/world/characters/superhero/character-HearTone.html",
+      "excerpt": "“我确实说过不会对女人出手……但我的意思并不是让你把我变成女人！你这混账神明，快把我变回去！”"
+    },
+    {
+      "title": "幻绘星",
+      "path": "/docs/world/characters/superhero/character-Illustra.html",
+      "excerpt": "<div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\"/images/EtherealKnigh"
+    },
+    {
+      "title": "幻绘星",
+      "path": "/docs/world/characters/superhero/character-Illustra.html",
+      "excerpt": "“啊啊！烦死了烦死了！我爸根的真的不想出来营业啊！”"
+    },
+    {
+      "title": "月五",
+      "path": "/docs/world/characters/superhero/character-M-A-Y.html",
+      "excerpt": "<div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\"/images/EtherealKnigh"
+    },
+    {
+      "title": "月五",
+      "path": "/docs/world/characters/superhero/character-M-A-Y.html",
+      "excerpt": "“瓦尔德！开庭！行于汝应当审判！罪于汝该当裁决！”"
+    },
+    {
+      "title": "天灾",
+      "path": "/docs/world/characters/superhero/character-Scourge.html",
+      "excerpt": "天灾 <LeadBlock quote=\"啊哈哈！我很强的……干嘛！不要那样看着我！\" / 姓名：尹守 性别：男 英雄名：天灾（Scourge 昵称：后宫男 年龄：26 种族：人类 出生年月：2004年5月20日 职业：偶像经纪人 学历：大"
+    },
+    {
+      "title": "天灾",
+      "path": "/docs/world/characters/superhero/character-Scourge.html",
+      "excerpt": "“啊哈哈！我很强的……干嘛！不要那样看着我！”"
+    },
+    {
+      "title": "警钟",
+      "path": "/docs/world/characters/superhero/character-StrikeClock.html",
+      "excerpt": "<div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\"/images/EtherealKnigh"
+    },
+    {
+      "title": "警钟",
+      "path": "/docs/world/characters/superhero/character-StrikeClock.html",
+      "excerpt": "“嗯，对于成为救世主这件事，我并不是自愿的，只是……那些无法自救的人，不应被抛弃。”"
+    },
+    {
+      "title": "巫师希望",
+      "path": "/docs/world/characters/superhero/character-WizardHope.html",
+      "excerpt": "<div class=\"airow\" <AIMedia src=\"/images/EtherealKnightCombSuit.jpg\" caption=\"战斗状态\"/ <AIMedia src=\"/images/EtherealKnigh"
+    },
+    {
+      "title": "巫师希望",
+      "path": "/docs/world/characters/superhero/character-WizardHope.html",
+      "excerpt": "“生活也许很艰难，但是有家人和朋友在一起，我就有勇气面对。”"
+    },
+    {
+      "title": "超级英雄",
+      "path": "/docs/world/characters/superhero/",
+      "excerpt": "这里可以写一点团体的文字介绍。 比如巅峰议会的成立历史、议会目标、对世界格局的影响等等。 下面也可以继续正常写 Markdown 内容： 组织结构 议会会议制度 与各团体的关系 灵动骑士 天灾 HearTone M·A·Y 测试页面 ……把"
+    },
+    {
+      "title": "测试目标A",
+      "path": "/docs/world/characters/superhero/test-a.html",
+      "excerpt": "术语总览 这里是按 五大分类 和 标签 自动生成的索引页。 说明：只要某篇文档的 Frontmatter 里写了 / ，就会自动出现在下面列表中。 <TaxonomyList :showtags=\"true\" / 这是测试目标 A 的页面。"
+    },
+    {
+      "title": "测试 B",
+      "path": "/docs/world/characters/superhero/test-b.html",
+      "excerpt": "我在这里随便写一句：测试目标A会不会被自动加链接。"
+    },
+    {
+      "title": "十二主神",
+      "path": "/docs/world/concepts/twelveprimedeities/",
+      "excerpt": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。"
+    },
+    {
+      "title": "异常事物管理局",
+      "path": "/docs/world/factions/official/AMA/",
+      "excerpt": "名称：异常事物管理局\n译名：Anomaly Management Agency\n简称：AMA\n成立日期： 历史\n异常管理局的源头可追溯至【先知】创立的早期组织——【危机管理机构】Crisis Control Organization，简称C"
+    }
+  ]
+}

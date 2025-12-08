@@ -1,16 +1,3 @@
 import comp from "C:/Users/super/ZenithWorld/wiki/.vuepress/.temp/pages/docs/world/characters/superhero/test-a.html.vue"
 const data = JSON.parse("{\"path\":\"/docs/world/characters/superhero/test-a.html\",\"title\":\"测试目标A\",\"lang\":\"zh-CN\",\"frontmatter\":{\"title\":\"测试目标A\",\"description\":\"术语总览 这里是按 五大分类 和 标签 自动生成的索引页。 说明：只要某篇文档的 Frontmatter 里写了 category / tag，就会自动出现在下面列表中。\",\"head\":[[\"script\",{\"type\":\"application/ld+json\"},\"{\\\"@context\\\":\\\"https://schema.org\\\",\\\"@type\\\":\\\"Article\\\",\\\"headline\\\":\\\"测试目标A\\\",\\\"image\\\":[\\\"\\\"],\\\"dateModified\\\":\\\"2025-12-06T09:01:33.000Z\\\",\\\"author\\\":[{\\\"@type\\\":\\\"Person\\\",\\\"name\\\":\\\"xanadu590\\\"}]}\"],[\"meta\",{\"property\":\"og:url\",\"content\":\"https://zenithworld.com/docs/world/characters/superhero/test-a.html\"}],[\"meta\",{\"property\":\"og:site_name\",\"content\":\"巅峰世界\"}],[\"meta\",{\"property\":\"og:title\",\"content\":\"测试目标A\"}],[\"meta\",{\"property\":\"og:description\",\"content\":\"术语总览 这里是按 五大分类 和 标签 自动生成的索引页。 说明：只要某篇文档的 Frontmatter 里写了 category / tag，就会自动出现在下面列表中。\"}],[\"meta\",{\"property\":\"og:type\",\"content\":\"article\"}],[\"meta\",{\"property\":\"og:locale\",\"content\":\"zh-CN\"}],[\"meta\",{\"property\":\"og:updated_time\",\"content\":\"2025-12-06T09:01:33.000Z\"}],[\"meta\",{\"property\":\"article:modified_time\",\"content\":\"2025-12-06T09:01:33.000Z\"}]]},\"git\":{\"createdTime\":1764636538000,\"updatedTime\":1765011693000},\"readingTime\":{\"minutes\":0.24,\"words\":72},\"filePathRelative\":\"docs/world/characters/superhero/test-a.md\",\"autoDesc\":true}")
 export { comp, data }
-
-if (import.meta.webpackHot) {
-  import.meta.webpackHot.accept()
-  if (__VUE_HMR_RUNTIME__.updatePageData) {
-    __VUE_HMR_RUNTIME__.updatePageData(data)
-  }
-}
-
-if (import.meta.hot) {
-  import.meta.hot.accept(({ data }) => {
-    __VUE_HMR_RUNTIME__.updatePageData(data)
-  })
-}
