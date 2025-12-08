@@ -12,7 +12,7 @@ export const nosearchPaths = [
   "/docs/world/characters/divineproxy/",
   "/docs/world/characters/superhero/",
   "/docs/world/factions/heroic/",
+  "/docs/world/factions/neutral/",
   "/docs/world/factions/official/",
-  "/docs/world/factions/others/",
-  "/docs/world/factions/neutral/"
+  "/docs/world/factions/others/"
 ];

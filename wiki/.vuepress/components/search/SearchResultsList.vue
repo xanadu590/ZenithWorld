@@ -45,9 +45,6 @@
             v-html="highlight(hit.summary || hit.text || '（暂无摘要）')"
           ></div>
 
-          <!-- ⭐ 正文解析出的实体信息：姓名 / 简称 / 英文名 / 称号 -->
-          <SearchResultEntityMeta :meta="hit.entityMeta" />
-
           <div class="mfs-result-meta-line">
             <span v-if="inferType(hit)">
               类型：{{ typeLabelMap[inferType(hit)!] || inferType(hit) }}
@@ -64,6 +61,27 @@
             <span v-if="hit.viewCount">
               · 访问：{{ hit.viewCount }} 次
             </span>
+
+            <!-- ✅ 新增：实体信息（从 wiki-entity-meta.json 来） -->
+            <span v-if="hit.entityMeta?.name">
+              · 姓名：{{ hit.entityMeta.name }}
+            </span>
+            <span v-if="hit.entityMeta?.shortName">
+              · 简称：{{ hit.entityMeta.shortName }}
+            </span>
+            <span v-if="hit.entityMeta?.alias">
+              · 别名：{{ hit.entityMeta.alias }}
+            </span>
+            <span v-if="hit.entityMeta?.enName">
+              · 英文名：{{ hit.entityMeta.enName }}
+            </span>
+            <span v-if="hit.entityMeta?.title">
+              · 称号：{{ hit.entityMeta.title }}
+            </span>
+          </div>
+
+          <div class="mfs-result-url">
+            {{ hit.url }}
           </div>
         </div>
       </a>
@@ -73,7 +91,6 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import SearchResultEntityMeta from "./SearchResultEntityMeta.vue";
 
 const props = defineProps<{
   results: any[];
@@ -229,6 +246,13 @@ function highlight(text: string): string {
   font-size: 0.85rem;
   color: var(--vp-c-text-1, #4b5563);
   margin-top: 0.2rem;
+}
+
+/* 公共 URL 行样式 */
+.mfs-result-url {
+  font-size: 0.75rem;
+  color: var(--vp-c-text-3, #9ca3af);
+  margin-top: 0.25rem;
 }
 
 /* ✅ 高亮 mark 样式（用 v-html 渲染，所以用 v-deep） */

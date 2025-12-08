@@ -142,6 +142,12 @@
     "tooltip": ""
   },
   {
+    "term": "中立组织",
+    "path": "/docs/world/factions/neutral/",
+    "filePathRelative": "docs/world/factions/neutral/README.md",
+    "tooltip": ""
+  },
+  {
     "term": "官方组织",
     "path": "/docs/world/factions/official/",
     "filePathRelative": "docs/world/factions/official/README.md",
@@ -151,12 +157,6 @@
     "term": "其他组织",
     "path": "/docs/world/factions/others/",
     "filePathRelative": "docs/world/factions/others/README.md",
-    "tooltip": ""
-  },
-  {
-    "term": "中立组织",
-    "path": "/docs/world/factions/neutral/",
-    "filePathRelative": "docs/world/factions/neutral/README.md",
     "tooltip": ""
   },
   {

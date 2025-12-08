@@ -20,6 +20,7 @@ import { taxonomyData } from "@temp/wiki-taxonomy/data.js";
  * - random-index 摘要
  * - recommended-pages 更新时间
  * - Twikoo 真实访问量 viewCount
+ * - 实体信息（姓名 / 简称 / 别名等）
  * - ESC 快捷键
  */
 export function useWikiSearch() {
@@ -256,54 +257,6 @@ export function useWikiSearch() {
   }
 
   /* =========================================================
-   * —— 实体额外信息：从正文解析的 姓名 / 简称 / 英文名 / 称号 等
-   *    - 来源：/data/wiki-entity-meta.json
-   * ======================================================= */
-
-  interface EntityMetaItem {
-    path: string;
-    name?: string;
-    alias?: string;
-    shortName?: string;
-    enName?: string;
-    title?: string;
-  }
-
-  const entityMetaLoaded = ref(false);
-  const entityMetaMap: Record<string, EntityMetaItem> = {};
-
-  async function loadEntityMeta() {
-    if (entityMetaLoaded.value) return;
-    try {
-      const res = await fetch("/data/wiki-entity-meta.json");
-      if (!res.ok) {
-        entityMetaLoaded.value = true;
-        return;
-      }
-      const json = await res.json();
-      const items: EntityMetaItem[] = Array.isArray(json.items)
-        ? json.items
-        : [];
-
-      for (const it of items) {
-        const norm = normalizePath(it.path);
-        entityMetaMap[norm] = it;
-      }
-    } catch {
-      // 忽略
-    } finally {
-      entityMetaLoaded.value = true;
-    }
-  }
-
-  function getEntityMetaForUrl(
-    url?: string | null
-  ): EntityMetaItem | undefined {
-    const norm = normalizePath(url || "");
-    return entityMetaMap[norm];
-  }
-
-  /* =========================================================
    * 七、taxonomy path → tags 映射
    * ======================================================= */
 
@@ -338,7 +291,53 @@ export function useWikiSearch() {
   }
 
   /* =========================================================
-   * 八、搜索结果增强：summary + tags + updatedAt + viewCount(pv)
+   * 八、实体信息 wiki-entity-meta：姓名 / 简称 / 别名 等
+   *    - 来源：/data/wiki-entity-meta.json
+   * ======================================================= */
+
+  interface EntityMetaItem {
+    path: string;
+    name?: string;
+    alias?: string;
+    shortName?: string;
+    enName?: string;
+    title?: string;
+  }
+
+  const entityMetaLoaded = ref(false);
+  const entityMetaMap: Record<string, EntityMetaItem> = {};
+
+  async function loadEntityMeta() {
+    if (entityMetaLoaded.value) return;
+    try {
+      const res = await fetch("/data/wiki-entity-meta.json");
+      if (!res.ok) {
+        entityMetaLoaded.value = true;
+        return;
+      }
+      const json = await res.json();
+      const items: EntityMetaItem[] = Array.isArray(json.items)
+        ? json.items
+        : [];
+
+      for (const item of items) {
+        const norm = normalizePath(item.path);
+        entityMetaMap[norm] = item;
+      }
+    } catch {
+      // 忽略错误：没有这个文件就当没有实体信息
+    } finally {
+      entityMetaLoaded.value = true;
+    }
+  }
+
+  function getEntityMetaForUrl(url?: string | null): EntityMetaItem | undefined {
+    const norm = normalizePath(url || "");
+    return entityMetaMap[norm];
+  }
+
+  /* =========================================================
+   * 九、搜索结果增强：summary + tags + updatedAt + viewCount(pv) + entityMeta
    * ======================================================= */
 
   function attachSummaryAndMeta(hit: any) {
@@ -369,7 +368,7 @@ export function useWikiSearch() {
     const updatedAt = meta?.updatedAt ?? hit.updatedAt ?? null;
     const viewCount = getVisitForUrl(hit.url || hit.path) ?? hit.viewCount ?? 0;
 
-    // 4）正文解析来的实体信息
+    // 4）实体信息（姓名/简称/别名等）
     const entityMeta = getEntityMetaForUrl(hit.url || hit.path);
 
     return {
@@ -383,7 +382,7 @@ export function useWikiSearch() {
   }
 
   /* =========================================================
-   * 九、类型推断 & 分类按钮逻辑
+   * 十、类型推断 & 分类按钮逻辑
    * ======================================================= */
 
   /** 根据 URL 简单判断这是“人物/概念/势力/地理/历史”哪一类 */
@@ -411,7 +410,7 @@ export function useWikiSearch() {
   }
 
   /* =========================================================
-   * 十、主搜索流程（Meili + 前端排序）
+   * 十一、主搜索流程（Meili + 前端排序）
    * ======================================================= */
 
   async function search() {
@@ -512,7 +511,7 @@ export function useWikiSearch() {
   }
 
   /* =========================================================
-   * 十一、初始化 + 全局 ESC 快捷键
+   * 十二、初始化 + 全局 ESC 快捷键
    * ======================================================= */
 
   function handleEsc(e: KeyboardEvent) {

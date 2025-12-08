@@ -2,7 +2,11 @@
   "items": [
     {
       "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
-      "name": "宇文南城"
+      "name": "宇文南城",
+      "title": "灵动骑士（Ethereal Knight)",
+      "shortName": "07",
+      "alias": "灵骑",
+      "enName": "E-Knight"
     },
     {
       "path": "/docs/world/characters/superhero/character-HearTone.html",
