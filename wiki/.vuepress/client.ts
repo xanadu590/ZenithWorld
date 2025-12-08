@@ -23,18 +23,10 @@ import SearchEmptyState from './components/search/SearchEmptyState.vue'
 import SearchInputBox from './components/search/SearchInputBox.vue'
 import SearchResultsList from './components/search/SearchResultsList.vue'
 import TagPager from './components/search/TagPager.vue'
-
-
-
-
-
-
 import MeiliFilterControls from './components/search/MeiliFilterControls.vue'
-
 import TaxonomyList from './components/TaxonomyList.vue'
-
 import AutoLinkTooltip from './components/AutoLinkTooltip.vue'
-import BacklinkList from './components/BacklinkList.vue'
+import BacklinksList from './components/BacklinksList.vue'
 
 
 export type AISetting = {
@@ -134,19 +126,9 @@ export default defineClientConfig({
     app.component('SearchInputBox', SearchInputBox)
     app.component('SearchResultsList', SearchResultsList)
     app.component('TagPager', TagPager)
-
-
-
-
-
-
-
-
-
     app.component('TaxonomyList', TaxonomyList)
     app.component('AutoLinkTooltip', AutoLinkTooltip)
-   
-    app.component('BacklinkList', BacklinkList)
+    app.component('BacklinksList', BacklinksList)
 
     // ✅ 新增：每次路由切换后上报访问
     if (router) {
