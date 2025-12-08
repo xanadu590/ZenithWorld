@@ -1,0 +1,80 @@
+{
+  "/": [
+    {
+      "path": "/docs/advanced-search.html",
+      "title": "高级搜索"
+    }
+  ],
+  "/docs/world/concepts/": [
+    {
+      "path": "/docs/advanced-search.html",
+      "title": "高级搜索"
+    }
+  ],
+  "/docs/world/characters/superhero/character-EtherealKnight.html": [
+    {
+      "path": "/docs/world/characters/superhero/",
+      "title": "超级英雄"
+    },
+    {
+      "path": "/docs/RoleCard.html",
+      "title": "关系卡"
+    },
+    {
+      "path": "/docs/world/characters/superhero/character-Scourge.html",
+      "title": "天灾"
+    }
+  ],
+  "/docs/world/characters/superhero/character-Scourge.html": [
+    {
+      "path": "/docs/world/characters/superhero/",
+      "title": "超级英雄"
+    },
+    {
+      "path": "/docs/RoleCard.html",
+      "title": "关系卡"
+    },
+    {
+      "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
+      "title": "灵动骑士"
+    }
+  ],
+  "/docs/world/history/": [
+    {
+      "path": "/docs/world/characters/superhero/",
+      "title": "超级英雄"
+    },
+    {
+      "path": "/docs/world/factions/official/AMA/",
+      "title": "异常事物管理局"
+    }
+  ],
+  "/docs/world/characters/superhero/test-a.html": [
+    {
+      "path": "/docs/world/characters/superhero/test-b.html",
+      "title": "测试 B"
+    }
+  ],
+  "/docs/world/characters/CCO/": [
+    {
+      "path": "/docs/world/concepts/isomer/",
+      "title": "异常构造"
+    },
+    {
+      "path": "/docs/world/factions/official/AMA/",
+      "title": "异常事物管理局"
+    }
+  ],
+  "/docs/world/factions/official/": [
+    {
+      "path": "/docs/world/factions/official/AMA/",
+      "title": "异常事物管理局"
+    }
+  ],
+  "/docs/world/concepts/isomer/": [
+    {
+      "path": "/docs/world/factions/official/AMA/",
+      "title": "异常事物管理局"
+    }
+  ]
+}

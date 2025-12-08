@@ -36,14 +36,14 @@
     "hotScore": 0
   },
   {
-    "title": "历史",
-    "path": "/docs/world/history/",
+    "title": "概念",
+    "path": "/docs/world/concepts/",
     "lastUpdated": 1764926399000,
     "hotScore": 0
   },
   {
-    "title": "概念",
-    "path": "/docs/world/concepts/",
+    "title": "危机管理机构",
+    "path": "/docs/world/characters/CCO/",
     "lastUpdated": 1764926399000,
     "hotScore": 0
   },
@@ -60,8 +60,8 @@
     "hotScore": 0
   },
   {
-    "title": "危机管理机构",
-    "path": "/docs/world/characters/CCO/",
+    "title": "历史",
+    "path": "/docs/world/history/",
     "lastUpdated": 1764926399000,
     "hotScore": 0
   },
@@ -132,6 +132,12 @@
     "hotScore": 0
   },
   {
+    "title": "英雄组织",
+    "path": "/docs/world/factions/heroic/",
+    "lastUpdated": 1764926399000,
+    "hotScore": 0
+  },
+  {
     "title": "异常构造",
     "path": "/docs/world/concepts/isomer/",
     "lastUpdated": 1764576698000,
@@ -144,18 +150,6 @@
     "hotScore": 0
   },
   {
-    "title": "官方组织",
-    "path": "/docs/world/factions/official/",
-    "lastUpdated": 1764926399000,
-    "hotScore": 0
-  },
-  {
-    "title": "英雄组织",
-    "path": "/docs/world/factions/heroic/",
-    "lastUpdated": 1764926399000,
-    "hotScore": 0
-  },
-  {
     "title": "其他组织",
     "path": "/docs/world/factions/others/",
     "lastUpdated": 1764926399000,
@@ -164,6 +158,12 @@
   {
     "title": "中立组织",
     "path": "/docs/world/factions/neutral/",
+    "lastUpdated": 1764926399000,
+    "hotScore": 0
+  },
+  {
+    "title": "官方组织",
+    "path": "/docs/world/factions/official/",
     "lastUpdated": 1764926399000,
     "hotScore": 0
   },
