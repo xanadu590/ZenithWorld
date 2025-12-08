@@ -8,8 +8,10 @@
 <LeadBlock quote="绝世的容貌，高洁的灵魂，无缺的完人……咳咳，好吧，这句确实有点过了。" /><ul>
 <li>姓名：宇文南城</li>
 <li>性别：女刺猬猫</li>
-<li>英雄名：灵动骑士（Ethereal Knight)</li>
-<li>昵称：灵骑、07、E-Knight</li>
+<li>称号：灵动骑士（Ethereal Knight)</li>
+<li>简称：07</li>
+<li>别名：灵骑</li>
+<li>英文名：E-Knight</li>
 <li>年龄：19</li>
 <li>种族：人类</li>
 <li>出生年月：2011年7月30日</li>
@@ -77,7 +79,7 @@
 <li>朋友：舒雪，韩英宇，姬泽</li>
 <li>恋人：卞体羽</li>
 <li>家人：无</li>
-<li>战友：肖银池，兰音悦，柯丹，韩笑雨中，连珐紫，伊美素，<span class="zw-auto-link-wrap"><RouterLink to="/docs/world/characters/superhero/character-Scourge.html" class="zw-auto-link zw-auto-link--first" data-tooltip="天灾">天灾</RouterLink><AutoLinkTooltip term="天灾" to="/docs/world/characters/superhero/character-Scourge.html" tooltip="天灾" first="true" /></span></li>
+<li>战友：肖银池，兰音悦，柯丹，韩笑雨中，连珐紫，伊美素，天灾</li>
 <li>宿敌：金华谑（金王子）</li>
 </ul>
 <blockquote>

@@ -124,15 +124,21 @@
     "tooltip": "我在这里随便写一句：测试目标A会不会被自动加链接。"
   },
   {
+    "term": "异常构造",
+    "path": "/docs/world/concepts/isomer/",
+    "filePathRelative": "docs/world/concepts/isomer/README.md",
+    "tooltip": "名称：异常构造 译名：Isomer 简称：异构、ISO 关于「异常构造」的详细定义 在这个世界，即便存在大量离奇事物，【异常构造】仍是其中最特殊且最危险的一类。 旧定义 在危机管理机构时期，最初的定义是： “以极不合理的机制运行的事物。” 问题在于，这个定义过于宽泛，导致许多“只是难以理解但不算异常”的现象也被划入该类。 新定义 某位博士提出了一个颠覆..."
+  },
+  {
+    "term": "十二主神",
+    "path": "/docs/world/concepts/twelveprimedeities/",
+    "filePathRelative": "docs/world/concepts/twelveprimedeities/README.md",
+    "tooltip": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。 十二主神 － 天神/全能神/主神 － 太阳神/光明神 － 月神/黑夜神 － 战争之神 － 大地神/母神/生命神 － 风暴神/雷神 － 爱神/美神 － 十二主神的由来 十二主神并不是严格遵守十二这个数字，实际上，并没有完全遵守十二这个数字..."
+  },
+  {
     "term": "英雄组织",
     "path": "/docs/world/factions/heroic/",
     "filePathRelative": "docs/world/factions/heroic/README.md",
-    "tooltip": ""
-  },
-  {
-    "term": "中立组织",
-    "path": "/docs/world/factions/neutral/",
-    "filePathRelative": "docs/world/factions/neutral/README.md",
     "tooltip": ""
   },
   {
@@ -148,16 +154,10 @@
     "tooltip": ""
   },
   {
-    "term": "异常构造",
-    "path": "/docs/world/concepts/isomer/",
-    "filePathRelative": "docs/world/concepts/isomer/README.md",
-    "tooltip": "名称：异常构造 译名：Isomer 简称：异构、ISO 关于「异常构造」的详细定义 在这个世界，即便存在大量离奇事物，【异常构造】仍是其中最特殊且最危险的一类。 旧定义 在危机管理机构时期，最初的定义是： “以极不合理的机制运行的事物。” 问题在于，这个定义过于宽泛，导致许多“只是难以理解但不算异常”的现象也被划入该类。 新定义 某位博士提出了一个颠覆..."
-  },
-  {
-    "term": "十二主神",
-    "path": "/docs/world/concepts/twelveprimedeities/",
-    "filePathRelative": "docs/world/concepts/twelveprimedeities/README.md",
-    "tooltip": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。 十二主神 － 天神/全能神/主神 － 太阳神/光明神 － 月神/黑夜神 － 战争之神 － 大地神/母神/生命神 － 风暴神/雷神 － 爱神/美神 － 十二主神的由来 十二主神并不是严格遵守十二这个数字，实际上，并没有完全遵守十二这个数字..."
+    "term": "中立组织",
+    "path": "/docs/world/factions/neutral/",
+    "filePathRelative": "docs/world/factions/neutral/README.md",
+    "tooltip": ""
   },
   {
     "term": "关系卡",
@@ -172,6 +172,12 @@
     "tooltip": "基本信息"
   },
   {
+    "term": "概念",
+    "path": "/docs/world/concepts/",
+    "filePathRelative": "docs/world/concepts/README.md",
+    "tooltip": ""
+  },
+  {
     "term": "地理",
     "path": "/docs/world/geography/",
     "filePathRelative": "docs/world/geography/README.md",
@@ -181,12 +187,6 @@
     "term": "历史",
     "path": "/docs/world/history/",
     "filePathRelative": "docs/world/history/README.md",
-    "tooltip": ""
-  },
-  {
-    "term": "概念",
-    "path": "/docs/world/concepts/",
-    "filePathRelative": "docs/world/concepts/README.md",
     "tooltip": ""
   },
   {
