@@ -36,6 +36,11 @@
       "excerpt": "新神在人间为自己选择的代理人。"
     },
     {
+      "title": "十二主神",
+      "path": "/docs/world/concepts/twelveprimedeities/",
+      "excerpt": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。"
+    },
+    {
       "title": "灵动骑士",
       "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
       "excerpt": "意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！"
@@ -139,11 +144,6 @@
       "title": "测试 B",
       "path": "/docs/world/characters/superhero/test-b.html",
       "excerpt": "我在这里随便写一句：测试目标A会不会被自动加链接。"
-    },
-    {
-      "title": "十二主神",
-      "path": "/docs/world/concepts/twelveprimedeities/",
-      "excerpt": "十二主神是所有神话都存在的十二种权能，每当时代更替，将会出现新的神话，将会出现新的十二主神。 ——新的神明即将降临。"
     },
     {
       "title": "异常事物管理局",

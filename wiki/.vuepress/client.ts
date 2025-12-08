@@ -24,6 +24,8 @@ import SearchInputBox from './components/search/SearchInputBox.vue'
 import SearchResultsList from './components/search/SearchResultsList.vue'
 import TagPager from './components/search/TagPager.vue'
 import MeiliFilterControls from './components/search/MeiliFilterControls.vue'
+import SearchResultEntityMeta from './components/search/SearchResultEntityMeta.vue'
+
 import TaxonomyList from './components/TaxonomyList.vue'
 import AutoLinkTooltip from './components/AutoLinkTooltip.vue'
 import BacklinksList from './components/BacklinksList.vue'
@@ -126,6 +128,8 @@ export default defineClientConfig({
     app.component('SearchInputBox', SearchInputBox)
     app.component('SearchResultsList', SearchResultsList)
     app.component('TagPager', TagPager)
+    
+    app.component('SearchResultEntityMeta', SearchResultEntityMeta)
     app.component('TaxonomyList', TaxonomyList)
     app.component('AutoLinkTooltip', AutoLinkTooltip)
     app.component('BacklinksList', BacklinksList)

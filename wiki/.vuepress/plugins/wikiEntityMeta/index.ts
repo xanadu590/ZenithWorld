@@ -1,0 +1,103 @@
+import type { Plugin } from "vuepress";
+import { fs, path } from "@vuepress/utils";
+
+interface EntityMetaItem {
+  path: string;
+  name?: string;
+  alias?: string;
+  shortName?: string;
+  enName?: string;
+  title?: string;
+}
+
+export const wikiEntityMetaPlugin = (): Plugin => ({
+  name: "wiki-entity-meta",
+
+  async onInitialized(app) {
+    const items: EntityMetaItem[] = [];
+
+    // 「中文标签 → 字段名」映射表，以后想扩展就在这里加
+    const LABEL_MAP: Record<string, keyof EntityMetaItem> = {
+      // 姓名类
+      "姓名": "name",
+      "名称": "name",
+      "本名": "name",
+
+      // 简称 / 外号
+      "简称": "shortName",
+      "外号": "shortName",
+
+      // 别名
+      "别名": "alias",
+      "又名": "alias",
+
+      // 英文名
+      "英文名": "enName",
+      "英文名称": "enName",
+
+      // 称号 / 头衔
+      "称号": "title",
+      "头衔": "title",
+    };
+
+    for (const page of app.pages) {
+      const content = page.content ?? "";
+      if (!content) continue;
+
+      const lines = content.split(/\r?\n/);
+      let inBasicSection = false;
+      const meta: Partial<EntityMetaItem> = {};
+
+      for (const raw of lines) {
+        const line = raw.trim();
+
+        // 找到 "## 基本信息" 作为开始
+        if (/^##\s*基本信息/.test(line)) {
+          inBasicSection = true;
+          continue;
+        }
+
+        // 进入别的 "##" 小节就停止扫描
+        if (inBasicSection && /^##\s+/.test(line)) {
+          break;
+        }
+
+        if (!inBasicSection) continue;
+
+        // 匹配 "- 标签：内容"
+        const m = /^[-*]\s*([^：:]+)[：:]\s*(.+)$/.exec(line);
+        if (!m) continue;
+
+        const label = m[1].trim();
+        const value = m[2].trim();
+        if (!value) continue;
+
+        const key = LABEL_MAP[label];
+        if (!key) continue;
+
+        (meta as any)[key] = value;
+      }
+
+      if (Object.keys(meta).length) {
+        items.push({
+          path: page.path,
+          ...meta,
+        });
+      }
+    }
+
+    const tempFile = app.dir.temp("wiki-entity-meta.json");
+    await fs.writeFile(
+      tempFile,
+      JSON.stringify({ items }, null, 2),
+      "utf-8"
+    );
+  },
+
+  async onGenerated(app) {
+    const src = app.dir.temp("wiki-entity-meta.json");
+    const dest = path.join(app.dir.dest(), "data", "wiki-entity-meta.json");
+    await fs.mkdir(path.dirname(dest), { recursive: true });
+    await fs.copyFile(src, dest);
+  },
+});

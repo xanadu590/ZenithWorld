@@ -256,6 +256,54 @@ export function useWikiSearch() {
   }
 
   /* =========================================================
+   * —— 实体额外信息：从正文解析的 姓名 / 简称 / 英文名 / 称号 等
+   *    - 来源：/data/wiki-entity-meta.json
+   * ======================================================= */
+
+  interface EntityMetaItem {
+    path: string;
+    name?: string;
+    alias?: string;
+    shortName?: string;
+    enName?: string;
+    title?: string;
+  }
+
+  const entityMetaLoaded = ref(false);
+  const entityMetaMap: Record<string, EntityMetaItem> = {};
+
+  async function loadEntityMeta() {
+    if (entityMetaLoaded.value) return;
+    try {
+      const res = await fetch("/data/wiki-entity-meta.json");
+      if (!res.ok) {
+        entityMetaLoaded.value = true;
+        return;
+      }
+      const json = await res.json();
+      const items: EntityMetaItem[] = Array.isArray(json.items)
+        ? json.items
+        : [];
+
+      for (const it of items) {
+        const norm = normalizePath(it.path);
+        entityMetaMap[norm] = it;
+      }
+    } catch {
+      // 忽略
+    } finally {
+      entityMetaLoaded.value = true;
+    }
+  }
+
+  function getEntityMetaForUrl(
+    url?: string | null
+  ): EntityMetaItem | undefined {
+    const norm = normalizePath(url || "");
+    return entityMetaMap[norm];
+  }
+
+  /* =========================================================
    * 七、taxonomy path → tags 映射
    * ======================================================= */
 
@@ -321,12 +369,16 @@ export function useWikiSearch() {
     const updatedAt = meta?.updatedAt ?? hit.updatedAt ?? null;
     const viewCount = getVisitForUrl(hit.url || hit.path) ?? hit.viewCount ?? 0;
 
+    // 4）正文解析来的实体信息
+    const entityMeta = getEntityMetaForUrl(hit.url || hit.path);
+
     return {
       ...hit,
       summary,
       tags: tagsFromTax.length ? tagsFromTax : fallbackTags,
       updatedAt,
       viewCount,
+      entityMeta,
     };
   }
 
@@ -368,8 +420,13 @@ export function useWikiSearch() {
     error.value = null;
 
     try {
-      // 确保 random-index、recommended-pages、Twikoo 访问量 都已加载
-      await Promise.all([loadRandomIndex(), loadMetaIndex(), loadVisitStats()]);
+      // 确保 random-index、recommended-pages、Twikoo 访问量、实体信息 都已加载
+      await Promise.all([
+        loadRandomIndex(),
+        loadMetaIndex(),
+        loadVisitStats(),
+        loadEntityMeta(),
+      ]);
 
       // 不传 sort，保持 Meili 默认相关度排序
       const body: any = {
@@ -408,7 +465,7 @@ export function useWikiSearch() {
         return true;
       });
 
-      // d. 补充 summary / tags / updatedAt / viewCount(pv)
+      // d. 补充 summary / tags / updatedAt / viewCount(pv) / entityMeta
       let enriched = unique.map((h) => attachSummaryAndMeta(h));
 
       // e. 从当前所有结果中统计出“候选标签列表”
