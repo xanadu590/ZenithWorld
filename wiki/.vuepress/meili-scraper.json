@@ -13,7 +13,7 @@
 
     "lvl1": "main h1, [vp-content] h1, article h1, .theme-hope-content h1",
 
-    "text": "main p, main li, [vp-content] p, [vp-content] li",
+    "content": "main p, main li, [vp-content] p, [vp-content] li",
 
     "lang": {
       "selector": "/html/@lang",
@@ -37,7 +37,7 @@
       "hierarchy_lvl4",
       "hierarchy_lvl5",
       "hierarchy_lvl6",
-      "text",
+      "content",
       "lang",
       "objectID"
     ],
@@ -51,7 +51,7 @@
       "hierarchy_lvl6",
       "anchor",
       "url",
-      "text",
+      "content",
       "lang"
     ],
     "filterableAttributes": ["lang"],

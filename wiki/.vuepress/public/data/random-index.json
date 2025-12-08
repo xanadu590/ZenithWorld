@@ -31,6 +31,11 @@
       "excerpt": "<MapJump src=\"/images/worldmap.jpg\" ratio=\"16/9\" :regions=\" { id: 1, title: '中域群体', to: '/docs/world/characters/superher"
     },
     {
+      "title": "神明代理",
+      "path": "/docs/world/characters/divineproxy/",
+      "excerpt": "新神在人间为自己选择的代理人。"
+    },
+    {
       "title": "灵动骑士",
       "path": "/docs/world/characters/superhero/character-EtherealKnight.html",
       "excerpt": "意外获得能够变身成游戏人物能力的美少女，行侠仗义！行动！"
@@ -134,11 +139,6 @@
       "title": "测试 B",
       "path": "/docs/world/characters/superhero/test-b.html",
       "excerpt": "我在这里随便写一句：测试目标A会不会被自动加链接。"
-    },
-    {
-      "title": "神明代理",
-      "path": "/docs/world/characters/divineproxy/",
-      "excerpt": "新神在人间为自己选择的代理人。"
     },
     {
       "title": "十二主神",
