@@ -13,7 +13,7 @@ interface EntityMetaItem {
 export const wikiEntityMetaPlugin = (): Plugin => ({
   name: "wiki-entity-meta",
 
-  async onInitialized(app) {
+  async onPrepared(app) {
     const items: EntityMetaItem[] = [];
 
     // 「中文标签 → 字段名」映射表，以后想扩展就在这里加
@@ -41,7 +41,17 @@ export const wikiEntityMetaPlugin = (): Plugin => ({
     };
 
     for (const page of app.pages) {
-      const content = page.content ?? "";
+      // 只处理有物理文件的页面（排除 404、自动生成页等）
+      const filePath = page.filePath;
+      if (!filePath) continue;
+
+      let content = "";
+      try {
+        content = await fs.readFile(filePath, "utf-8");
+      } catch {
+        continue;
+      }
+
       if (!content) continue;
 
       const lines = content.split(/\r?\n/);

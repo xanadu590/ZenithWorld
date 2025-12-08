@@ -136,15 +136,15 @@
     "tooltip": "我在这里随便写一句：测试目标A会不会被自动加链接。"
   },
   {
-    "term": "英雄组织",
-    "path": "/docs/world/factions/heroic/",
-    "filePathRelative": "docs/world/factions/heroic/README.md",
-    "tooltip": ""
-  },
-  {
     "term": "中立组织",
     "path": "/docs/world/factions/neutral/",
     "filePathRelative": "docs/world/factions/neutral/README.md",
+    "tooltip": ""
+  },
+  {
+    "term": "英雄组织",
+    "path": "/docs/world/factions/heroic/",
+    "filePathRelative": "docs/world/factions/heroic/README.md",
     "tooltip": ""
   },
   {
@@ -172,15 +172,15 @@
     "tooltip": "基本信息"
   },
   {
-    "term": "地理",
-    "path": "/docs/world/geography/",
-    "filePathRelative": "docs/world/geography/README.md",
-    "tooltip": ""
-  },
-  {
     "term": "概念",
     "path": "/docs/world/concepts/",
     "filePathRelative": "docs/world/concepts/README.md",
+    "tooltip": ""
+  },
+  {
+    "term": "地理",
+    "path": "/docs/world/geography/",
+    "filePathRelative": "docs/world/geography/README.md",
     "tooltip": ""
   },
   {
