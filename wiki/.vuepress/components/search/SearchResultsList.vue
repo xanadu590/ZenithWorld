@@ -38,14 +38,57 @@
           v-html="highlight(shortSummary(hit.summary || hit.text || '（暂无摘要）'))"
         ></div>
 
-        <!-- 展开态：完整摘要 + meta -->
+        <!-- 展开态：完整摘要 + entityMeta + meta -->
         <div v-else class="mfs-result-detail">
           <div
             class="mfs-result-summary-full"
             v-html="highlight(hit.summary || hit.text || '（暂无摘要）')"
           ></div>
 
-          <!-- 第一行：类型 / 区域 / 标签 / 更新时间 / 访问量 -->
+          <!-- ✅ 新增：实体信息（姓名 / 简称 / 别名 / 英文名 / 称号） -->
+          <div v-if="hit.entityMeta" class="mfs-result-entity">
+            <span v-if="hit.entityMeta.name">
+              姓名：{{ hit.entityMeta.name }}
+            </span>
+            <span v-if="hit.entityMeta.shortName">
+              <span v-if="hit.entityMeta.name"> · </span>
+              简称：{{ hit.entityMeta.shortName }}
+            </span>
+            <span v-if="hit.entityMeta.alias">
+              <span
+                v-if="hit.entityMeta.name || hit.entityMeta.shortName"
+              >
+                ·
+              </span>
+              别名：{{ hit.entityMeta.alias }}
+            </span>
+            <span v-if="hit.entityMeta.enName">
+              <span
+                v-if="
+                  hit.entityMeta.name ||
+                  hit.entityMeta.shortName ||
+                  hit.entityMeta.alias
+                "
+              >
+                ·
+              </span>
+              英文名：{{ hit.entityMeta.enName }}
+            </span>
+            <span v-if="hit.entityMeta.title">
+              <span
+                v-if="
+                  hit.entityMeta.name ||
+                  hit.entityMeta.shortName ||
+                  hit.entityMeta.alias ||
+                  hit.entityMeta.enName
+                "
+              >
+                ·
+              </span>
+              称号：{{ hit.entityMeta.title }}
+            </span>
+          </div>
+
           <div class="mfs-result-meta-line">
             <span v-if="inferType(hit)">
               类型：{{ typeLabelMap[inferType(hit)!] || inferType(hit) }}
@@ -63,29 +106,6 @@
               · 访问：{{ hit.viewCount }} 次
             </span>
           </div>
-
-          <!-- ⭐ 新增：第二行实体信息（姓名 / 简称 / 别名 / 英文名 / 称号） -->
-          <div
-            v-if="hit.entityMeta"
-            class="mfs-result-meta-line"
-          >
-            <span v-if="hit.entityMeta.name">
-              姓名：{{ hit.entityMeta.name }}
-            </span>
-            <span v-if="hit.entityMeta.shortName">
-              · 简称：{{ hit.entityMeta.shortName }}
-            </span>
-            <span v-if="hit.entityMeta.alias">
-              · 别名：{{ hit.entityMeta.alias }}
-            </span>
-            <span v-if="hit.entityMeta.enName">
-              · 英文名：{{ hit.entityMeta.enName }}
-            </span>
-            <span v-if="hit.entityMeta.title">
-              · 称号：{{ hit.entityMeta.title }}
-            </span>
-          </div>
-          <!-- ⭐ 新增结束 -->
 
           <div class="mfs-result-url">
             {{ hit.url }}
@@ -239,6 +259,17 @@ function highlight(text: string): string {
 /* 展开态整体块 */
 .mfs-result-detail {
   margin-top: 0.25rem;
+}
+
+/* 展开态实体信息 */
+.mfs-result-entity {
+  margin-top: 0.2rem;
+  font-size: 0.8rem;
+  color: var(--vp-c-text-2, #6b7280);
+}
+
+.mfs-result-entity span + span {
+  margin-left: 0.25rem;
 }
 
 /* 展开态 meta 信息一行 */
