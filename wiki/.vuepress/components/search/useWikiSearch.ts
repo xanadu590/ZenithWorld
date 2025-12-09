@@ -323,6 +323,7 @@ export function useWikiSearch() {
             for (const item of items) {
         const norm = normalizePath(item.path);
 
+        console.log("[entityMetaMap size]", Object.keys(entityMetaMap).length);
         // 1) 原始标准化路径
         entityMetaMap[norm] = item;
 
@@ -429,6 +430,17 @@ export function useWikiSearch() {
 
     // 4）实体信息（姓名/简称/别名等）
     const entityMeta = getEntityMetaForUrl(hit.url || hit.path);
+
+    if ((hit.title || "").includes("灵动骑士")) {
+  console.log(
+    "[CHECK entityMeta]",
+    hit.url,
+    "→ norm=",
+    normalizePath(hit.url || hit.path),
+    "→ meta=",
+    entityMeta
+  );
+}
 
     return {
       ...hit,
