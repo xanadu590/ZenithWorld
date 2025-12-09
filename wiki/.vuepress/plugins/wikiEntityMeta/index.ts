@@ -16,7 +16,7 @@ export const wikiEntityMetaPlugin = (): Plugin => ({
   async onPrepared(app) {
     const items: EntityMetaItem[] = [];
 
-    // 「中文标签 → 字段名」映射表，以后想扩展就在这里加
+    // 「中文标签 → 字段名」映射表
     const LABEL_MAP: Record<string, keyof EntityMetaItem> = {
       // 姓名类
       "姓名": "name",
@@ -96,18 +96,17 @@ export const wikiEntityMetaPlugin = (): Plugin => ({
       }
     }
 
+    const json = JSON.stringify({ items }, null, 2);
+
+    // 1）写入临时目录（可供需要时 import / 调试）
     const tempFile = app.dir.temp("wiki-entity-meta.json");
-    await fs.writeFile(
-      tempFile,
-      JSON.stringify({ items }, null, 2),
-      "utf-8"
-    );
+    await fs.writeFile(tempFile, json, "utf-8");
+
+    // 2）写入 public/data，dev + build 都能通过 /data/xxx 访问
+    const publicFile = path.join(app.dir.public(), "data", "wiki-entity-meta.json");
+    await fs.mkdir(path.dirname(publicFile), { recursive: true });
+    await fs.writeFile(publicFile, json, "utf-8");
   },
 
-  async onGenerated(app) {
-    const src = app.dir.temp("wiki-entity-meta.json");
-    const dest = path.join(app.dir.dest(), "data", "wiki-entity-meta.json");
-    await fs.mkdir(path.dirname(dest), { recursive: true });
-    await fs.copyFile(src, dest);
-  },
+  // onGenerated 其实可以不要了，因为 public/ 会自动拷贝到 dist
 });

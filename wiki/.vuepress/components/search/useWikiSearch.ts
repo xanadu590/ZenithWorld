@@ -12,6 +12,9 @@ import { nosearchPaths } from "@temp/nosearch/nosearchPaths.js";
 // 由自定义 taxonomy 插件生成：包含每个页面的分类与标签
 // @ts-ignore
 import { taxonomyData } from "@temp/wiki-taxonomy/data.js";
+// 由 wiki-entity-meta 插件生成：实体信息（姓名 / 简称 / 别名等）
+// @ts-ignore
+import { wikiEntityMetaItems } from "@temp/wiki-entity-meta.js";
 
 /**
  * 把所有“百科搜索逻辑”集中在这里：
@@ -292,7 +295,7 @@ export function useWikiSearch() {
 
   /* =========================================================
    * 八、实体信息 wiki-entity-meta：姓名 / 简称 / 别名 等
-   *    - 来源：/data/wiki-entity-meta.json
+   *    - 来源：@temp/wiki-entity-meta.js
    * ======================================================= */
 
   interface EntityMetaItem {
@@ -304,85 +307,79 @@ export function useWikiSearch() {
     title?: string;
   }
 
-  const entityMetaLoaded = ref(false);
   const entityMetaMap: Record<string, EntityMetaItem> = {};
 
-  async function loadEntityMeta() {
-    if (entityMetaLoaded.value) return;
-    try {
-      const res = await fetch("/data/wiki-entity-meta.json");
-      if (!res.ok) {
-        entityMetaLoaded.value = true;
-        return;
-      }
-      const json = await res.json();
-      const items: EntityMetaItem[] = Array.isArray(json.items)
-        ? json.items
-        : [];
+  // 启动时根据 wikiEntityMetaItems 构建一个多 key 的映射表
+  (function buildEntityMetaMap() {
+    const items: EntityMetaItem[] = Array.isArray(wikiEntityMetaItems)
+      ? wikiEntityMetaItems
+      : [];
 
-            for (const item of items) {
-        const norm = normalizePath(item.path);
+    for (const item of items) {
+      const norm = normalizePath(item.path);
 
-        console.log("[entityMetaMap size]", Object.keys(entityMetaMap).length);
-        // 1) 原始标准化路径
+      // 1) 原始标准化路径
+      if (!entityMetaMap[norm]) {
         entityMetaMap[norm] = item;
-
-        // 2) 去掉 .html 的版本（/xxx/yyy.html -> /xxx/yyy）
-        const noHtml = norm.replace(/\.html$/, "");
-        if (!entityMetaMap[noHtml]) {
-          entityMetaMap[noHtml] = item;
-        }
-
-        // 3) 补一个去掉 /docs 前缀的版本（防止 hit.url 没有 /docs）
-        const withoutDocs = norm.replace(/^\/docs/, "") || "/";
-        if (!entityMetaMap[withoutDocs]) {
-          entityMetaMap[withoutDocs] = item;
-        }
       }
 
-    } catch {
-      // 忽略错误：没有这个文件就当没有实体信息
-    } finally {
-      entityMetaLoaded.value = true;
+      // 2) 去掉 .html 的版本（/xxx/yyy.html -> /xxx/yyy）
+      const noHtml = norm.replace(/\.html$/, "");
+      if (!entityMetaMap[noHtml]) {
+        entityMetaMap[noHtml] = item;
+      }
+
+      // 3) 去掉 /docs 前缀的版本
+      const withoutDocs = norm.replace(/^\/docs/, "") || "/";
+      if (!entityMetaMap[withoutDocs]) {
+        entityMetaMap[withoutDocs] = item;
+      }
+
+      // 4) 补上 /docs 前缀的版本（防止有的 url 自带 /docs，有的不带）
+      const withDocs = norm.startsWith("/docs")
+        ? norm
+        : "/docs" + (norm.startsWith("/") ? norm : "/" + norm);
+      if (!entityMetaMap[withDocs]) {
+        entityMetaMap[withDocs] = item;
+      }
     }
-  }
+  })();
 
-  function getEntityMetaForUrl(url?: string | null): EntityMetaItem | undefined {
-  const norm = normalizePath(url || "");
+  function getEntityMetaForUrl(
+    url?: string | null
+  ): EntityMetaItem | undefined {
+    const norm = normalizePath(url || "");
 
-  // 1）先直接查一次
-  if (entityMetaMap[norm]) return entityMetaMap[norm];
+    // 1）直接命中
+    if (entityMetaMap[norm]) return entityMetaMap[norm];
 
-  // 2）再试试去掉 /docs 前缀 / 加上 /docs 前缀
-  const variants = new Set<string>();
+    const variants = new Set<string>();
+    variants.add(norm);
 
-  variants.add(norm);
+    const withoutDocs = norm.replace(/^\/docs/, "") || "/";
+    variants.add(withoutDocs);
 
-  const withoutDocs = norm.replace(/^\/docs/, "") || "/";
-  variants.add(withoutDocs);
-
-  const withDocs =
-    norm.startsWith("/docs")
+    const withDocs = norm.startsWith("/docs")
       ? norm
       : "/docs" + (norm.startsWith("/") ? norm : "/" + norm);
-  variants.add(withDocs);
+    variants.add(withDocs);
 
-  // 先在 variants 里直接命中一次
-  for (const v of variants) {
-    if (entityMetaMap[v]) return entityMetaMap[v];
+    const noHtml = norm.replace(/\.html$/, "");
+    variants.add(noHtml);
+
+    for (const v of variants) {
+      if (entityMetaMap[v]) return entityMetaMap[v];
+    }
+
+    // 2）最后做一轮尾部模糊匹配（兜底）
+    for (const [k, v] of Object.entries(entityMetaMap)) {
+      if (k === norm) return v;
+      if (k.endsWith(norm)) return v;
+      if (norm.endsWith(k)) return v;
+    }
+
+    return undefined;
   }
-
-  // 3）还不行就做一轮“尾部模糊匹配”：
-  //    只要 entity.path 和 norm 其中一个是以另一个结尾，就认为是同一页
-  for (const [k, v] of Object.entries(entityMetaMap)) {
-    if (k === norm) return v;
-    if (k.endsWith(norm)) return v;
-    if (norm.endsWith(k)) return v;
-  }
-
-  return undefined;
-}
-
 
   /* =========================================================
    * 九、搜索结果增强：summary + tags + updatedAt + viewCount(pv) + entityMeta
@@ -390,18 +387,6 @@ export function useWikiSearch() {
 
   function attachSummaryAndMeta(hit: any) {
     const hitPathNorm = normalizePath(hit.url || hit.path);
-
-        // === 调试：看一下路径和实体是否匹配 ===
-    if (typeof hit.title === "string" && hit.title.includes("灵动骑士")) {
-      const em = getEntityMetaForUrl(hit.url || hit.path);
-      console.log("[DEBUG entityMeta] 灵动骑士",
-        {
-          rawUrl: hit.url,
-          normUrl: hitPathNorm,
-          entityMeta: em,
-        }
-      );
-    }
 
     // 1）摘要
     const match = randomIndex.value.find(
@@ -430,17 +415,6 @@ export function useWikiSearch() {
 
     // 4）实体信息（姓名/简称/别名等）
     const entityMeta = getEntityMetaForUrl(hit.url || hit.path);
-
-    if ((hit.title || "").includes("灵动骑士")) {
-  console.log(
-    "[CHECK entityMeta]",
-    hit.url,
-    "→ norm=",
-    normalizePath(hit.url || hit.path),
-    "→ meta=",
-    entityMeta
-  );
-}
 
     return {
       ...hit,
@@ -490,12 +464,11 @@ export function useWikiSearch() {
     error.value = null;
 
     try {
-      // 确保 random-index、recommended-pages、Twikoo 访问量、实体信息 都已加载
+      // 确保 random-index、recommended-pages、Twikoo 访问量 都已加载
       await Promise.all([
         loadRandomIndex(),
         loadMetaIndex(),
         loadVisitStats(),
-        loadEntityMeta(),
       ]);
 
       // 不传 sort，保持 Meili 默认相关度排序
