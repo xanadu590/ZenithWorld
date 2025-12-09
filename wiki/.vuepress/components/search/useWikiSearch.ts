@@ -332,9 +332,25 @@ export function useWikiSearch() {
   }
 
   function getEntityMetaForUrl(url?: string | null): EntityMetaItem | undefined {
-    const norm = normalizePath(url || "");
-    return entityMetaMap[norm];
-  }
+  const norm = normalizePath(url || "");
+
+  // 1) 直接用当前路径查一遍
+  let meta = entityMetaMap[norm];
+  if (meta) return meta;
+
+  // 2) 去掉 /docs 前缀再试一遍
+  const withoutDocs = norm.replace(/^\/docs/, "") || "/";
+  meta = entityMetaMap[withoutDocs];
+  if (meta) return meta;
+
+  // 3) 补上 /docs 前缀再试一遍
+  const withDocs =
+    norm.startsWith("/docs") ? norm : "/docs" + (norm.startsWith("/") ? norm : "/" + norm);
+  meta = entityMetaMap[withDocs];
+  if (meta) return meta;
+
+  return undefined;
+}
 
   /* =========================================================
    * 九、搜索结果增强：summary + tags + updatedAt + viewCount(pv) + entityMeta
