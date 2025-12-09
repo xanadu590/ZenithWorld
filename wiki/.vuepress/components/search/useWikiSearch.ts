@@ -14,7 +14,8 @@ import { nosearchPaths } from "@temp/nosearch/nosearchPaths.js";
 import { taxonomyData } from "@temp/wiki-taxonomy/data.js";
 // 由 wiki-entity-meta 插件生成：实体信息（姓名 / 简称 / 别名等）
 // @ts-ignore
-import { wikiEntityMetaItems } from "@temp/wiki-entity-meta.js";
+import { wikiEntityMetaItems } from "/data/wiki-entity-meta.js";
+
 
 /**
  * 把所有“百科搜索逻辑”集中在这里：
