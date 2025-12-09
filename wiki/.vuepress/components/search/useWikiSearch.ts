@@ -334,23 +334,39 @@ export function useWikiSearch() {
   function getEntityMetaForUrl(url?: string | null): EntityMetaItem | undefined {
   const norm = normalizePath(url || "");
 
-  // 1) 直接用当前路径查一遍
-  let meta = entityMetaMap[norm];
-  if (meta) return meta;
+  // 1）先直接查一次
+  if (entityMetaMap[norm]) return entityMetaMap[norm];
 
-  // 2) 去掉 /docs 前缀再试一遍
+  // 2）再试试去掉 /docs 前缀 / 加上 /docs 前缀
+  const variants = new Set<string>();
+
+  variants.add(norm);
+
   const withoutDocs = norm.replace(/^\/docs/, "") || "/";
-  meta = entityMetaMap[withoutDocs];
-  if (meta) return meta;
+  variants.add(withoutDocs);
 
-  // 3) 补上 /docs 前缀再试一遍
   const withDocs =
-    norm.startsWith("/docs") ? norm : "/docs" + (norm.startsWith("/") ? norm : "/" + norm);
-  meta = entityMetaMap[withDocs];
-  if (meta) return meta;
+    norm.startsWith("/docs")
+      ? norm
+      : "/docs" + (norm.startsWith("/") ? norm : "/" + norm);
+  variants.add(withDocs);
+
+  // 先在 variants 里直接命中一次
+  for (const v of variants) {
+    if (entityMetaMap[v]) return entityMetaMap[v];
+  }
+
+  // 3）还不行就做一轮“尾部模糊匹配”：
+  //    只要 entity.path 和 norm 其中一个是以另一个结尾，就认为是同一页
+  for (const [k, v] of Object.entries(entityMetaMap)) {
+    if (k === norm) return v;
+    if (k.endsWith(norm)) return v;
+    if (norm.endsWith(k)) return v;
+  }
 
   return undefined;
 }
+
 
   /* =========================================================
    * 九、搜索结果增强：summary + tags + updatedAt + viewCount(pv) + entityMeta
