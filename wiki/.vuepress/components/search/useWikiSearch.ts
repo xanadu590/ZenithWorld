@@ -320,10 +320,25 @@ export function useWikiSearch() {
         ? json.items
         : [];
 
-      for (const item of items) {
+            for (const item of items) {
         const norm = normalizePath(item.path);
+
+        // 1) 原始标准化路径
         entityMetaMap[norm] = item;
+
+        // 2) 去掉 .html 的版本（/xxx/yyy.html -> /xxx/yyy）
+        const noHtml = norm.replace(/\.html$/, "");
+        if (!entityMetaMap[noHtml]) {
+          entityMetaMap[noHtml] = item;
+        }
+
+        // 3) 补一个去掉 /docs 前缀的版本（防止 hit.url 没有 /docs）
+        const withoutDocs = norm.replace(/^\/docs/, "") || "/";
+        if (!entityMetaMap[withoutDocs]) {
+          entityMetaMap[withoutDocs] = item;
+        }
       }
+
     } catch {
       // 忽略错误：没有这个文件就当没有实体信息
     } finally {
@@ -374,6 +389,18 @@ export function useWikiSearch() {
 
   function attachSummaryAndMeta(hit: any) {
     const hitPathNorm = normalizePath(hit.url || hit.path);
+
+        // === 调试：看一下路径和实体是否匹配 ===
+    if (typeof hit.title === "string" && hit.title.includes("灵动骑士")) {
+      const em = getEntityMetaForUrl(hit.url || hit.path);
+      console.log("[DEBUG entityMeta] 灵动骑士",
+        {
+          rawUrl: hit.url,
+          normUrl: hitPathNorm,
+          entityMeta: em,
+        }
+      );
+    }
 
     // 1）摘要
     const match = randomIndex.value.find(
