@@ -1,5 +1,6 @@
+// wiki/.vuepress/plugins/wikiEntityMeta/index.ts
 import type { Plugin } from "vuepress";
-import { fs, path } from "@vuepress/utils";
+import { fs, path } from "vuepress/utils";
 
 interface EntityMetaItem {
   path: string;
@@ -13,6 +14,7 @@ interface EntityMetaItem {
 export const wikiEntityMetaPlugin = (): Plugin => ({
   name: "wiki-entity-meta",
 
+  // 在 onPrepared 阶段扫描所有页面，生成实体信息
   async onPrepared(app) {
     const items: EntityMetaItem[] = [];
 
@@ -96,17 +98,21 @@ export const wikiEntityMetaPlugin = (): Plugin => ({
       }
     }
 
-    const json = JSON.stringify({ items }, null, 2);
+    // 1）仍然生成 JSON（可选，用于调试或以后需要）
+    const jsonTempFile = app.dir.temp("wiki-entity-meta.json");
+    await fs.writeFile(
+      jsonTempFile,
+      JSON.stringify({ items }, null, 2),
+      "utf-8"
+    );
 
-    // 1）写入临时目录（可供需要时 import / 调试）
-    const tempFile = app.dir.temp("wiki-entity-meta.json");
-    await fs.writeFile(tempFile, json, "utf-8");
-
-    // 2）写入 public/data，dev + build 都能通过 /data/xxx 访问
-    const publicFile = path.join(app.dir.public(), "data", "wiki-entity-meta.json");
-    await fs.mkdir(path.dirname(publicFile), { recursive: true });
-    await fs.writeFile(publicFile, json, "utf-8");
+    // 2）额外生成 JS 模块：@temp/wiki-entity-meta.js
+    const jsTempFile = app.dir.temp("wiki-entity-meta.js");
+    const jsContent =
+      `export const wikiEntityMetaItems = ${JSON.stringify(items, null, 2)};\n`;
+    await fs.writeFile(jsTempFile, jsContent, "utf-8");
   },
 
-  // onGenerated 其实可以不要了，因为 public/ 会自动拷贝到 dist
+  // ❌ 不再需要把东西复制到 dist/data 里，搜索直接用 @temp 的 JS
+  // async onGenerated(app) { ... } 可以删掉
 });
