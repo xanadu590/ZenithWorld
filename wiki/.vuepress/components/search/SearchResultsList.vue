@@ -107,6 +107,29 @@
             </span>
           </div>
 
+          <!-- ========== 实体信息（姓名 / 简称 / 别名 / 英文名 / 称号） ========== -->
+<div
+  v-if="hit.entityMeta"
+  class="mfs-entity-meta"
+>
+  <span v-if="hit.entityMeta.name">
+    姓名：{{ hit.entityMeta.name }}
+  </span>
+  <span v-if="hit.entityMeta.shortName">
+    · 简称：{{ hit.entityMeta.shortName }}
+  </span>
+  <span v-if="hit.entityMeta.alias">
+    · 别名：{{ hit.entityMeta.alias }}
+  </span>
+  <span v-if="hit.entityMeta.enName">
+    · 英文名：{{ hit.entityMeta.enName }}
+  </span>
+  <span v-if="hit.entityMeta.title">
+    · 称号：{{ hit.entityMeta.title }}
+  </span>
+</div>
+
+
           <div class="mfs-result-url">
             {{ hit.url }}
           </div>
@@ -292,6 +315,13 @@ function highlight(text: string): string {
   color: var(--vp-c-text-3, #9ca3af);
   margin-top: 0.25rem;
 }
+
+.mfs-entity-meta {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--vp-c-text-2, #6b7280);
+}
+
 
 /* ✅ 高亮 mark 样式（用 v-html 渲染，所以用 v-deep） */
 ::v-deep(.mfs-hl) {
