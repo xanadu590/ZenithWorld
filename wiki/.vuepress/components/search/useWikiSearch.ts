@@ -16,7 +16,6 @@ import { taxonomyData } from "@temp/wiki-taxonomy/data.js";
 // @ts-ignore
 import { wikiEntityMetaItems } from "@temp/wiki-entity-meta.js";
 
-
 /**
  * 把所有“百科搜索逻辑”集中在这里：
  * - Meili 查询
@@ -149,14 +148,6 @@ export function useWikiSearch() {
    *    - 字段：lastUpdated（git 时间）
    * ======================================================= */
 
-  interface MetaIndexItem {
-    title: string;
-    path: string;
-    lastUpdated: number | null;
-    hotScore: number; // 不再用于 viewCount，只保留字段
-  }
-
-  const metaIndex = ref<MetaIndexItem[]>([]);
   const metaIndexLoaded = ref(false);
 
   /** path → { updatedAt } 映射表 */
@@ -184,8 +175,12 @@ export function useWikiSearch() {
         metaIndexLoaded.value = true;
         return;
       }
-      const list = (await res.json()) as MetaIndexItem[];
-      metaIndex.value = list;
+      const list = (await res.json()) as {
+        title: string;
+        path: string;
+        lastUpdated: number | null;
+        hotScore?: number;
+      }[];
 
       for (const item of list) {
         const norm = normalizePath(item.path);
@@ -299,20 +294,11 @@ export function useWikiSearch() {
    *    - 来源：@temp/wiki-entity-meta.js
    * ======================================================= */
 
-  interface EntityMetaItem {
-    path: string;
-    name?: string;
-    alias?: string;
-    shortName?: string;
-    enName?: string;
-    title?: string;
-  }
-
-  const entityMetaMap: Record<string, EntityMetaItem> = {};
+  const entityMetaMap: Record<string, any> = {};
 
   // 启动时根据 wikiEntityMetaItems 构建一个多 key 的映射表
   (function buildEntityMetaMap() {
-    const items: EntityMetaItem[] = Array.isArray(wikiEntityMetaItems)
+    const items: any[] = Array.isArray(wikiEntityMetaItems)
       ? wikiEntityMetaItems
       : [];
 
@@ -348,7 +334,7 @@ export function useWikiSearch() {
 
   function getEntityMetaForUrl(
     url?: string | null
-  ): EntityMetaItem | undefined {
+  ): any | undefined {
     const norm = normalizePath(url || "");
 
     // 1）直接命中
