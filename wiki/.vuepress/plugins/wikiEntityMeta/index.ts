@@ -1,5 +1,6 @@
+// wiki/.vuepress/plugins/wiki-entity-meta.ts
 import type { Plugin } from "vuepress";
-import { fs, path } from "@vuepress/utils";
+import { fs } from "vuepress/utils";
 
 interface EntityMetaItem {
   path: string;
@@ -18,19 +19,29 @@ export const wikiEntityMetaPlugin = (): Plugin => ({
 
     /** 中文标签 → 字段名 */
     const LABEL_MAP: Record<string, keyof EntityMetaItem> = {
+      // 姓名
       "姓名": "name",
       "名称": "name",
       "本名": "name",
+
+      // 简称 / 外号
       "简称": "shortName",
       "外号": "shortName",
+
+      // 别名
       "别名": "alias",
       "又名": "alias",
+
+      // 英文名
       "英文名": "enName",
       "英文名称": "enName",
+
+      // 称号 / 头衔
       "称号": "title",
       "头衔": "title",
     };
 
+    // 扫描所有有物理文件的页面
     for (const page of app.pages) {
       const filePath = page.filePath;
       if (!filePath) continue;
@@ -50,15 +61,17 @@ export const wikiEntityMetaPlugin = (): Plugin => ({
       for (const raw of lines) {
         const line = raw.trim();
 
+        // 进入 “## 基本信息”
         if (/^##\s*基本信息/.test(line)) {
           inBasic = true;
           continue;
         }
 
+        // 碰到下一个 “## ” 小节就结束
         if (inBasic && /^##\s+/.test(line)) break;
-
         if (!inBasic) continue;
 
+        // 匹配 "- 标签：内容"
         const m = /^[-*]\s*([^：:]+)[：:]\s*(.+)$/.exec(line);
         if (!m) continue;
 
@@ -80,19 +93,17 @@ export const wikiEntityMetaPlugin = (): Plugin => ({
       }
     }
 
-    /** 输出 JS 文件 */
-    const outFile = path.join(
-      app.dir.source(), // 即 wiki/ 目录
-      ".vuepress/public/data/wiki-entity-meta.js"
-    );
-
+    /** ✅ 输出到 @temp：供前端通过 @temp/wiki-entity-meta.js 引用 */
     const jsContent =
       "export const wikiEntityMetaItems = " +
       JSON.stringify(items, null, 2) +
       ";\n";
 
-    await fs.writeFile(outFile, jsContent, "utf-8");
+    await app.writeTemp("wiki-entity-meta.js", jsContent);
 
-    console.log(`[wiki-entity-meta] generated: ${outFile}`);
+    console.log(
+      "[wiki-entity-meta] temp module generated:",
+      app.dir.temp("wiki-entity-meta.js")
+    );
   },
 });

@@ -12,8 +12,12 @@ import { nosearchPaths } from "@temp/nosearch/nosearchPaths.js";
 // 由自定义 taxonomy 插件生成：包含每个页面的分类与标签
 // @ts-ignore
 import { taxonomyData } from "@temp/wiki-taxonomy/data.js";
+// 由 wiki-entity-meta 插件生成：实体信息（姓名 / 简称 / 别名等）
+// @ts-ignore
+import { wikiEntityMetaItems } from "/data/wiki-entity-meta.js";
 
- /**
+
+/**
  * 把所有“百科搜索逻辑”集中在这里：
  * - Meili 查询
  * - 分类 / 标签筛选
@@ -292,7 +296,7 @@ export function useWikiSearch() {
 
   /* =========================================================
    * 八、实体信息 wiki-entity-meta：姓名 / 简称 / 别名 等
-   *    - 来源：/data/wiki-entity-meta.json
+   *    - 来源：@temp/wiki-entity-meta.js
    * ======================================================= */
 
   interface EntityMetaItem {
@@ -304,63 +308,43 @@ export function useWikiSearch() {
     title?: string;
   }
 
-  const entityMetaLoaded = ref(false);
   const entityMetaMap: Record<string, EntityMetaItem> = {};
 
-  async function loadEntityMeta() {
-    if (entityMetaLoaded.value) return;
+  // 启动时根据 wikiEntityMetaItems 构建一个多 key 的映射表
+  (function buildEntityMetaMap() {
+    const items: EntityMetaItem[] = Array.isArray(wikiEntityMetaItems)
+      ? wikiEntityMetaItems
+      : [];
 
-    try {
-      const res = await fetch("/data/wiki-entity-meta.js");
-      if (!res.ok) {
-        entityMetaLoaded.value = true;
-        return;
+    for (const item of items) {
+      const norm = normalizePath(item.path);
+
+      // 1) 原始标准化路径
+      if (!entityMetaMap[norm]) {
+        entityMetaMap[norm] = item;
       }
 
-      const json = await res.json();
-      const items: EntityMetaItem[] = Array.isArray(json.items)
-        ? json.items
-        : [];
-
-      for (const item of items) {
-        const norm = normalizePath(item.path);
-
-        // 原始
-        if (!entityMetaMap[norm]) {
-          entityMetaMap[norm] = item;
-        }
-
-        // 去 .html
-        const noHtml = norm.replace(/\.html$/, "");
-        if (!entityMetaMap[noHtml]) {
-          entityMetaMap[noHtml] = item;
-        }
-
-        // 去 /docs 前缀
-        const withoutDocs = norm.replace(/^\/docs/, "") || "/";
-        if (!entityMetaMap[withoutDocs]) {
-          entityMetaMap[withoutDocs] = item;
-        }
-
-        // 补上 /docs 前缀
-        const withDocs = norm.startsWith("/docs")
-          ? norm
-          : "/docs" + (norm.startsWith("/") ? norm : "/" + norm);
-        if (!entityMetaMap[withDocs]) {
-          entityMetaMap[withDocs] = item;
-        }
+      // 2) 去掉 .html 的版本（/xxx/yyy.html -> /xxx/yyy）
+      const noHtml = norm.replace(/\.html$/, "");
+      if (!entityMetaMap[noHtml]) {
+        entityMetaMap[noHtml] = item;
       }
 
-      console.log(
-        "[wiki-entity-meta] loaded items:",
-        Object.keys(entityMetaMap).length
-      );
-    } catch (e) {
-      console.warn("[wiki-entity-meta] load failed:", e);
-    } finally {
-      entityMetaLoaded.value = true;
+      // 3) 去掉 /docs 前缀的版本
+      const withoutDocs = norm.replace(/^\/docs/, "") || "/";
+      if (!entityMetaMap[withoutDocs]) {
+        entityMetaMap[withoutDocs] = item;
+      }
+
+      // 4) 补上 /docs 前缀的版本（防止有的 url 自带 /docs，有的不带）
+      const withDocs = norm.startsWith("/docs")
+        ? norm
+        : "/docs" + (norm.startsWith("/") ? norm : "/" + norm);
+      if (!entityMetaMap[withDocs]) {
+        entityMetaMap[withDocs] = item;
+      }
     }
-  }
+  })();
 
   function getEntityMetaForUrl(
     url?: string | null
@@ -481,12 +465,11 @@ export function useWikiSearch() {
     error.value = null;
 
     try {
-      // 确保 random-index、recommended-pages、Twikoo 访问量、实体信息 都已加载
+      // 确保 random-index、recommended-pages、Twikoo 访问量 都已加载
       await Promise.all([
         loadRandomIndex(),
         loadMetaIndex(),
         loadVisitStats(),
-        loadEntityMeta(),
       ]);
 
       // 不传 sort，保持 Meili 默认相关度排序
