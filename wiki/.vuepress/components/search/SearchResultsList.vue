@@ -45,50 +45,6 @@
             v-html="highlight(hit.summary || hit.text || '（暂无摘要）')"
           ></div>
 
-          <!-- ✅ 新增：实体信息（姓名 / 简称 / 别名 / 英文名 / 称号） -->
-          <div v-if="hit.entityMeta" class="mfs-result-entity">
-            <span v-if="hit.entityMeta.name">
-              姓名：{{ hit.entityMeta.name }}
-            </span>
-            <span v-if="hit.entityMeta.shortName">
-              <span v-if="hit.entityMeta.name"> · </span>
-              简称：{{ hit.entityMeta.shortName }}
-            </span>
-            <span v-if="hit.entityMeta.alias">
-              <span
-                v-if="hit.entityMeta.name || hit.entityMeta.shortName"
-              >
-                ·
-              </span>
-              别名：{{ hit.entityMeta.alias }}
-            </span>
-            <span v-if="hit.entityMeta.enName">
-              <span
-                v-if="
-                  hit.entityMeta.name ||
-                  hit.entityMeta.shortName ||
-                  hit.entityMeta.alias
-                "
-              >
-                ·
-              </span>
-              英文名：{{ hit.entityMeta.enName }}
-            </span>
-            <span v-if="hit.entityMeta.title">
-              <span
-                v-if="
-                  hit.entityMeta.name ||
-                  hit.entityMeta.shortName ||
-                  hit.entityMeta.alias ||
-                  hit.entityMeta.enName
-                "
-              >
-                ·
-              </span>
-              称号：{{ hit.entityMeta.title }}
-            </span>
-          </div>
-
           <div class="mfs-result-meta-line">
             <span v-if="inferType(hit)">
               类型：{{ typeLabelMap[inferType(hit)!] || inferType(hit) }}
@@ -108,27 +64,26 @@
           </div>
 
           <!-- ========== 实体信息（姓名 / 简称 / 别名 / 英文名 / 称号） ========== -->
-<div
-  v-if="hit.entityMeta"
-  class="mfs-entity-meta"
->
-  <span v-if="hit.entityMeta.name">
-    姓名：{{ hit.entityMeta.name }}
-  </span>
-  <span v-if="hit.entityMeta.shortName">
-    · 简称：{{ hit.entityMeta.shortName }}
-  </span>
-  <span v-if="hit.entityMeta.alias">
-    · 别名：{{ hit.entityMeta.alias }}
-  </span>
-  <span v-if="hit.entityMeta.enName">
-    · 英文名：{{ hit.entityMeta.enName }}
-  </span>
-  <span v-if="hit.entityMeta.title">
-    · 称号：{{ hit.entityMeta.title }}
-  </span>
-</div>
-
+          <div
+            v-if="hit.entityMeta"
+            class="mfs-entity-meta"
+          >
+            <span v-if="hit.entityMeta.name">
+              姓名：{{ hit.entityMeta.name }}
+            </span>
+            <span v-if="hit.entityMeta.shortName">
+              · 简称：{{ hit.entityMeta.shortName }}
+            </span>
+            <span v-if="hit.entityMeta.alias">
+              · 别名：{{ hit.entityMeta.alias }}
+            </span>
+            <span v-if="hit.entityMeta.enName">
+              · 英文名：{{ hit.entityMeta.enName }}
+            </span>
+            <span v-if="hit.entityMeta.title">
+              · 称号：{{ hit.entityMeta.title }}
+            </span>
+          </div>
 
           <div class="mfs-result-url">
             {{ hit.url }}
@@ -284,17 +239,6 @@ function highlight(text: string): string {
   margin-top: 0.25rem;
 }
 
-/* 展开态实体信息 */
-.mfs-result-entity {
-  margin-top: 0.2rem;
-  font-size: 0.8rem;
-  color: var(--vp-c-text-2, #6b7280);
-}
-
-.mfs-result-entity span + span {
-  margin-left: 0.25rem;
-}
-
 /* 展开态 meta 信息一行 */
 .mfs-result-meta-line {
   margin-top: 0.2rem;
@@ -316,12 +260,12 @@ function highlight(text: string): string {
   margin-top: 0.25rem;
 }
 
+/* 实体信息块 */
 .mfs-entity-meta {
   margin-top: 0.25rem;
   font-size: 0.8rem;
   color: var(--vp-c-text-2, #6b7280);
 }
-
 
 /* ✅ 高亮 mark 样式（用 v-html 渲染，所以用 v-deep） */
 ::v-deep(.mfs-hl) {
