@@ -46,7 +46,7 @@
 */
 
 import { inject } from 'vue'
-import { AI_INJECT_KEY } from '../client'
+import { AI_INJECT_KEY } from '../client.js'
 import { withBase } from '@vuepress/client'  // 保留：基于站点 base 构造完整资源路径
 
 defineProps<{

@@ -36,6 +36,12 @@
     "hotScore": 0
   },
   {
+    "title": "反派组织",
+    "path": "/docs/world/factions/",
+    "lastUpdated": 1764926399000,
+    "hotScore": 0
+  },
+  {
     "title": "概念",
     "path": "/docs/world/concepts/",
     "lastUpdated": 1764926399000,
@@ -48,12 +54,6 @@
     "hotScore": 0
   },
   {
-    "title": "反派组织",
-    "path": "/docs/world/factions/",
-    "lastUpdated": 1764926399000,
-    "hotScore": 0
-  },
-  {
     "title": "历史",
     "path": "/docs/world/history/",
     "lastUpdated": 1764926399000,
@@ -62,6 +62,18 @@
   {
     "title": "危机管理机构",
     "path": "/docs/world/characters/CCO/",
+    "lastUpdated": 1764926399000,
+    "hotScore": 0
+  },
+  {
+    "title": "神明代理",
+    "path": "/docs/world/characters/divineproxy/",
+    "lastUpdated": 1764926399000,
+    "hotScore": 0
+  },
+  {
+    "title": "英雄组织",
+    "path": "/docs/world/factions/heroic/",
     "lastUpdated": 1764926399000,
     "hotScore": 0
   },
@@ -126,26 +138,8 @@
     "hotScore": 0
   },
   {
-    "title": "神明代理",
-    "path": "/docs/world/characters/divineproxy/",
-    "lastUpdated": 1764926399000,
-    "hotScore": 0
-  },
-  {
-    "title": "异常构造",
-    "path": "/docs/world/concepts/isomer/",
-    "lastUpdated": 1764576698000,
-    "hotScore": 0
-  },
-  {
-    "title": "十二主神",
-    "path": "/docs/world/concepts/twelveprimedeities/",
-    "lastUpdated": 1763641434000,
-    "hotScore": 0
-  },
-  {
-    "title": "英雄组织",
-    "path": "/docs/world/factions/heroic/",
+    "title": "中立组织",
+    "path": "/docs/world/factions/neutral/",
     "lastUpdated": 1764926399000,
     "hotScore": 0
   },
@@ -156,15 +150,21 @@
     "hotScore": 0
   },
   {
-    "title": "中立组织",
-    "path": "/docs/world/factions/neutral/",
+    "title": "其他组织",
+    "path": "/docs/world/factions/others/",
     "lastUpdated": 1764926399000,
     "hotScore": 0
   },
   {
-    "title": "其他组织",
-    "path": "/docs/world/factions/others/",
-    "lastUpdated": 1764926399000,
+    "title": "十二主神",
+    "path": "/docs/world/concepts/twelveprimedeities/",
+    "lastUpdated": 1763641434000,
+    "hotScore": 0
+  },
+  {
+    "title": "异常构造",
+    "path": "/docs/world/concepts/isomer/",
+    "lastUpdated": 1764576698000,
     "hotScore": 0
   },
   {
