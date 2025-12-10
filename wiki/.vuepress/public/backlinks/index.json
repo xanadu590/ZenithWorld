@@ -39,22 +39,6 @@
       "title": "灵动骑士"
     }
   ],
-  "/docs/world/history/": [
-    {
-      "path": "/docs/world/characters/superhero/",
-      "title": "超级英雄"
-    },
-    {
-      "path": "/docs/world/factions/official/AMA/",
-      "title": "异常事物管理局"
-    }
-  ],
-  "/docs/world/characters/superhero/test-a.html": [
-    {
-      "path": "/docs/world/characters/superhero/test-b.html",
-      "title": "测试 B"
-    }
-  ],
   "/docs/world/characters/CCO/": [
     {
       "path": "/docs/world/concepts/isomer/",
@@ -75,6 +59,22 @@
     {
       "path": "/docs/world/factions/official/AMA/",
       "title": "异常事物管理局"
+    }
+  ],
+  "/docs/world/history/": [
+    {
+      "path": "/docs/world/characters/superhero/",
+      "title": "超级英雄"
+    },
+    {
+      "path": "/docs/world/factions/official/AMA/",
+      "title": "异常事物管理局"
+    }
+  ],
+  "/docs/world/characters/superhero/test-a.html": [
+    {
+      "path": "/docs/world/characters/superhero/test-b.html",
+      "title": "测试 B"
     }
   ]
 }

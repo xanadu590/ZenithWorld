@@ -311,7 +311,7 @@ export function useWikiSearch() {
     if (entityMetaLoaded.value) return;
 
     try {
-      const res = await fetch("/data/wiki-entity-meta.json");
+      const res = await fetch("/data/wiki-entity-meta.js");
       if (!res.ok) {
         entityMetaLoaded.value = true;
         return;
