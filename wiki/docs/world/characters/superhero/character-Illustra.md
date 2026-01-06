@@ -1,5 +1,5 @@
 ---
-title: 幻绘星
+title: 绘星
 sidebar: false
 category:
 - 人物
@@ -15,7 +15,7 @@ isOriginal: true
 
 ## 基本信息
 ---
-<LeadBlock quote="啊啊！烦死了烦死了！我爸根的真的不想出来营业啊！" />
+<LeadBlock quote="啊啊！烦死了烦死了！我真的不想出来营业啊！" />
 
 * 姓名：高乐
 * 性别：女
@@ -26,4 +26,5 @@ isOriginal: true
 * 出生年月：
 * 职业：网红博主|画师
 * 学历：大学毕业
+
 * 加入过的团体：世界英雄（World Hero)，正义者组织
