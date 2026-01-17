@@ -1,31 +1,74 @@
 name: Scrape MeiliSearch index
 
 on:
+  # 如果你不想每次 push 都跑（推荐），就把 push 注释掉，仅保留 schedule + workflow_dispatch
   push:
     branches:
       - main
 
-  # 定时任务：每天凌晨 02:00（北京时间）
+  # 手动触发
+  workflow_dispatch:
+
+  # 定时任务：每天凌晨 02:00（北京时间 = UTC+8 => UTC 18:00）
   schedule:
     - cron: "0 18 * * *"
+
+# 防止同一时间多次触发（push + schedule）造成并发写索引
+concurrency:
+  group: meili-scrape-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Run Meili docs-scraper
+      # --- 探针 1：不带 key，看看 /health 返回的到底是不是 JSON ---
+      - name: Probe MeiliSearch endpoint (no key)
+        env:
+          HOST_URL: ${{ secrets.MEILISEARCH_HOST_URL }}
+        run: |
+          set -e
+          echo "HOST_URL=$HOST_URL"
+          echo "== curl /health =="
+          curl -sS -L -D - -o /tmp/body.txt "$HOST_URL/health" || true
+          echo "----- body (first 300 bytes) -----"
+          head -c 300 /tmp/body.txt || true
+          echo
+
+      # --- 探针 2：带 key，看看鉴权后的 /version 是否正常 ---
+      - name: Probe MeiliSearch endpoint (with key)
         env:
           HOST_URL: ${{ secrets.MEILISEARCH_HOST_URL }}
           API_KEY: ${{ secrets.MEILISEARCH_MASTER_KEY }}
+        run: |
+          set -e
+          echo "== curl /version with Authorization =="
+          curl -sS -L -D - -o /tmp/body2.txt \
+            -H "Authorization: Bearer $API_KEY" \
+            "$HOST_URL/version" || true
+          echo "----- body (first 300 bytes) -----"
+          head -c 300 /tmp/body2.txt || true
+          echo
+
+      # --- 正式运行 docs-scraper ---
+      - name: Run Meili docs-scraper
+        env:
+          MEILISEARCH_HOST_URL: ${{ secrets.MEILISEARCH_HOST_URL }}
+          MEILISEARCH_API_KEY: ${{ secrets.MEILISEARCH_MASTER_KEY }}
           CONFIG_FILE_PATH: ${{ github.workspace }}/wiki/.vuepress/meili-scraper.json
         run: |
+          set -e
+          echo "Config file: $CONFIG_FILE_PATH"
+          test -f "$CONFIG_FILE_PATH"
+
           docker run -t --rm \
-            -e MEILISEARCH_HOST_URL=$HOST_URL \
-            -e MEILISEARCH_API_KEY=$API_KEY \
-            -v $CONFIG_FILE_PATH:/docs-scraper/config.json \
+            -e MEILISEARCH_HOST_URL \
+            -e MEILISEARCH_API_KEY \
+            -v "$CONFIG_FILE_PATH:/docs-scraper/config.json" \
             getmeili/docs-scraper:latest \
             pipenv run ./docs_scraper config.json
