@@ -46,13 +46,26 @@
         </button>
       </div>
 
-      <!-- 标签行：挪到排序行下面 -->
-      <TagPager
-        :available-tags="availableTags"
-        :visible-tags="visibleTags"
-        :selected-tags="selectedTags"
-        @toggle-tag="toggleTag"
-      />
+      <!-- ✅ 标签行：始终占位，避免首屏“加载完才出现” -->
+      <div class="mfs-tags-wrap" aria-label="标签筛选">
+        <!-- 关键：TagPager 永远渲染 -->
+        <TagPager
+          :available-tags="availableTags"
+          :visible-tags="visibleTags"
+          :selected-tags="selectedTags"
+          @toggle-tag="toggleTag"
+        />
+
+        <!-- ✅ 首屏占位：当 TagPager 还没内容时显示 -->
+        <!-- 说明：如果 TagPager 内部有 v-if 导致它不渲染，也没关系，占位会顶上来 -->
+        <div
+          v-if="showTagPlaceholder"
+          class="mfs-tags-placeholder"
+        >
+          <span v-if="loading">标签加载中…</span>
+          <span v-else>暂无可用标签</span>
+        </div>
+      </div>
     </div>
 
     <!-- 搜索状态提示 -->
@@ -60,9 +73,7 @@
     <div class="mfs-status" v-else-if="error">出错了：{{ error }}</div>
 
     <!-- 无结果时：显示推荐内容 -->
-    <SearchEmptyState
-      v-else-if="!results.length && searchedOnce"
-    />
+    <SearchEmptyState v-else-if="!results.length && searchedOnce" />
 
     <!-- 有结果时：折叠 / 展开结果列表 -->
     <SearchResultsList
@@ -70,12 +81,13 @@
       :results="results"
       :type-label-map="typeLabelMap"
       :infer-type="inferType"
-      :keyword="keyword"   
+      :keyword="keyword"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { useWikiSearch } from "./useWikiSearch.js";
 import MeiliFilterControls from "./MeiliFilterControls.vue";
 import TagPager from "./TagPager.vue";
@@ -104,6 +116,23 @@ const {
   search,
   inferType,
 } = useWikiSearch();
+
+/**
+ * ✅ 什么时候显示“占位标签行”？
+ * - 首屏 / 未加载到可用标签时显示
+ * - 一旦 visibleTags/availableTags 有内容，就隐藏占位
+ */
+const showTagPlaceholder = computed(() => {
+  const hasTags =
+    (visibleTags?.value?.length ?? 0) > 0 ||
+    (availableTags?.value?.length ?? 0) > 0;
+
+  // 如果已经有标签了，就不显示占位
+  if (hasTags) return false;
+
+  // 没标签时：首屏给一个占位行，避免“加载完才出现”
+  return true;
+});
 </script>
 
 <style scoped>
@@ -132,7 +161,7 @@ const {
   position: absolute;
   left: 0;
   right: 0;
-  top: -1rem;            /* 想往上延伸多少就调这里 */
+  top: -1rem; /* 想往上延伸多少就调这里 */
   height: 1rem;
   background: var(--vp-bg, #fff);
   pointer-events: none;
@@ -173,5 +202,33 @@ const {
   font-size: 0.9rem;
   color: var(--vp-c-text-2, #6b7280);
   margin: 0.5rem 0;
+}
+
+/* ✅ 标签包裹：用于“始终占位” */
+.mfs-tags-wrap {
+  position: relative;
+  margin-top: 0.25rem;
+}
+
+/**
+ * ✅ 占位行：当 TagPager 没渲染任何可见标签时显示
+ * 重点：给它一个稳定高度，避免 sticky 高度抖动
+ */
+.mfs-tags-placeholder {
+  display: flex;
+  align-items: center;
+  min-height: 32px; /* 你 Tag 的高度差不多就行 */
+  padding: 0.15rem 0.2rem;
+  font-size: 0.85rem;
+  color: var(--vp-c-text-2, #6b7280);
+}
+
+/* 如果你希望占位行更“像标签”，可以加一点视觉 */
+.mfs-tags-placeholder span {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  border: 1px dashed var(--vp-c-border, #d0d7de);
+  background: var(--vp-bg, #fff);
 }
 </style>
